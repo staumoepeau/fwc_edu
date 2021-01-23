@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include fwc_edu *.css
+recursive-include fwc_edu *.csv
+recursive-include fwc_edu *.html
+recursive-include fwc_edu *.ico
+recursive-include fwc_edu *.js
+recursive-include fwc_edu *.json
+recursive-include fwc_edu *.md
+recursive-include fwc_edu *.png
+recursive-include fwc_edu *.py
+recursive-include fwc_edu *.svg
+recursive-include fwc_edu *.txt
+recursive-exclude fwc_edu *.pyc
