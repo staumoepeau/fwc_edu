@@ -1,0 +1,27 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2021-02-12 04:37:43.133847",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "FWC Education",
+ "modified": "2021-02-12 04:37:43.133847",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "FWC Bank Remittance",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Payroll Entry",
+ "report_name": "FWC Bank Remittance",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "HR Manager"
+  }
+ ]
+}
