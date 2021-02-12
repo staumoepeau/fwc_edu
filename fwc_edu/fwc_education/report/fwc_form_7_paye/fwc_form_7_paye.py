@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe, erpnext
+from frappe.utils import flt
 from frappe import _
 
 def execute(filters=None):
@@ -29,8 +30,8 @@ def execute(filters=None):
 #		if ss.leave_without_pay is not None: columns[9] = columns[9].replace('-1','130')
 
 
-#		for e in earning_types:
-#			row.append(ss_earning_map.get(ss.name, {}).get(e))
+		for e in earning_types:
+			row.append(ss_earning_map.get(ss.name, {}).get(e))
 
 		if currency == company_currency:
 			row += [flt(ss.gross_pay) * flt(ss.exchange_rate)]
@@ -54,13 +55,13 @@ def execute(filters=None):
 def get_columns(salary_slips):
 	"""
 	columns = [
-		_("Salary Slip ID") + ":Link/Salary Slip:150",
+		_("TIN") + "::100",
 		_("Employee") + ":Link/Employee:120",
 		_("Employee Name") + "::140",
 	]
 	"""
 	columns = [
-		_("Salary Slip ID") + ":Link/Salary Slip:150",
+		_("TIN") + "::100",
 		_("Employee") + ":Link/Employee:120", 
 		_("Employee Name") + "::140",
 #		_("Date of Joining") + "::80", _("Branch") + ":Link/Branch:-1", _("Department") + ":Link/Department:-1",
@@ -69,7 +70,7 @@ def get_columns(salary_slips):
 #		_("Payment Days") + ":Float:120"
 	]
 
-#	salary_components = {_("Earning"): [], _("Deduction"): []}
+	salary_components = {_("Earning"): [], _("Deduction"): []}
 
 	for component in frappe.db.sql("""select distinct sd.salary_component, sc.type
 		from `tabSalary Detail` sd, `tabSalary Component` sc
