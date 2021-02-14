@@ -7,141 +7,122 @@ from frappe.utils import flt
 from frappe import _
 
 def execute(filters=None):
-	if not filters: filters = {}
-	currency = None
-	if filters.get('currency'):
-		currency = filters.get('currency')
-	company_currency = erpnext.get_company_currency(filters.get("company"))
-	salary_slips = get_salary_slips(filters, company_currency)
-	if not salary_slips: return [], []
-
-	columns, earning_types, ded_types = get_columns(salary_slips)
-	ss_earning_map = get_ss_earning_map(salary_slips, currency, company_currency)
-	ss_ded_map = get_ss_ded_map(salary_slips,currency, company_currency)
-#	doj_map = get_employee_doj_map()
-
-	data = []
-	for ss in salary_slips:
-		row = [ss.name, ss.employee, ss.employee_name]
-
-#		if ss.branch is not None: columns[3] = columns[3].replace('-1','120')
-#		if ss.department is not None: columns[4] = columns[4].replace('-1','120')
-#		if ss.designation is not None: columns[5] = columns[5].replace('-1','120')
-#		if ss.leave_without_pay is not None: columns[9] = columns[9].replace('-1','130')
-
-
-		for e in earning_types:
-			row.append(ss_earning_map.get(ss.name, {}).get(e))
-
-		if currency == company_currency:
-			row += [flt(ss.gross_pay) * flt(ss.exchange_rate)]
-		else:
-			row += [ss.gross_pay]
-
-		for d in ded_types:
-			row.append(ss_ded_map.get(ss.name, {}).get(d))
-
-#		row.append(ss.total_loan_repayment)
-
-		if currency == company_currency:
-			row += [flt(ss.total_deduction) * flt(ss.exchange_rate), flt(ss.net_pay) * flt(ss.exchange_rate)]
-		else:
-			row += [ss.total_deduction, ss.net_pay]
-		row.append(currency or company_currency)
-		data.append(row)
+	data = get_data(filters)
+	columns = get_columns(filters) if len(data) else []
 
 	return columns, data
 
-def get_columns(salary_slips):
-	"""
+def get_columns(filters):
 	columns = [
-		_("TIN") + "::100",
-		_("Employee") + ":Link/Employee:120",
-		_("Employee Name") + "::140",
+		{
+			"label": _("Employee Name"),
+			"options": "Employee",
+			"fieldname": "employee_name",
+			"fieldtype": "Link",
+			"width": 160
+		},
+		{
+			"label": _("TIN"),
+			"fieldname": "tin",
+			"fieldtype": "Data",
+			"width": 140
+		},
+		{
+			"label": _("Income Tax Component"),
+			"fieldname": "it_comp",
+			"fieldtype": "Data",
+			"width": 170
+		},
+		{
+			"label": _("Income Tax Amount"),
+			"fieldname": "it_amount",
+			"fieldtype": "Currency",
+			"options": "currency",
+			"width": 140
+		},
+		{
+			"label": _("Gross Pay"),
+			"fieldname": "gross_pay",
+			"fieldtype": "Currency",
+			"options": "currency",
+			"width": 140
+		},
+		{
+			"label": _("Posting Date"),
+			"fieldname": "posting_date",
+			"fieldtype": "Date",
+			"width": 140
+		}
 	]
-	"""
-	columns = [
-		_("TIN") + "::100",
-		_("Employee") + ":Link/Employee:120", 
-		_("Employee Name") + "::140",
-#		_("Date of Joining") + "::80", _("Branch") + ":Link/Branch:-1", _("Department") + ":Link/Department:-1",
-#		_("Designation") + ":Link/Designation:120", _("Company") + ":Link/Company:120", _("Start Date") + "::80",
-#		_("End Date") + "::80", 
-#		_("Payment Days") + ":Float:120"
-	]
 
-	salary_components = {_("Earning"): [], _("Deduction"): []}
+	return columns
 
-	for component in frappe.db.sql("""select distinct sd.salary_component, sc.type
-		from `tabSalary Detail` sd, `tabSalary Component` sc
-		where sc.name=sd.salary_component and sd.amount != 0 and sd.parent in (%s)""" %
-		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
-		salary_components[_(component.type)].append(component.salary_component)
+def get_conditions(filters):
+	conditions = [""]
 
-	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + \
-		[_("Gross Pay") + ":Currency:120"] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
-		[_("Total Deduction") + ":Currency:120", _("Net Pay") + ":Currency:120"]
+	if filters.get("department"):
+		conditions.append("sal.department = '%s' " % (filters["department"]) )
 
-	return columns, salary_components[_("Earning")], salary_components[_("Deduction")]
+	if filters.get("branch"):
+		conditions.append("sal.branch = '%s' " % (filters["branch"]) )
 
-def get_salary_slips(filters, company_currency):
-	filters.update({"from_date": filters.get("from_date"), "to_date":filters.get("to_date")})
-	conditions, filters = get_conditions(filters, company_currency)
-	salary_slips = frappe.db.sql("""select * from `tabSalary Slip` where %s
-		order by employee""" % conditions, filters, as_dict=1)
+	if filters.get("company"):
+		conditions.append("sal.company = '%s' " % (filters["company"]) )
 
-	return salary_slips or []
+	if filters.get("month"):
+		conditions.append("month(sal.start_date) = '%s' " % (filters["month"]))
 
-def get_conditions(filters, company_currency):
-	conditions = ""
-	doc_status = {"Draft": 0, "Submitted": 1, "Cancelled": 2}
+	if filters.get("year"):
+		conditions.append("year(start_date) = '%s' " % (filters["year"]))
 
-	if filters.get("docstatus"):
-		conditions += "docstatus = {0}".format(doc_status[filters.get("docstatus")])
+	return " and ".join(conditions)
 
-	if filters.get("from_date"): conditions += " and start_date >= %(from_date)s"
-	if filters.get("to_date"): conditions += " and end_date <= %(to_date)s"
-	if filters.get("company"): conditions += " and company = %(company)s"
-	if filters.get("employee"): conditions += " and employee = %(employee)s"
-	if filters.get("currency") and filters.get("currency") != company_currency:
-		conditions += " and currency = %(currency)s"
 
-	return conditions, filters
+def get_data(filters):
 
-def get_employee_doj_map():
-	return	frappe._dict(frappe.db.sql("""
-				SELECT
-					employee,
-					date_of_joining
-				FROM `tabEmployee`
-				"""))
+	data = []
+	employee_tin_dict = frappe._dict(frappe.db.sql(""" select employee, tin from `tabEmployee`"""))
+	component_types = frappe.db.sql(""" select name from `tabSalary Component`
+		where is_income_tax_component = 1 """)
 
-def get_ss_earning_map(salary_slips, currency, company_currency):
-	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, sd.amount, ss.exchange_rate, ss.name
-		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s)""" %
-		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
+	employee_tax_amount = frappe.db.sql(""" SELECT sal.employee, sum(ded.amount)
+		FROM `tabSalary Slip` sal
+		LEFT JOIN `tabSalary Detail` ded ON
+			sal.name = ded.parent
+		AND ded.parentfield = 'deductions'
+		AND ded.parenttype = 'Salary Slip'
+		AND sal.docstatus = 1
+		AND ded.salary_component = 'PAYE-TAX'
+	""")
 
-	ss_earning_map = {}
-	for d in ss_earnings:
-		ss_earning_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
-		if currency == company_currency:
-			ss_earning_map[d.parent][d.salary_component] = flt(d.amount) * flt(d.exchange_rate if d.exchange_rate else 1)
-		else:
-			ss_earning_map[d.parent][d.salary_component] = flt(d.amount)
+	component_types = [comp_type[0] for comp_type in component_types]
 
-	return ss_earning_map
+	if not len(component_types):
+		return []
 
-def get_ss_ded_map(salary_slips, currency, company_currency):
-	ss_deductions = frappe.db.sql("""select sd.parent, sd.salary_component, sd.amount, ss.exchange_rate, ss.name
-		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s)""" %
-		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
+	conditions = get_conditions(filters)
 
-	ss_ded_map = {}
-	for d in ss_deductions:
-		ss_ded_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
-		if currency == company_currency:
-			ss_ded_map[d.parent][d.salary_component] = flt(d.amount) * flt(d.exchange_rate if d.exchange_rate else 1)
-		else:
-			ss_ded_map[d.parent][d.salary_component] = flt(d.amount)
+	entry = frappe.db.sql(""" SELECT sal.employee, sal.employee_name, sal.posting_date, ded.salary_component, ded.amount, sal.gross_pay
+		FROM `tabSalary Slip` sal
+		LEFT JOIN `tabSalary Detail` ded ON
+			sal.name = ded.parent
+		AND ded.parentfield = 'deductions'
+		AND ded.parenttype = 'Salary Slip'
+		AND sal.docstatus = 1
+		AND ded.salary_component = 'PAYE-TAX'
+	""", as_dict=1)
 
-	return ss_ded_map
+	for d in entry:
+
+		employee = {
+			"employee_name": d.employee_name,
+			"it_comp": d.salary_component,
+			"posting_date": d.posting_date,
+			"tin": employee_tin_dict.get(d.employee),
+			"it_amount": employee_tax_amount.get(d.employee),
+			"gross_pay": d.gross_pay
+		}
+
+		data.append(employee)
+
+	return data

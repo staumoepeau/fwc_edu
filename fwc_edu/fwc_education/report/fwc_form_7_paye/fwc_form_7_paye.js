@@ -22,21 +22,6 @@ frappe.query_reports["FWC FORM 7 PAYE"] = {
 			"width": "100px"
 		},
 		{
-			"fieldname": "currency",
-			"fieldtype": "Link",
-			"options": "Currency",
-			"label": __("Currency"),
-			"default": erpnext.get_currency(frappe.defaults.get_default("Company")),
-			"width": "50px"
-		},
-		{
-			"fieldname":"employee",
-			"label": __("Employee"),
-			"fieldtype": "Link",
-			"options": "Employee",
-			"width": "100px"
-		},
-		{
 			"fieldname":"company",
 			"label": __("Company"),
 			"fieldtype": "Link",

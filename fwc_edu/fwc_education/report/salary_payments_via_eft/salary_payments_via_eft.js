@@ -29,18 +29,39 @@ frappe.query_reports["Salary Payments via EFT"] = {
 				"width": "90px"
 			},
 		],
+//				method: "fwc_edu.fwc_education.report.salary_payments_via_eft.salary_payments_via_eft.create_bank_eft_file",
+
+
 		onload: function(report) {
-//			report.page.remove_inner_toolbar()
-//			report.page.add_inner_button(__("Transfer"), function() {
-//				frappe.msgprint("Transfer");
-//			});
-		report.page.add_action_icon(__("fa fa-credit-card fa-2x text-success"), function() {
-			return  frappe.call({
-				method: "fwc_edu.fwc_education.report.salary_payments_via_eft.create_bank_eft_file",
+
+			report.page.set_primary_action('Bank', function() {
+				var args = "as a draft"
+					var reporter = frappe.query_reports["Salary Payments via EFT"];
+						reporter.maketextfile(report);
+			}, 'octicon octicon-plus')
+		},
+
+		isNumeric: function( obj ) {
+		return !jQuery.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
+		},
+		maketextfile: function(report){
+		var filters = report.get_values();
+		if (filters.bank_name) {
+			return frappe.call({
+				method: "fwc_edu.fwc_education.report.salary_payments_via_eft.salary_payments_via_eft.create_bank_eft_file",
+				args: {
+					"posting_date": filters.posting_date,
+					"bank_name": filters.bank_name
+				},
 				callback: function(r) {
 					console.log(r)
+//				if(r.message) {
+//					frappe.set_route('List',r.message );
+//				}
 				}
-			});		
-		});
+			})
+		} else {
+			frappe.msgprint("Please select all filters for creating Text File")
 		}
-	}
+	},
+}
