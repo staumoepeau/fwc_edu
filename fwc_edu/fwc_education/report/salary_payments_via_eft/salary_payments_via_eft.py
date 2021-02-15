@@ -23,8 +23,8 @@ format = "%Y-%m-%d %H:%M:%S"
 
 
 def execute(filters=None):
-	global data
-	data = []
+	global netpay
+	netpay = []
 
 	columns = get_columns(filters)
 	data = get_data(filters)
@@ -172,6 +172,19 @@ def get_bank_data(posting_date, bank_name):
 	return bankdata
 
 
+def get_sum_netpay(posting_date, bank_name):
+
+	netpay = frappe.db.sql(""" select sum(net_pay)
+		from `tabSalary Slip`
+		where docstatus = 1
+		and posting_date = %s
+		and bank_name = %s """,(posting_date, bank_name))
+	
+	netpay = ((str(netpay)).replace(".","")).zfill(10)
+
+	return netpay
+
+
 @frappe.whitelist()
 def create_bank_eft_file(posting_date, bank_name):
 
@@ -188,16 +201,23 @@ def create_bank_eft_file(posting_date, bank_name):
 	ferp.is_private = 1
 	ferp.file_url = "/private/files/"+fname
 
+	
 	f= open(file_name,"w+")
 	bank_data = []
 
 	bank_data = get_bank_data(posting_date, bank_name)
+	netpay = get_sum_netpay(posting_date, bank_name)
+	netpay = (netpay.replace("(",""))
+	netpay = (netpay.replace(")","")).replace(",","")
+	
 
-	netpay = get
+	posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yyyy")
+#	posting_date = frappe.utils.datetime.posting_date.format("DD-MM-YYYY")
+
 
 	if bank_name == "BSP":
 		f.write("1203900100")
-		f.write("0123456789")
+		f.write("000113903701")
 		f.write(" ")
 		f.write(posting_date.replace("-", ""))
 		f.write("EDS0769FWC\n")
@@ -207,8 +227,8 @@ def create_bank_eft_file(posting_date, bank_name):
 		f.write(posting_date.replace("-", ""))
 		f.write("\n")
 
-#	txt = "^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR2,2~SD15^JUS^LRN^CI0^XZ^XA^MMT^PW812^LL0406^LS0"
 	filler = ""
+	
 
 	for data in bank_data:
 		if data['bank'] == "BSP":
@@ -228,16 +248,20 @@ def create_bank_eft_file(posting_date, bank_name):
 #		f.write(str(data))
 
 		f.write('1303900100')
-		f.writelines('{0}053{1}{2}000000000000{3} {4}\n'.format(data['account_no'], data['net_pay'], data['employee_name'].ljust(20), data['payment_details'], data['bank']))
-
+		f.write('{0}053{1}{2}000000000000{3} {4}\n'.format(data['account_no'], data['net_pay'], data['employee_name'].ljust(20), data['payment_details'], data['bank']))
+		
 #		f.write("^FT250,79^A0R,28,28^FH\^FD%s^FS" % (rows[0]))
 #		f.write("^FT533,53^A0R,28,28^FH\^FD%s^FS" % (rows[1]))
 #		f.write("^FT300,301^BQN,2,8^FH\^FDMA1%s^FS" % (rows[0]))
 #		f.write("^PQ1,0,1,Y^XZ")
 #			txt += "^FT250,79^A0R,28,28^FH\^FD%s^FS" % rows[0]
 #	f.insert(txt)
+#	for s in netpay:
+	f.write("139900000000000211   ")
+	f.write(str(netpay).zfill(10))
+
 	frappe.msgprint(_("Text File created - Please check File List to download the file"))
 	ferp.save()
 	f.close()
-#	return bank_data
+
 
