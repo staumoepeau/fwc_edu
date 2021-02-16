@@ -184,6 +184,18 @@ def get_sum_netpay(posting_date, bank_name):
 
 	return netpay
 
+def get_sum_account(posting_date, bank_name):
+
+	sum_account = frappe.db.sql(""" select sum(bank_account_no)
+		from `tabSalary Slip`
+		where docstatus = 1
+		and posting_date = %s
+		and bank_name = %s """,(posting_date, bank_name))
+	
+	sum_account = (str(sum_account)).replace(".","")
+
+	return sum_account
+
 
 @frappe.whitelist()
 def create_bank_eft_file(posting_date, bank_name):
@@ -209,15 +221,25 @@ def create_bank_eft_file(posting_date, bank_name):
 	netpay = get_sum_netpay(posting_date, bank_name)
 	netpay = (netpay.replace("(",""))
 	netpay = (netpay.replace(")","")).replace(",","")
-	
+
+	account_total = get_sum_account(posting_date, bank_name)
+	account_total = (account_total.replace("(",""))
+	account_total = (account_total.replace(")","")).replace(",","")
+	account_total = ('%.11s' % account_total)
 
 	posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yyyy")
-#	posting_date = frappe.utils.datetime.posting_date.format("DD-MM-YYYY")
 
+	direct_debit = "12"
+	bank_number = "03"
+	state_number = "9"
+	branch_number = "001"
+	fwc_account = "113903701"
+	batch_no = "211"
 
+	quickpay_header = direct_debit + bank_number + state_number + branch_number + fwc_account.zfill(12) + batch_no
 	if bank_name == "BSP":
-		f.write("1203900100")
-		f.write("000113903701")
+		f.write(quickpay_header)
+#		f.write("")
 		f.write(" ")
 		f.write(posting_date.replace("-", ""))
 		f.write("EDS0769FWC\n")
@@ -257,7 +279,10 @@ def create_bank_eft_file(posting_date, bank_name):
 #			txt += "^FT250,79^A0R,28,28^FH\^FD%s^FS" % rows[0]
 #	f.insert(txt)
 #	for s in netpay:
-	f.write("139900000000000211   ")
+
+	f.write("1399")
+	f.write(str(account_total))
+	f.write("211   ")
 	f.write(str(netpay).zfill(10))
 
 	frappe.msgprint(_("Text File created - Please check File List to download the file"))
