@@ -101,7 +101,7 @@
    "name": "Salary Slip-other_bank_deduction",
    "no_copy": 0,
    "non_negative": 0,
-   "options": "Additional Salary Detail",
+   "options": "Salary Detail",
    "owner": "Administrator",
    "parent": null,
    "parentfield": null,
