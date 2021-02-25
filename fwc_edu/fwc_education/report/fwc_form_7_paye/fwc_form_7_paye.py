@@ -28,12 +28,6 @@ def get_columns(filters):
 			"width": 140
 		},
 		{
-			"label": _("Income Tax Component"),
-			"fieldname": "it_comp",
-			"fieldtype": "Data",
-			"width": 170
-		},
-		{
 			"label": _("Income Tax Amount"),
 			"fieldname": "it_amount",
 			"fieldtype": "Currency",
@@ -47,12 +41,6 @@ def get_columns(filters):
 			"options": "currency",
 			"width": 140
 		},
-		{
-			"label": _("Posting Date"),
-			"fieldname": "posting_date",
-			"fieldtype": "Date",
-			"width": 140
-		}
 	]
 
 	return columns
@@ -61,19 +49,19 @@ def get_conditions(filters):
 	conditions = [""]
 
 	if filters.get("department"):
-		conditions.append("sal.department = '%s' " % (filters["department"]) )
+		conditions.append("department = '%s' " % (filters["department"]) )
 
 	if filters.get("branch"):
-		conditions.append("sal.branch = '%s' " % (filters["branch"]) )
+		conditions.append("branch = '%s' " % (filters["branch"]) )
 
 	if filters.get("company"):
-		conditions.append("sal.company = '%s' " % (filters["company"]) )
+		conditions.append("company = '%s' " % (filters["company"]) )
 
 	if filters.get("month"):
-		conditions.append("month(sal.start_date) = '%s' " % (filters["month"]))
+		conditions.append("month(posting_date) = '%s' " % (filters["month"]))
 
 	if filters.get("year"):
-		conditions.append("year(start_date) = '%s' " % (filters["year"]))
+		conditions.append("year(posting_date) = '%s' " % (filters["year"]))
 
 	return " and ".join(conditions)
 
@@ -81,28 +69,28 @@ def get_conditions(filters):
 def get_data(filters):
 
 	data = []
-	employee_tin_dict = frappe._dict(frappe.db.sql(""" select employee, tin from `tabEmployee`"""))
-	component_types = frappe.db.sql(""" select name from `tabSalary Component`
-		where is_income_tax_component = 1 """)
 
-	employee_tax_amount = frappe.db.sql(""" SELECT sal.employee, sum(ded.amount)
-		FROM `tabSalary Slip` sal
-		LEFT JOIN `tabSalary Detail` ded ON
-			sal.name = ded.parent
-		AND ded.parentfield = 'deductions'
-		AND ded.parenttype = 'Salary Slip'
-		AND sal.docstatus = 1
-		AND ded.salary_component = 'PAYE-TAX'
-	""")
+	fields = ["employee", "tin", "department"]
+	
+	employee_details = frappe.get_list("Employee", fields = fields)
+	employee_data_dict = {}
 
-	component_types = [comp_type[0] for comp_type in component_types]
-
-	if not len(component_types):
-		return []
+	for d in employee_details:
+		employee_data_dict.setdefault(
+			d.employee,{
+				"employee" : d.employee,
+				"tin": d.tin,
+				"department": d.department
+			}
+		)
 
 	conditions = get_conditions(filters)
 
-	entry = frappe.db.sql(""" SELECT sal.employee, sal.employee_name, sal.posting_date, ded.salary_component, ded.amount, sal.gross_pay
+	posting_month = filters.get("month")
+	posting_year = filters.get("year")
+	department = filters.get("department")
+
+	entry = frappe.db.sql("""SELECT sal.employee, sal.employee_name, sum(ded.amount) as tax, sum(sal.gross_pay) as gross
 		FROM `tabSalary Slip` sal
 		LEFT JOIN `tabSalary Detail` ded ON
 			sal.name = ded.parent
@@ -110,17 +98,18 @@ def get_data(filters):
 		AND ded.parenttype = 'Salary Slip'
 		AND sal.docstatus = 1
 		AND ded.salary_component = 'PAYE-TAX'
-	""", as_dict=1)
-
-	for d in entry:
-
+		AND month(sal.posting_date) = %s
+		AND year(sal.posting_date) = %s
+		AND sal.department = %s
+        GROUP BY sal.employee
+	""", (posting_month, posting_year, department), as_dict=1)
+	
+	for e in entry:
 		employee = {
-			"employee_name": d.employee_name,
-			"it_comp": d.salary_component,
-			"posting_date": d.posting_date,
-			"tin": employee_tin_dict.get(d.employee),
-			"it_amount": employee_tax_amount.get(d.employee),
-			"gross_pay": d.gross_pay
+			"employee_name" : e.employee_name,
+			"tin" : employee_data_dict.get(e.employee).get("tin"),
+			"it_amount" : e.tax,
+			"gross_pay": e.gross,	
 		}
 
 		data.append(employee)
