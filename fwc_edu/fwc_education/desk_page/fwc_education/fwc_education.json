@@ -1,5 +1,17 @@
 {
- "cards": [],
+ "cards": [
+  {
+   "hidden": 0,
+   "label": "Budget",
+   "links": "[\n    {\n        \"description\": \"Define budget for a financial year.\",\n        \"label\": \"Budget\",\n        \"name\": \"Budget\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"dependencies\": [\n            \"Cost Center\"\n        ],\n        \"doctype\": \"Cost Center\",\n        \"is_query_report\": true,\n        \"label\": \"Budget Variance Report\",\n        \"name\": \"Budget Variance Report\",\n        \"type\": \"report\"\n    },\n    {\n        \"description\": \"Seasonality for setting budgets, targets etc.\",\n        \"label\": \"Monthly Distribution\",\n        \"name\": \"Monthly Distribution\",\n        \"type\": \"doctype\"\n    }\n]"
+  },
+  {
+   "hidden": 0,
+   "label": "Cost Center",
+   "links": "[\n    {\n        \"description\": \"Tree of financial Cost Centers.\",\n        \"icon\": \"fa fa-sitemap\",\n        \"label\": \"Chart of Cost Centers\",\n        \"name\": \"Cost Center\",\n        \"route\": \"#Tree/Cost Center\",\n        \"type\": \"doctype\"\n    }\n]"
+  }
+ ],
+ "cards_label": "reports",
  "category": "Modules",
  "charts": [],
  "creation": "2021-02-25 08:44:35.604033",
@@ -8,18 +20,18 @@
  "docstatus": 0,
  "doctype": "Desk Page",
  "extends_another_page": 0,
- "hide_custom": 0,
+ "hide_custom": 1,
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
  "label": "FWC Education",
- "modified": "2021-02-26 10:55:11.394119",
+ "modified": "2021-02-26 12:03:49.722025",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
  "owner": "Administrator",
  "pin_to_bottom": 0,
- "pin_to_top": 0,
+ "pin_to_top": 1,
  "shortcuts": [
   {
    "doc_view": "",
@@ -31,6 +43,12 @@
    "doc_view": "",
    "label": "FWC FORM 7 PAYE",
    "link_to": "FWC FORM 7 PAYE",
+   "type": "Report"
+  },
+  {
+   "doc_view": "",
+   "label": "FWC Salary Register",
+   "link_to": "FWC Salary Register",
    "type": "Report"
   }
  ],
