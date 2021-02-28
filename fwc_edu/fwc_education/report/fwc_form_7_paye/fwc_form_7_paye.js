@@ -49,10 +49,18 @@ frappe.query_reports["FWC FORM 7 PAYE"] = {
 			fieldtype: "Link",
 			options: "Department",
 			width: "250px",
-//			reqd: 1 
+			reqd: 1 
 		},
 	],
-	"onload": function() {
+
+	onload: function(report) {
+
+		report.page.set_primary_action('PAYE', function() {
+			var args = "as a draft"
+				var reporter = frappe.query_reports["FWC FORM 7 PAYE"];
+					reporter.maketextfile(report);
+		}, 'octicon octicon-plus')
+
 		return  frappe.call({
 			method: "erpnext.regional.report.provident_fund_deductions.provident_fund_deductions.get_years",
 			callback: function(r) {
@@ -62,6 +70,27 @@ frappe.query_reports["FWC FORM 7 PAYE"] = {
 				year_filter.refresh();
 				year_filter.set_input(year_filter.df.default);
 			}
-		});
-	}
+		});	
+	},
+	isNumeric: function(obj) {
+		return !jQuery.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
+	},
+	maketextfile: function(report){
+		var filters = report.get_values();
+		if (filters.department) {
+			return frappe.call({
+				method: "fwc_edu.fwc_education.report.fwc_form_7_paye.fwc_form_7_paye.save_data_to_Excel",
+				args: {
+					"month": filters.month,
+					"department": filters.department,
+					"year": filters.year					
+				},
+				callback: function(r) {
+					console.log(r)
+				}
+			})
+		} else {
+			frappe.msgprint("Please select all filters for creating Text File")
+		}
+	},
 }

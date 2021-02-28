@@ -18,30 +18,29 @@ def execute(filters=None):
 	if not employee_salary: return [], []
 
 	columns, earning_types, ded_types = get_columns(employee_salary)
-	ss_earning_map = get_ss_earning_map(employee_salary)
-	ss_ded_map = get_ss_ded_map(employee_salary)
+	ss_earning_map = get_ss_earning_map()
+	ss_ded_map = get_ss_ded_map()
 #	doj_map = get_employee_doj_map()
 
 	data = []
 	for ss in employee_salary:
-		row = [ss.name, ss.employee, ss.employee_name]
+		row = [ss.employee, ss.employee_name, ss.department]
 
-#		if ss.branch is not None: columns[3] = columns[3].replace('-1','120')
-#		if ss.department is not None: columns[4] = columns[4].replace('-1','120')
+		if ss.duty_allowance is not None: columns[3] = columns[3].replace('-1','120')
+		if ss.duty is not None: columns[4] = columns[4].replace('-1','120')
 #		if ss.designation is not None: columns[5] = columns[5].replace('-1','120')
 #		if ss.leave_without_pay is not None: columns[9] = columns[9].replace('-1','130')
 
 
 		for e in earning_types:
-			row.append(ss_earning_map.get(ss.name, {}).get(e))
-
-			row += [ss.gross_pay]
-
+			row.append(ss_earning_map.get(ss.employee, {}).get(e))
+		
+	
 		for d in ded_types:
-			row.append(ss_ded_map.get(ss.name, {}).get(d))
+			row.append(ss_ded_map.get(ss.employee, {}).get(d))
 
-			row += [ss.total_deduction, ss.net_pay]
-
+			row += [ss.duty_allowance, ss.duty]
+		
 		data.append(row)
 
 	return columns, data
@@ -56,9 +55,11 @@ def get_columns(employee_salary):
 	columns = [
 		_("Employee") + ":Link/Employee:120", 
 		_("Employee Name") + "::140",
- 		_("Department") + ":Link/Department:-1",
-#		_("Designation") + ":Link/Designation:120", _("Company") + ":Link/Company:120", _("Start Date") + "::80",
-#		_("End Date") + "::80", 
+ 		_("Department") + ":Link/Department:200",
+#		_("Annual Salary") + ":Currency:120",
+#		_("Basic") + ":Currency:120", 
+#		_("Annual Duty") + ":Currency:80",
+#		_("Duty") + ":Currency:80", 
 #		_("Payment Days") + ":Float:120"
 	]
 
@@ -70,8 +71,7 @@ def get_columns(employee_salary):
 		(', '.join(['%s']*len(employee_salary))), tuple([d.name for d in employee_salary]), as_dict=1):
 		salary_components[_(component.type)].append(component.salary_component)
 
-	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + \
-		[_("Gross Pay") + ":Currency:120"] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
+	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
 		[_("Total Deduction") + ":Currency:120", _("Net Pay") + ":Currency:120"]
 
 	return columns, salary_components[_("Earning")], salary_components[_("Deduction")]
@@ -83,10 +83,13 @@ def get_employee_salary(filters):
 	status = filters.get("status")
 	department = filters.get("department")
 	
-	employee_salary = frappe.db.sql("""select * from `tabEmployee` 
-		where status = %s
-		and department = %s
-		order by employee""", (status, department), as_dict=1)
+	employee_salary = frappe.db.sql("""SELECT temp.employee, temp.employee_name, tssa.salary_structure, tsd.salary_component, tsd.amount, tsd.parent, temp.status, temp.department
+		FROM `tabEmployee` temp
+			INNER JOIN `tabSalary Structure Assignment` tssa ON temp.employee = tssa.employee
+			INNER JOIN `tabSalary Detail` tsd ON temp.employee = tsd.parent
+			AND temp.status = %s
+			AND temp.department = %s
+		ORDER BY temp.employee""", (status, department), as_dict=1)
 
 	return employee_salary or []
 
@@ -107,10 +110,22 @@ def get_employee_doj_map():
 				FROM `tabEmployee`
 				"""))
 
-def get_ss_earning_map(employee_salary):
-	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, sd.amount, ss.name
-		from `tabSalary Detail` sd, `tabEmployee` ss where sd.parent=ss.name and sd.parent in (%s)""" %
-		(', '.join(['%s']*len(employee_salary))), tuple([d.name for d in employee_salary]), as_dict=1)
+#def get_ss_earning_map(employee_salary):
+#	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, sd.amount, ss.employee
+#		from `tabSalary Detail` sd, `tabEmployee` ss where sd.parent=ss.employee and sd.parent in (%s)""" %
+#		(', '.join(['%s']*len(employee_salary))), tuple([d.employee for d in employee_salary]), as_dict=1)
+
+#	ss_earning_map = {}
+#	for d in ss_earnings:
+#
+#	return ss_earning_map
+
+def get_ss_earning_map():
+	ss_earnings = frappe.db.sql(""" SELECT temp.employee, temp.employee_name, tssa.salary_structure, tsd.salary_component, tsd.amount, tsd.parent
+			FROM `tabEmployee` temp
+				INNER JOIN `tabSalary Structure Assignment` tssa ON temp.employee = tssa.employee
+				INNER JOIN `tabSalary Detail` tsd ON temp.employee = tsd.parent
+			ORDER BY temp.employee""", as_dict=1)
 
 	ss_earning_map = {}
 	for d in ss_earnings:
@@ -119,11 +134,12 @@ def get_ss_earning_map(employee_salary):
 
 	return ss_earning_map
 
-def get_ss_ded_map(employee_salary):
-	ss_deductions = frappe.db.sql("""select sd.parent, sd.salary_component, sd.amount, ss.name
-		from `tabSalary Detail` sd, `tabEmployee` ss where sd.parent=ss.name and sd.parent in (%s)""" %
-		(', '.join(['%s']*len(employee_salary))), tuple([d.name for d in employee_salary]), as_dict=1)
-
+def get_ss_ded_map():
+	ss_deductions = frappe.db.sql(""" SELECT temp.employee, temp.employee_name, tssa.salary_structure, tsd.salary_component, tsd.amount, tsd.parent
+			FROM `tabEmployee` temp
+				INNER JOIN `tabSalary Structure Assignment` tssa ON temp.employee = tssa.employee
+				INNER JOIN `tabSalary Detail` tsd ON temp.employee = tsd.parent
+			ORDER BY temp.employee""", as_dict=1)
 	ss_ded_map = {}
 	for d in ss_deductions:
 		ss_ded_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])

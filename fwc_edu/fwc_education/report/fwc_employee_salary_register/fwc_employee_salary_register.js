@@ -26,7 +26,7 @@ frappe.query_reports["FWC Employee Salary Register"] = {
 			"label": __("Department"),
 			"fieldtype": "Link",
 			"options": "Department",
-			"width": "200px",
+			"width": "100px",
 			"reqd": 1
 		},
 		{

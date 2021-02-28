@@ -6,8 +6,8 @@
 frappe.query_reports["Salary Payments via EFT"] = {
 	"filters": [
 		{
-			"fieldname": "type",
-			"label": __("Type"),
+			"fieldname": "salary_mode",
+			"label": __("Salary Mode"),
 			"fieldtype": "Select",
 			"options":["", "Bank", "Cash"]
 
