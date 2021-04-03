@@ -28,14 +28,24 @@ frappe.query_reports["Salary Payments via EFT"] = {
 			"width": "90px",
 //			"reqd": 1
 		},
-		{
-			"fieldname":"department",
-			"label":__("Department"),
-			"fieldtype":"Link",
-			"options": "Department",
-			"width": "90px",
+//		{
+//			"fieldname":"branch",
+//			"label": __("Branch"),
+//			"fieldtype": "Link",
+//			"options": "Branch",
+//			"width": "100px",
 //			"reqd": 1
+//		},
+		{
+			"fieldname":"company",
+			"label": __("Company"),
+			"fieldtype": "Link",
+			"options": "Company",
+			"default": frappe.defaults.get_user_default("Company"),
+			"width": "100px",
+			"reqd": 1
 		},
+		
 	],
 //				method: "fwc_edu.fwc_education.report.salary_payments_via_eft.salary_payments_via_eft.create_bank_eft_file",
 
@@ -59,8 +69,9 @@ frappe.query_reports["Salary Payments via EFT"] = {
 			method: "fwc_edu.fwc_education.report.salary_payments_via_eft.salary_payments_via_eft.create_bank_eft_file",
 			args: {
 				"posting_date": filters.posting_date,
-				"department": filters.department,
+				"company": filters.company,
 				"bank_name": filters.bank_name
+
 				
 			},
 			callback: function(r) {

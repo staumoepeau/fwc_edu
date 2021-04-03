@@ -25,7 +25,7 @@
  "is_default": 0,
  "is_standard": 1,
  "label": "FWC Education",
- "modified": "2021-02-26 12:03:49.722025",
+ "modified": "2021-03-30 07:02:47.923548",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -50,6 +50,24 @@
    "label": "FWC Salary Register",
    "link_to": "FWC Salary Register",
    "type": "Report"
+  },
+  {
+   "doc_view": "",
+   "label": "Purchase Order",
+   "link_to": "Purchase Order",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Purchase Invoice",
+   "link_to": "Purchase Invoice",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Lodgement Form",
+   "link_to": "FWC Lodgement Form",
+   "type": "DocType"
   }
  ],
  "shortcuts_label": "FWC Education"

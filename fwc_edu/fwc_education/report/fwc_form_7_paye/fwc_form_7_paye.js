@@ -49,7 +49,7 @@ frappe.query_reports["FWC FORM 7 PAYE"] = {
 			fieldtype: "Link",
 			options: "Department",
 			width: "250px",
-			reqd: 1 
+//			reqd: 1 
 		},
 	],
 

@@ -104,22 +104,39 @@ def get_data(filters):
 	posting_month = filters.get("month")
 	posting_year = filters.get("year")
 	department = filters.get("department")
+	
+	if department == "All Departments":
+		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+					tmp.tax, tmp.gross, tmp.department
+					FROM `tabEmployee` temp INNER JOIN
+					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
+					FROM `tabSalary Slip` sal LEFT JOIN 
+					`tabSalary Detail` ded ON sal.name = ded.parent
+					AND ded.docstatus = 1
+					AND ded.parentfield = 'deductions'
+					AND ded.parenttype = 'Salary Slip'
+					AND ded.salary_component = 'PAYE-TAX'
+					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
+					WHERE tmp.month = %s
+					AND tmp.year = %s 
+			""", (posting_month, posting_year), as_dict=1)
 
-	entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-				tmp.tax, tmp.gross, tmp.department
-				FROM `tabEmployee` temp INNER JOIN
-				(SELECT sal.employee, sal.employee_name, sum(ded.amount)as tax, sum(sal.gross_pay) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
-				FROM `tabSalary Slip` sal LEFT JOIN 
-				`tabSalary Detail` ded ON sal.name = ded.parent
-				AND ded.docstatus = 1
-				AND ded.parentfield = 'deductions'
-				AND ded.parenttype = 'Salary Slip'
-				AND ded.salary_component = 'PAYE-TAX'
-				GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
-				WHERE temp.department = %s
-				AND tmp.month = %s
-				AND tmp.year = %s 
-		""", (department, posting_month, posting_year), as_dict=1)
+	if department != "All Departments":
+		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+					tmp.tax, tmp.gross, tmp.department
+					FROM `tabEmployee` temp INNER JOIN
+					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
+					FROM `tabSalary Slip` sal LEFT JOIN 
+					`tabSalary Detail` ded ON sal.name = ded.parent
+					AND ded.docstatus = 1
+					AND ded.parentfield = 'deductions'
+					AND ded.parenttype = 'Salary Slip'
+					AND ded.salary_component = 'PAYE-TAX'
+					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
+					WHERE temp.department = %s
+					AND tmp.month = %s
+					AND tmp.year = %s 
+			""", (department, posting_month, posting_year), as_dict=1)
 
 	for e in entry:
 		employee = {
@@ -148,27 +165,38 @@ def get_paye_data(posting_month, posting_year, department):
 			}
 		)
 
-#	conditions = get_conditions(filters)
-
-#	posting_month = filters.get("month")
-#	posting_year = filters.get("year")
-#	department = filters.get("department")
-
-	entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-				tmp.tax, tmp.gross, tmp.department
-				FROM `tabEmployee` temp INNER JOIN
-				(SELECT sal.employee, sal.employee_name, sum(ded.amount)as tax, sum(sal.gross_pay) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
-				FROM `tabSalary Slip` sal LEFT JOIN 
-				`tabSalary Detail` ded ON sal.name = ded.parent
-				AND ded.docstatus = 1
-				AND ded.parentfield = 'deductions'
-				AND ded.parenttype = 'Salary Slip'
-				AND ded.salary_component = 'PAYE-TAX'
-				GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
-				WHERE temp.department = %s
-				AND tmp.month = %s
-				AND tmp.year = %s 
-		""", (department, posting_month, posting_year), as_dict=1)
+	if department == "All Departments":
+		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+					tmp.tax, tmp.gross, tmp.department
+					FROM `tabEmployee` temp INNER JOIN
+					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
+					FROM `tabSalary Slip` sal LEFT JOIN  
+					`tabSalary Detail` ded ON sal.name = ded.parent
+					AND ded.docstatus = 1
+					AND ded.parentfield = 'deductions'
+					AND ded.parenttype = 'Salary Slip'
+					AND ded.salary_component = 'PAYE-TAX'
+					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
+					WHERE tmp.month = %s
+					AND tmp.year = %s 
+			""", (posting_month, posting_year), as_dict=1)
+	
+	if department != "All Departments":
+		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+					tmp.tax, tmp.gross, tmp.department
+					FROM `tabEmployee` temp INNER JOIN
+					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
+					FROM `tabSalary Slip` sal LEFT JOIN 
+					`tabSalary Detail` ded ON sal.name = ded.parent
+					AND ded.docstatus = 1
+					AND ded.parentfield = 'deductions'
+					AND ded.parenttype = 'Salary Slip'
+					AND ded.salary_component = 'PAYE-TAX'
+					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
+					WHERE temp.department = %s
+					AND tmp.month = %s
+					AND tmp.year = %s 
+			""", (department, posting_month, posting_year), as_dict=1)
 
 	for e in entry:
 		employee = {
@@ -190,17 +218,25 @@ def get_paye_data(posting_month, posting_year, department):
 @frappe.whitelist()
 def save_data_to_Excel(month, department, year):
 
-	filename = "FWC-FORM7-PAYE.xlsm"
+	filename = "PAYE.xltm"
 
-#	filename = "FWC-PAYE-" + month + year+".xlsm"
+	new_filename = "FWC-FORM7-PAYE-" + month + year+".xlsm"
 
-	save_path = 'fwc.edu/private/files'
+	save_path = 'fwc.edu/private/files/Form_7'
 	file_name = os.path.join(save_path, filename)
+	new_file_name = os.path.join(save_path, new_filename)
 	ferp = frappe.new_doc("File")
 	ferp.file_name = filename
-	ferp.folder = "Home"
-	ferp.is_private = 1
-	ferp.file_url = "/private/files/"+filename
+
+	fileerp = frappe.new_doc("File")
+	fileerp.new_file_name = new_filename
+	fileerp.folder = "Home/Form_7"
+	fileerp.is_private = 1
+	fileerp.file_url = "/private/files/Form_7/"+new_filename
+
+#	ferp.folder = "Home"
+#	ferp.is_private = 1
+#	ferp.file_url = "/private/files/Form_7/"+new_filename
 
 	Month = datetime.date(1900, int(month), 1).strftime('%B')
 
@@ -210,12 +246,14 @@ def save_data_to_Excel(month, department, year):
 	df = pd.DataFrame(paye_data)
 
 	workbook1 = openpyxl.load_workbook(file_name, read_only=False, keep_vba= True)
+	workbook1.template = True
 	sheetname = workbook1.get_sheet_by_name('PAYE')
-	sheetname['B5']= str('')
+	sheetname['B5']= str('263317')
 	sheetname['B7']= str(Month)
 	sheetname['D7']= str(year)
+	sheetname['B9']= str('FWC Education')
 
-	writer = pd.ExcelWriter(file_name, engine='openpyxl')
+	writer = pd.ExcelWriter(new_file_name, engine='openpyxl')
 	writer.book = workbook1
 	writer.sheets = dict((ws.title, ws) for ws in workbook1.worksheets)
 
@@ -226,6 +264,15 @@ def save_data_to_Excel(month, department, year):
 #		df.to_excel(writer, sheet_name=sheetname, index=False, header=False, startrow=13, startcol=1)
     
 
-	frappe.msgprint(_("File created - Please check File List to download the file"))
-	writer.save()
-	writer.close()
+#	frappe.msgprint(_("File created - Please check File List to download the file"))
+#	writer.save()
+	frappe.msgprint(_("Form 7 have been created"))
+	
+#	writer.close()
+#	frappe.msgprint(_("Executing the below:"))
+#	frappe.local.response.filename = new_file_name
+#	with open(new_file_name, "rb") as fileobj:
+#		filedata = fileobj.read()
+#	frappe.logger().debug("Inside") 
+#	frappe.local.response.filecontent = filedata
+#	frappe.local.response.type = "download"

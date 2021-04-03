@@ -1,16 +1,15 @@
-.print-format table, .print-format tr,
-.print-format td, .print-format div, .print-format p {
-font-family: Monospace;
-font-size: 4;
-vertical-align: top;
-}
+<style>
+    .table td, .table th {
+        font-size: 8px;
+    }
+</style>
+
+
 {%
 	var report_columns = report.get_columns_for_print();
 %}
-<div style="margin-bottom: 7px;" class="text-center">
-	{%= frappe.boot.letter_heads[filters.letter_head || frappe.defaults.get_default("letter_head")].header %}
-</div>
-<h2 class="text-center">{%= __(report.report_name) %}</h2>
+
+<h2 class="text-center">{%= filters.company %}</h2>
 <h5 class="text-center">{{ __("From") }} {%= filters.from_date %} {{ __("to") }} {%= filters.to_date %}</h5>
 <hr>
 <table class="table table-bordered">
@@ -43,4 +42,26 @@ vertical-align: top;
 		{% } %}
 	</tbody>
 </table>
+
+<div id="footer">
+	<table width="100%">
+		<thead>
+			<tr>
+				<th>Approval</th><th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Prepared By</td><td>Signature</td>
+			</tr>
+			
+			 <tr>
+				<td>Authorised By</td><td>Signature</td>
+			</tr>
+			<tr>
+				<td>Check for FWC By</td><td>Signature</td>
+		</tbody>
+	</table>
+</div>
+
 <p class="text-right text-muted">{{ __("Printed On") }} {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}</p>
