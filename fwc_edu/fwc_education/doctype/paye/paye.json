@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "creation": "2021-04-09 11:41:40.343771",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_year",
+  "posting_month",
+  "tin",
+  "name1",
+  "gross",
+  "paye"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_year",
+   "fieldtype": "Select",
+   "label": "Posting Year",
+   "options": "\n2019\n2020\n2021"
+  },
+  {
+   "fieldname": "posting_month",
+   "fieldtype": "Select",
+   "label": "Posting Month",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "tin",
+   "fieldtype": "Data",
+   "label": "TIN"
+  },
+  {
+   "fieldname": "gross",
+   "fieldtype": "Currency",
+   "label": "Gross"
+  },
+  {
+   "fieldname": "paye",
+   "fieldtype": "Currency",
+   "label": "PAYE"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2021-04-09 11:51:03.310349",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "PAYE",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

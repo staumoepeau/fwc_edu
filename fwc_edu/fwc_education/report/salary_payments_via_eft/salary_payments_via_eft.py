@@ -273,7 +273,7 @@ def get_bank_data(postingdate, company, bankname):
 
 	for e in other:
 		employee = {
-			"employee_name" : ((e.employee_name).replace("'","")[:20]),
+			"employee_name" : ((e.employee_name.upper()).replace(".","").replace("'","")[:20]),
 			"employee": e.employee,
 #			"amount" : ((str(e.amount)).replace(".","")).zfill(10),
 			"amount" : (str(int((e.amount)*100))).zfill(10),
@@ -287,7 +287,7 @@ def get_bank_data(postingdate, company, bankname):
 	for d in entry:
 
 		employee = {
-			"employee_name" : ((d.employee_name).replace("'","")[:20]),
+			"employee_name" : ((d.employee_name.upper()).replace(".","").replace("'","")[:20]),
 #			"employee" : d.employee,
 			"amount" : (str(int((d.amount)*100))).zfill(10),
 			"payment_details" : d.payment_details,
@@ -301,6 +301,8 @@ def get_bank_data(postingdate, company, bankname):
 
 
 def get_sum_netpay(posting_date, company, bank_name):
+	netpay = ""
+	netpay_1, netpay_2 = [], []
 
 	netpay_1 = frappe.db.sql(""" select sum(net_pay)
 		from `tabSalary Slip`
@@ -311,24 +313,46 @@ def get_sum_netpay(posting_date, company, bank_name):
 	
 	netpay_2 = frappe.db.sql("""SELECT sum(tsd.amount) from `tabSalary Detail` tsd, `tabSalary Slip` tss
 			WHERE tsd.parent = tss.name
-			AND tsd.abbr LIKE %s
+			AND tsd.salary_component = %s
 			AND tsd.docstatus = 1
             AND tss.posting_date = %s
 			AND tss.company = %s
-			""", ("%" + bank_name + "%", posting_date, company))
+			""", (bank_name, posting_date, company))
 	
 #	if bank_name == "BSP":
 #		netpay = netpay_1
 		
-#	if bank_name == "TDB":
-	netpay = np.add(netpay_1, netpay_2)
+#	netpay_1 = str(netpay_1).replace("(","")
+#	netpay_1 = (str(netpay_1).replace(")","")).replace(",","")
+#	netpay_2 = str(netpay_2).replace("(","")
+#	netpay_2 = (str(netpay_2).replace(")","")).replace(",","")
+
+	if np.array(netpay_1):
+		netpay = netpay_1
+#		netpay = ((str(netpay_1)).replace(".","")).zfill(10)
+	if np.array(netpay_2):
+		netpay = netpay_2
+#		netpay = ((str(netpay_2)).replace(".","")).zfill(10)
+	if	np.array(netpay_1) and np.array(netpay_2):
+		netpay = np.add(netpay_1, netpay_2)
+		
+#	elif not netpay_1 and netpay_2:
+#		netpay = netpay_2
+#	elif netpay_1 and netpay_2:
+#		netpay = np.add(netpay_1, netpay_2)
+	
+#	frappe.msgprint(_("NetPay 1 {0}"). format(netpay_1))
+#	frappe.msgprint(_("NetPay 2 {0}"). format(netpay_2))
+#	frappe.msgprint(_("NetPay {0}"). format(netpay))
+
 	netpay = str(netpay).replace("[[","")
 	netpay = (str(netpay).replace("]]","")).replace(",","")
 
 	netpay = str(netpay).replace("(","")
 	netpay = (str(netpay).replace(")","")).replace(",","")
-	netpay = ((str(netpay)).replace(".","")).zfill(10)
 
+	netpay = ((str(netpay)).replace(".","")).zfill(10)
+#	frappe.msgprint(_("NetPay {0}"). format(netpay))
 	return netpay
 
 def get_sum_account(posting_date, company, bank_name):
@@ -347,6 +371,8 @@ def get_sum_account(posting_date, company, bank_name):
 
 @frappe.whitelist()
 def create_bank_eft_file(posting_date, company, bank_name):
+	fname = ""
+	batch_no = ""
 
 	curr_date = posting_date
 	if bank_name == "BSP":
@@ -475,19 +501,19 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	ferp.save()
 	f.close()
 
-	response = Response()
+#	response = Response()
 #	filename = ferp.file_url
-	frappe.response.filename = ferp.file_url
-	response.mimetype = 'text/plain'
-	response.charset = 'utf-8'
-	with open(ferp.file_url, "rb") as fileobj:
-		filedata = fileobj.read()
-	print("Created Filedata")
-	frappe.response.filecontent = filedata
-	print("Created Filecontent")
-	response.type = "download"
-	response.headers[b"Content-Disposition"] = ("filename=\"%s\"" % frappe.response['filename'].replace(' ', '_')).encode("utf-8")
-	response.data = frappe.response['filecontent']
-	print(frappe.response)
+#	frappe.response.filename = ferp.file_url
+#	response.mimetype = 'text/plain'
+#	response.charset = 'utf-8'
+#	with open(ferp.file_url, "rb") as fileobj:
+#		filedata = fileobj.read()
+#	print("Created Filedata")
+#	frappe.response.filecontent = filedata
+#	print("Created Filecontent")
+#	response.type = "download"
+#	response.headers[b"Content-Disposition"] = ("filename=\"%s\"" % frappe.response['filename'].replace(' ', '_')).encode("utf-8")
+#	response.data = frappe.response['filecontent']
+#	print(frappe.response)
 #	frappe.tools.downloadify(filename);
 #	return frappe.response
