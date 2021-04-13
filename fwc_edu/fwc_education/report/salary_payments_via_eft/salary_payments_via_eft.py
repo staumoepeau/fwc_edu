@@ -118,14 +118,18 @@ def get_data(filters):
 
 	employee_list = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
 			IF(ded.salary_component = "BSP", "BSP",
-				IF (ded.salary_component = "TDB", "TDB",
-					IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))
+				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
+					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
+						IF (ded.salary_component = "TDB", "TDB",
+							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
+								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
 			AND ded.parentfield = 'deductions'
 			AND ded.parenttype = 'Salary Slip'
+			AND ded.amount > 0
 			AND ded.docstatus = 1
             AND sal.posting_date = %s
 			AND sal.company = %s
@@ -147,9 +151,11 @@ def get_data(filters):
 
 	other = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
 			IF(ded.salary_component = "BSP", "BSP",
-				IF (ded.salary_component = "TDB", "TDB",
-					IF(ded.abbr = "ttifund_1", "BSP",
-						IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))
+				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
+					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
+						IF (ded.salary_component = "TDB", "TDB",
+							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
+								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
@@ -157,6 +163,7 @@ def get_data(filters):
 			AND ded.parentfield = 'deductions'
 			AND ded.parenttype = 'Salary Slip'
 			AND ded.docstatus = 1
+			AND ded.amount > 0
             AND sal.posting_date = %s
 			AND sal.company = %s
             HAVING bankname = %s
@@ -219,8 +226,11 @@ def get_bank_data(postingdate, company, bankname):
 
 	employee_list = frappe.db.sql(""" SELECT sal.employee, sal.employee_name, 
 			IF(ded.salary_component = "BSP", "BSP",
-				IF (ded.salary_component = "TDB", "TDB",
-					IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))
+				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
+					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
+						IF (ded.salary_component = "TDB", "TDB",
+							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
+								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
@@ -228,6 +238,7 @@ def get_bank_data(postingdate, company, bankname):
 			AND ded.parentfield = 'deductions'
 			AND ded.parenttype = 'Salary Slip'
 			AND ded.docstatus = 1
+			AND ded.amount > 0
             AND sal.posting_date = %s
 			AND sal.company = %s
             HAVING bankname = %s
@@ -248,8 +259,11 @@ def get_bank_data(postingdate, company, bankname):
 
 	other = frappe.db.sql(""" SELECT sal.employee, sal.employee_name, 
 			IF(ded.salary_component = "BSP", "BSP",
-				IF (ded.salary_component = "TDB", "TDB",
-					IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))
+				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
+					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
+						IF (ded.salary_component = "TDB", "TDB",
+							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
+								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
@@ -259,6 +273,7 @@ def get_bank_data(postingdate, company, bankname):
 			AND ded.docstatus = 1
             AND sal.posting_date = %s
 			AND sal.company = %s
+			AND ded.amount > 0
             HAVING bankname = %s
 			""", (postingdate, company, bankname), as_dict=1)
 	
@@ -268,6 +283,7 @@ def get_bank_data(postingdate, company, bankname):
 		WHERE docstatus = 1 
 		AND posting_date = %s
 		AND company = %s
+		AND net_pay > 0
         AND bank_name = %s
 		""", (postingdate, company, bankname), as_dict=1)
 
@@ -420,25 +436,31 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769FWC\n"
-			spacer = "FWC                 EDS0769\n"
+			spacer = "FWC                 EDS0769                               \n"
 		elif company == "Tupou Tertiary Institute":
 			fwc_account = "2000304531"
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769TTI\n"
-			spacer = "TTI                 EDS0769\n"
+			spacer = "TTI                 EDS0769                               \n"
 		elif company == "Tupou College Toloa":
 			fwc_account = "0119106901"
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0769TCT\n"
-			spacer = "TCT                 EDS0769\n"
+			header = "EDS0769TOLOA FEES                                                                                                               \n"
+			spacer = "TCT                 EDS0769                               \n"
 		elif company == "Tupou College Toloa Faama":
 			fwc_account = "0120232002"
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "212"
 			header = "EDS0769TCTF\n"
-			spacer = "TCTF                EDS0769\n"
+			spacer = "TCTF                EDS0769                               \n"
+		elif company == "Queen Salote College":
+			fwc_account = "0117600301"
+			fwc_account = fwc_account.zfill(12)
+			batch_no = "211"
+			header = "EDS0679QSC                                                                                                                      \n"
+			spacer = "QSC                 EDS0769                               \n"
 		
 		quickpay_header = direct_debit + bank_number + state_number + branch_number + fwc_account + batch_no
 		
@@ -466,7 +488,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		f.write("1399")
 		f.write(str(account_total))
 		f.write("211   ")
-		f.write(str(netpay).zfill(10))
+		f.write(str(netpay).zfill(10)+"                                                                                                                                 \n")
 		
 #==================================================================== BSP END ====================================================================================
 

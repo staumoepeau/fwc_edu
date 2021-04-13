@@ -68,7 +68,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-03-30 07:05:06.854574",
+ "modified": "2021-04-12 15:20:27.689939",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Lodgement Form",
@@ -84,6 +84,20 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Payroll",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
