@@ -373,14 +373,38 @@ def get_sum_netpay(posting_date, company, bank_name):
 
 def get_sum_account(posting_date, company, bank_name):
 
-	sum_account = frappe.db.sql(""" select sum(bank_account_no)
+	sum_account_1 = frappe.db.sql(""" select sum(bank_account_no)
 		from `tabSalary Slip`
 		where docstatus = 1
 		and posting_date = %s
 		and company = %s
 		and bank_name = %s """,(posting_date, company, bank_name))
 	
-	sum_account = (str(sum_account)).replace(".","")
+	sum_account_2 = frappe.db.sql("""SELECT sum(account_number) from `tabSalary Detail` tsd, `tabSalary Slip` tss
+			WHERE tsd.parent = tss.name
+			AND tsd.salary_component = %s
+			AND tsd.docstatus = 1
+            AND tss.posting_date = %s
+			AND tss.company = %s
+			""", (bank_name, posting_date, company))
+	
+	
+	if np.array(sum_account_1):
+		sum_account = sum_account_1
+#		netpay = ((str(netpay_1)).replace(".","")).zfill(10)
+	if np.array(sum_account_2):
+		sum_account = sum_account_2
+#		netpay = ((str(netpay_2)).replace(".","")).zfill(10)
+	if	np.array(sum_account_1) and np.array(sum_account_2):
+		sum_account = np.add(sum_account_1, sum_account_2)
+
+	sum_account = str(sum_account).replace("[[","")
+	sum_account = (str(sum_account).replace("]]","")).replace(",","")
+
+	sum_account = str(sum_account).replace("(","")
+	sum_account = (str(sum_account).replace(")","")).replace(",","")
+
+	#sum_account = (str(sum_account)).replace(".","")
 
 	return sum_account
 
@@ -389,6 +413,7 @@ def get_sum_account(posting_date, company, bank_name):
 def create_bank_eft_file(posting_date, company, bank_name):
 	fname = ""
 	batch_no = ""
+	x = " "
 
 	curr_date = posting_date
 	if bank_name == "BSP":
@@ -421,8 +446,9 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		bank_data = get_bank_data(posting_date, company, bank_name)
 		account_total = get_sum_account(posting_date, company, bank_name)
 		account_total = (account_total.replace("(",""))
-		account_total = (account_total.replace(")","")).replace(",","")
-		account_total = ('%.11s' % account_total)
+		account_total = (account_total.replace(")","")).replace(",","").replace(".","")
+#		account_total = ('%.11s' % account_total)
+		account_total = account_total.rjust(11)
 
 		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yyyy").replace("-", "")
 
@@ -436,31 +462,31 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769FWC\n"
-			spacer = "FWC                 EDS0769                               \n"
+			spacer = "FWC                 EDS0769                              \r\n"
 		elif company == "Tupou Tertiary Institute":
 			fwc_account = "2000304531"
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769TTI\n"
-			spacer = "TTI                 EDS0769                               \n"
+			spacer = "TTI                 EDS0769                               \r\n"
 		elif company == "Tupou College Toloa":
 			fwc_account = "0119106901"
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0769TOLOA FEES                                                                                                               \n"
-			spacer = "TCT                 EDS0769                               \n"
+			header = "EDS0769TOLOA FEES                                                                                                               \r\n"
+			spacer = "TCT                 EDS0769                               \r\n"
 		elif company == "Tupou College Toloa Faama":
 			fwc_account = "0120232002"
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "212"
-			header = "EDS0769TCTF\n"
-			spacer = "TCTF                EDS0769                               \n"
+			header = "EDS0769TCT                                                                                                                      \r\n"
+			spacer = "TCTF                EDS0769                               \r\n"
 		elif company == "Queen Salote College":
 			fwc_account = "0117600301"
 			fwc_account = fwc_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0679QSC                                                                                                                      \n"
-			spacer = "QSC                 EDS0769                               \n"
+			header = "EDS0769QSC                                                                                                                      \r\n"
+			spacer = "QSC                 EDS0769                               \r\n"
 		
 		quickpay_header = direct_debit + bank_number + state_number + branch_number + fwc_account + batch_no
 		
@@ -486,9 +512,11 @@ def create_bank_eft_file(posting_date, company, bank_name):
 #			f.write("FWC                 EDS0769\n")
 			
 		f.write("1399")
-		f.write(str(account_total))
-		f.write("211   ")
-		f.write(str(netpay).zfill(10)+"                                                                                                                                 \n")
+#		f.write(str(account_total))
+		f.write("00000000000")
+#		f.write("211   ")
+		f.write(batch_no + 3*x)
+		f.write(str(netpay).zfill(10)+129*x+"\r\n")
 		
 #==================================================================== BSP END ====================================================================================
 
