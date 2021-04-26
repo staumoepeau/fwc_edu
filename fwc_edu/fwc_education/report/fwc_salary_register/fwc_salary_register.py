@@ -23,13 +23,15 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		row = [ss.name, ss.employee, ss.employee_name, basic_annual.get(ss.employee), ss.branch, ss.department, ss.designation,
-			ss.company, ss.start_date, ss.end_date, ss.leave_without_pay, ss.payment_days]
+		row = [ss.employee, ss.employee_name, basic_annual.get(ss.employee)]
+		
+#		row = [ss.name, ss.employee, ss.employee_name, basic_annual.get(ss.employee), ss.branch, ss.department, ss.designation,
+#			ss.company, ss.start_date, ss.end_date, ss.leave_without_pay, ss.payment_days]
 
-		if ss.branch is not None: columns[3] = columns[3].replace('-1','120')
-		if ss.department is not None: columns[4] = columns[4].replace('-1','120')
-		if ss.designation is not None: columns[5] = columns[5].replace('-1','120')
-		if ss.leave_without_pay is not None: columns[9] = columns[9].replace('-1','130')
+#		if ss.branch is not None: columns[3] = columns[3].replace('-1','120')
+#		if ss.department is not None: columns[4] = columns[4].replace('-1','120')
+#		if ss.designation is not None: columns[5] = columns[5].replace('-1','120')
+#		if ss.leave_without_pay is not None: columns[9] = columns[9].replace('-1','130')
 
 
 		for e in earning_types:
@@ -40,15 +42,26 @@ def execute(filters=None):
 		else:
 			row += [ss.gross_pay]
 
+#		for d in ded_types:
+#			row.append(ss_ded_map.get(ss.name, {}).get(d))
+
+#		row.append(ss.total_loan_repayment)
+
+#		if currency == company_currency:
+#			row += [flt(ss.total_deduction) * flt(ss.exchange_rate), flt(ss.net_pay) * flt(ss.exchange_rate)]
+#		else:
+#			row += [ss.total_deduction, ss.net_pay]
+
 		for d in ded_types:
 			row.append(ss_ded_map.get(ss.name, {}).get(d))
 
-		row.append(ss.total_loan_repayment)
+#		row.append(ss.total_loan_repayment)
 
-		if currency == company_currency:
-			row += [flt(ss.total_deduction) * flt(ss.exchange_rate), flt(ss.net_pay) * flt(ss.exchange_rate)]
-		else:
-			row += [ss.total_deduction, ss.net_pay]
+#		if currency == company_currency:
+#			row += [flt(ss.total_deduction) * flt(ss.exchange_rate), flt(ss.net_pay) * flt(ss.exchange_rate)]
+#		else:
+		row += [ss.net_pay]
+
 		row.append(currency or company_currency)
 		data.append(row)
 
@@ -73,10 +86,18 @@ def get_columns(salary_slips):
 	]
 	"""
 	columns = [
-		_("Salary Slip ID") + ":Link/Salary Slip:150",_("Employee") + ":Link/Employee:120", _("Employee Name") + "::140",
-		_("Basic Salary") + ":Currency:120", _("Branch") + ":Link/Branch:-1", _("Department") + ":Link/Department:-1",
-		_("Designation") + ":Link/Designation:120", _("Company") + ":Link/Company:120", _("Start Date") + "::80",
-		_("End Date") + "::80", _("Leave Without Pay") + ":Float:50", _("Payment Days") + ":Float:120"
+#		_("Salary Slip ID") + ":Link/Salary Slip:150",
+		_("Employee") + ":Link/Employee:120",
+		_("Employee Name") + "::140",
+		_("Basic Salary") + ":Currency:120",
+#		_("Branch") + ":Link/Branch:-1",
+#		_("Department") + ":Link/Department:-1",
+#		_("Designation") + ":Link/Designation:120",
+#		_("Company") + ":Link/Company:120",
+#		_("Start Date") + "::80",
+#		_("End Date") + "::80",
+#		_("Leave Without Pay") + ":Float:50",
+#		_("Payment Days") + ":Float:120"
 	]
 
 	salary_components = {_("Earning"): [], _("Deduction"): []}
@@ -89,7 +110,11 @@ def get_columns(salary_slips):
 
 	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + \
 		[_("Gross Pay") + ":Currency:120"] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
-		[_("Loan Repayment") + ":Currency:120", _("Total Deduction") + ":Currency:120", _("Net Pay") + ":Currency:120"]
+		[_("Net Pay") + ":Currency:120"]
+
+#	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + \
+#		[_("Gross Pay") + ":Currency:120"] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
+#		[_("Loan Repayment") + ":Currency:120", _("Total Deduction") + ":Currency:120", _("Net Pay") + ":Currency:120"]
 
 	return columns, salary_components[_("Earning")], salary_components[_("Deduction")]
 

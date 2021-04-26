@@ -415,9 +415,12 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	batch_no = ""
 	x = " "
 
+	abbr = frappe.db.get_value("Company", company, "abbr")
+
 	curr_date = posting_date
 	if bank_name == "BSP":
-		fname = "FWC_EDU.PC1"
+		fname = abbr+"_"+curr_date+"_DISDATA.PC1"
+#		fname = "FWC_EDU.PC1"
 #		fname = "FWC_EDU_"+curr_date+".PC1"
 #		bank_data = get_bank_data(posting_date, bank_name)
 
@@ -425,13 +428,14 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		fname = "FWC_EDU_PAY-"+curr_date+".aba"
 #		bank_data = get_other_bankdata(posting_date, bank_name)
 
-	save_path = 'edu.fwc.to/private/files'
+#	save_path = 'edu.fwc.to/private/files'
+	save_path = 'edu.fwc.to/public/files'
 	file_name = os.path.join(save_path, fname)
 	ferp = frappe.new_doc("File")
 	ferp.file_name = fname
-	ferp.folder = "Home"
+	ferp.folder = "Home/QuickPay"
 	ferp.is_private = 1
-	ferp.file_url = "/private/files/"+fname
+	ferp.file_url = "/public/files/"+fname
 
 	f= open(file_name,"w+")
 	bank_data = []
@@ -517,8 +521,9 @@ def create_bank_eft_file(posting_date, company, bank_name):
 #		f.write("211   ")
 		f.write(batch_no + 3*x)
 		f.write(str(netpay).zfill(10)+129*x+"\r\n")
-		
+
 #==================================================================== BSP END ====================================================================================
+
 
 #==================================================================== TDB START ==================================================================================
 	filler = "0000000000"
@@ -567,3 +572,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 #	print(frappe.response)
 #	frappe.tools.downloadify(filename);
 #	return frappe.response
+
+#	frappe.local.response.filename = "{0}-DISDATA.PCI".format(company)
+#	frappe.local.response.filecontent = open(file_name).read()
+#	frappe.local.response.type = "download"
