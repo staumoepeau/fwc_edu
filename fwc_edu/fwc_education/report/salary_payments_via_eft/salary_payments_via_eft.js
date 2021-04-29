@@ -56,7 +56,7 @@ frappe.query_reports["Salary Payments via EFT"] = {
 			var args = "as a draft"
 				var reporter = frappe.query_reports["Salary Payments via EFT"];
 					reporter.maketextfile(report);
-		}, 'octicon octicon-plus')
+		},)
 	},
 
 	isNumeric: function( obj ) {

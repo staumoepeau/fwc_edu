@@ -172,7 +172,8 @@ def get_data(filters):
 	entry = frappe.db.sql("""select employee, employee_name, net_pay as amount, mode_of_payment, 
 		bank_account_no, bank_name, company, department, payment_details
 		from `tabSalary Slip`
-		where docstatus = 1 %s """
+		where docstatus = 1
+		and net_pay > 0 %s """
 		%(conditions), as_dict =1)
 
 	for e in other:
@@ -280,30 +281,16 @@ def get_bank_data(postingdate, company, bankname):
 	entry = frappe.db.sql(""" SELECT employee, employee_name, net_pay as amount, 
 		mode_of_payment, bank_account_no, bank_name, company, department, payment_details
 		FROM `tabSalary Slip`
-		WHERE docstatus = 1 
+		WHERE net_pay != 0 
 		AND posting_date = %s
 		AND company = %s
-		AND net_pay > 0
+		AND docstatus = 1
         AND bank_name = %s
 		""", (postingdate, company, bankname), as_dict=1)
 
-	for e in other:
-		employee = {
-			"employee_name" : ((e.employee_name.upper()).replace(".","").replace("'","")[:20]),
-			"employee": e.employee,
-#			"amount" : ((str(e.amount)).replace(".","")).zfill(10),
-			"amount" : (str(int((e.amount)*100))).zfill(10),
-			"bank_name" : e.bankname,
-			"account_number": e.account_number.replace("-",""),
-			"company": e.company
-		}
-
-		bank_data.append(employee)
-
 	for d in entry:
-
 		employee = {
-			"employee_name" : ((d.employee_name.upper()).replace(".","").replace("'","")[:20]),
+			"employee_name" : ((d.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 #			"employee" : d.employee,
 			"amount" : (str(int((d.amount)*100))).zfill(10),
 			"payment_details" : d.payment_details,
@@ -312,9 +299,20 @@ def get_bank_data(postingdate, company, bankname):
 		}
 
 		bank_data.append(employee)
+	
+	for e in other:
+		employee = {
+			"employee_name" : ((e.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
+			"employee": e.employee,
+			"amount" : (str(int((e.amount)*100))).zfill(10),
+			"bank_name" : e.bankname,
+			"account_number": e.account_number.replace("-",""),
+			"company": e.company
+		}
+
+		bank_data.append(employee)
 
 	return bank_data
-
 
 def get_sum_netpay(posting_date, company, bank_name):
 	netpay = ""
@@ -335,43 +333,30 @@ def get_sum_netpay(posting_date, company, bank_name):
 			AND tss.company = %s
 			""", (bank_name, posting_date, company))
 	
-#	if bank_name == "BSP":
-#		netpay = netpay_1
-		
-#	netpay_1 = str(netpay_1).replace("(","")
-#	netpay_1 = (str(netpay_1).replace(")","")).replace(",","")
-#	netpay_2 = str(netpay_2).replace("(","")
-#	netpay_2 = (str(netpay_2).replace(")","")).replace(",","")
-
 	if np.array(netpay_1):
 		netpay = netpay_1
-#		netpay = ((str(netpay_1)).replace(".","")).zfill(10)
+		frappe.msgprint(_("PAY 1 : {0}").format(netpay_1))
+
 	if np.array(netpay_2):
 		netpay = netpay_2
-#		netpay = ((str(netpay_2)).replace(".","")).zfill(10)
+		frappe.msgprint(_("PAY 2 : {0}").format(netpay_2))
+
+
 	if	np.array(netpay_1) and np.array(netpay_2):
 		netpay = np.add(netpay_1, netpay_2)
-		
-#	elif not netpay_1 and netpay_2:
-#		netpay = netpay_2
-#	elif netpay_1 and netpay_2:
-#		netpay = np.add(netpay_1, netpay_2)
-	
-#	frappe.msgprint(_("NetPay 1 {0}"). format(netpay_1))
-#	frappe.msgprint(_("NetPay 2 {0}"). format(netpay_2))
-#	frappe.msgprint(_("NetPay {0}"). format(netpay))
+		frappe.msgprint(_("NAT PAY : {0}").format(netpay))
+
 
 	netpay = str(netpay).replace("[[","")
 	netpay = (str(netpay).replace("]]","")).replace(",","")
-
 	netpay = str(netpay).replace("(","")
 	netpay = (str(netpay).replace(")","")).replace(",","")
-
 	netpay = ((str(netpay)).replace(".","")).zfill(10)
-#	frappe.msgprint(_("NetPay {0}"). format(netpay))
+
 	return netpay
 
 def get_sum_account(posting_date, company, bank_name):
+	sum_account = ""
 
 	sum_account_1 = frappe.db.sql(""" select sum(bank_account_no)
 		from `tabSalary Slip`
@@ -391,20 +376,26 @@ def get_sum_account(posting_date, company, bank_name):
 	
 	if np.array(sum_account_1):
 		sum_account = sum_account_1
-#		netpay = ((str(netpay_1)).replace(".","")).zfill(10)
+		frappe.msgprint(_("SUM 1 : {0}").format(sum_account_1))
+
 	if np.array(sum_account_2):
 		sum_account = sum_account_2
-#		netpay = ((str(netpay_2)).replace(".","")).zfill(10)
+		frappe.msgprint(_("SUM 2 : {0}").format(sum_account_2))
+
+
 	if	np.array(sum_account_1) and np.array(sum_account_2):
-		sum_account = np.add(sum_account_1, sum_account_2)
+		sum_account = np.add(np.array(sum_account_1), np.array(sum_account_2))
+		
 
 	sum_account = str(sum_account).replace("[[","")
 	sum_account = (str(sum_account).replace("]]","")).replace(",","")
 
 	sum_account = str(sum_account).replace("(","")
 	sum_account = (str(sum_account).replace(")","")).replace(",","")
+#	sum_account = format(sum_account,'.11g')
+	sum_account = "{:11g}".format(sum_account)
 
-	#sum_account = (str(sum_account)).replace(".","")
+	frappe.msgprint(_("TOTAL : {0}").format(sum_account))
 
 	return sum_account
 
@@ -415,27 +406,35 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	batch_no = ""
 	x = " "
 
-	abbr = frappe.db.get_value("Company", company, "abbr")
-
 	curr_date = posting_date
-	if bank_name == "BSP":
-		fname = abbr+"_"+curr_date+"_DISDATA.PC1"
-#		fname = "FWC_EDU.PC1"
-#		fname = "FWC_EDU_"+curr_date+".PC1"
-#		bank_data = get_bank_data(posting_date, bank_name)
+	if company == "FWC Education":
+		abbr = frappe.db.get_value("Company", company, "abbr")
 
-	if bank_name == "TDB":
-		fname = "FWC_EDU_PAY-"+curr_date+".aba"
-#		bank_data = get_other_bankdata(posting_date, bank_name)
+	elif company == "Tupou Tertiary Institute":
+		abbr = frappe.db.get_value("Company", company, "abbr")
 
-#	save_path = 'edu.fwc.to/private/files'
+	elif company == "Tupou College Toloa":
+		abbr = frappe.db.get_value("Company", company, "abbr")
+
+	elif company == "Tupou College Toloa Faama":
+		abbr = frappe.db.get_value("Company", company, "abbr")
+		
+	elif company == "Queen Salote College":
+		abbr = frappe.db.get_value("Company", company, "abbr")
+		
+	elif company == "Tupou High School":
+		abbr = frappe.db.get_value("Company", company, "abbr")
+	
+	fname = abbr+"_"+curr_date+"_DISDATA.PC1"
+
 	save_path = 'edu.fwc.to/public/files'
 	file_name = os.path.join(save_path, fname)
 	ferp = frappe.new_doc("File")
+	ferp.file_url = " "
 	ferp.file_name = fname
 	ferp.folder = "Home/QuickPay"
 	ferp.is_private = 1
-	ferp.file_url = "/public/files/"+fname
+	ferp.file_url = "/public/files/"+abbr+"_"+curr_date+"_DISDATA.PC1"
 
 	f= open(file_name,"w+")
 	bank_data = []
@@ -445,14 +444,24 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	netpay = (netpay.replace(")","")).replace(",","")
 
 	if bank_name == "BSP":
-		fwc_account = ""
+		dr_account = ""
 
 		bank_data = get_bank_data(posting_date, company, bank_name)
 		account_total = get_sum_account(posting_date, company, bank_name)
+		frappe.msgprint(_("Account Total 1 : {0}").format(account_total))
 		account_total = (account_total.replace("(",""))
 		account_total = (account_total.replace(")","")).replace(",","").replace(".","")
+		frappe.msgprint(_("Account Total 2 : {0}").format(account_total))
 #		account_total = ('%.11s' % account_total)
-		account_total = account_total.rjust(11)
+		length = 11
+		fillchar = '0'
+
+		if len(account_total) == 11:
+			account_total = str(account_total)
+		if len(account_total) < 11:
+			account_total = str(account_total).rjust(length, fillchar)
+		if len(account_total) > 11:
+			account_total = str(account_total)[:11]
 
 		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yyyy").replace("-", "")
 
@@ -460,119 +469,104 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		bank_number = "03"
 		state_number = "9"
 		branch_number = "001"
+		filler = " "
 
 		if company == "FWC Education":
-			fwc_account = "113903701"
-			fwc_account = fwc_account.zfill(12)
+			abbr = frappe.db.get_value("Company", company, "abbr")
+			dr_account = "113903701"
+			dr_account = dr_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0769FWC\n"
-			spacer = "FWC                 EDS0769                              \r\n"
+			header = "EDS0679TTI                                                                                                                      \r\n"
+			spacer = "FWC                 EDS0679                              \r\n"
+		
 		elif company == "Tupou Tertiary Institute":
-			fwc_account = "2000304531"
-			fwc_account = fwc_account.zfill(12)
+			abbr = frappe.db.get_value("Company", company, "abbr")
+			dr_account = "2000304531"
+			dr_account = dr_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0769TTI\n"
-			spacer = "TTI                 EDS0769                               \r\n"
+			header = "EDS0679TTI                                                                                                                      \r\n"
+			spacer = "TTI                 EDS0679                               \r\n"
+		
 		elif company == "Tupou College Toloa":
-			fwc_account = "0119106901"
-			fwc_account = fwc_account.zfill(12)
+			abbr = frappe.db.get_value("Company", company, "abbr")
+			dr_account = "0119106901"
+			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769TOLOA FEES                                                                                                               \r\n"
-			spacer = "TCT                 EDS0769                               \r\n"
+#			header = "EDS0769TCT                                                                                                                      \r\n"
+			spacer = "TOLOA        TOLOA FEES          EDS0769                               \r\n"
+#			spacer = "TCT                 EDS0769                               \r\n"
+
 		elif company == "Tupou College Toloa Faama":
-			fwc_account = "0120232002"
-			fwc_account = fwc_account.zfill(12)
+			abbr = frappe.db.get_value("Company", company, "abbr")
+			dr_account = "0120232002"
+			dr_account = dr_account.zfill(12)
 			batch_no = "212"
 			header = "EDS0769TCT                                                                                                                      \r\n"
 			spacer = "TCTF                EDS0769                               \r\n"
+		
 		elif company == "Queen Salote College":
-			fwc_account = "0117600301"
-			fwc_account = fwc_account.zfill(12)
+			abbr = frappe.db.get_value("Company", company, "abbr")
+			dr_account = "0117600301"
+			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769QSC                                                                                                                      \r\n"
 			spacer = "QSC                 EDS0769                               \r\n"
 		
-		quickpay_header = direct_debit + bank_number + state_number + branch_number + fwc_account + batch_no
+		elif company == "Tupou High School":
+			abbr = frappe.db.get_value("Company", company, "abbr")
+			dr_account = "0119259201"
+			dr_account = dr_account.zfill(12)
+			batch_no = "211"
+			header = "EDS0769THS                                                                                                                      \r\n"
+			spacer = "THS                 EDS0769                               \r\n"
+		
+		quickpay_header = direct_debit + bank_number + state_number + branch_number + dr_account + batch_no
 		
 		f.write(quickpay_header)
 		f.write(" ")
 		f.write(posting_date)
 		f.write(header)
-#		f.write("EDS0769FWC\n")
-		filler = " "
+		
 #		for data in range(len(bank_data)):
 		for data in bank_data:
-#			if bank_data[data]['bank_name'] == "BSP":
-#				data['bank_name'] = "FWC                 EDS0769"		
-
-#			if not data['payment_details']:
-#				data['payment_details'] = filler.ljust(36)
-#			if data['payment_details']:
-#				data['payment_details'] = filler + data['payment_details'].rjust(36)
 
 			f.write('1303900100')
-			f.write('{0}053{1}{2}000000000000{3}'.format(data['account_number'], data['amount'], data['employee_name'].ljust(20), filler.ljust(37)))
+			f.write('{0}053{1}{2}000000000000{3}'.format(data['account_number'], data['amount'], data['employee_name'].ljust(20), filler.ljust(24)))
 			f.write(spacer)
-#			f.write("FWC                 EDS0769\n")
 			
 		f.write("1399")
-#		f.write(str(account_total))
-		f.write("00000000000")
-#		f.write("211   ")
+#		f.write("00000000000")
+		f.write(account_total)
 		f.write(batch_no + 3*x)
 		f.write(str(netpay).zfill(10)+129*x+"\r\n")
 
+		f.write(account_total)
 #==================================================================== BSP END ====================================================================================
 
 
 #==================================================================== TDB START ==================================================================================
-	filler = "0000000000"
-	numbers = len(bank_data)
-
-	if bank_name == "TDB":
-		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yy").replace("-", "")
-
-		f.write("0                             FWC                       077100            ")
-		f.write(posting_date)
-		f.write("s")
-		f.write("\n")
-
-		for data in bank_data:
-			f.write('1077-100')
-			f.write('{0} 53{1}{2}'.format(data['account_number'].rjust(9), data['amount'], data['employee_name'].ljust(32)))
-			f.write("Pay"+posting_date+"-FWC     077-100\n")
-
-		f.write("7")
-		f.write("                   ")
-		f.write(str(netpay).zfill(10))
-		f.write(str(netpay).zfill(10))
-		f.write(filler + "                        ")
-		f.write(str(numbers).zfill(6))
+#	filler = "0000000000"
+#	numbers = len(bank_data)
+#	if bank_name == "TDB":
+#		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yy").replace("-", "")
+#		f.write("0                             FWC                       077100            ")
+#		f.write(posting_date)
+#		f.write("s")
+#		f.write("\n")
+#		for data in bank_data:
+#			f.write('1077-100')
+#			f.write('{0} 53{1}{2}'.format(data['account_number'].rjust(9), data['amount'], data['employee_name'].ljust(32)))
+#			f.write("Pay"+posting_date+"-FWC     077-100\n")
+#		f.write("7")
+#		f.write("                   ")
+#		f.write(str(netpay).zfill(10))
+#		f.write(str(netpay).zfill(10))
+#		f.write(filler + "                        ")
+#		f.write(str(numbers).zfill(6))
 #		f.write(str(len(bank_data))).zfill(6)
-
 #==================================================================== TDB END ====================================================================================
 
-	frappe.msgprint(_("Bank File created - Please download the file"))
+	frappe.msgprint(_("Bank File created - Please download the file : {0}").format(fname))
 	ferp.save()
 	f.close()
-
-#	response = Response()
-#	filename = ferp.file_url
-#	frappe.response.filename = ferp.file_url
-#	response.mimetype = 'text/plain'
-#	response.charset = 'utf-8'
-#	with open(ferp.file_url, "rb") as fileobj:
-#		filedata = fileobj.read()
-#	print("Created Filedata")
-#	frappe.response.filecontent = filedata
-#	print("Created Filecontent")
-#	response.type = "download"
-#	response.headers[b"Content-Disposition"] = ("filename=\"%s\"" % frappe.response['filename'].replace(' ', '_')).encode("utf-8")
-#	response.data = frappe.response['filecontent']
-#	print(frappe.response)
-#	frappe.tools.downloadify(filename);
-#	return frappe.response
-
-#	frappe.local.response.filename = "{0}-DISDATA.PCI".format(company)
-#	frappe.local.response.filecontent = open(file_name).read()
-#	frappe.local.response.type = "download"
