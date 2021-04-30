@@ -376,16 +376,16 @@ def get_sum_account(posting_date, company, bank_name):
 	
 	if np.array(sum_account_1):
 		sum_1 = np.array(sum_account_1)
-		sum_account_01 = sum_1.astype(int)
-		frappe.msgprint(_("SUM 1 : {0}").format(sum_account_01))
+		sum_account = sum_1.astype(int)
+		frappe.msgprint(_("SUM 1 : {0}").format(sum_account))
 
 	if np.array(sum_account_2):
 		sum_2 = np.array(sum_account_2)
-		sum_account_02 = sum_2.astype(int)
-		frappe.msgprint(_("SUM 1 : {0}").format(sum_account_02))
+		sum_account = sum_2.astype(int)
+		frappe.msgprint(_("SUM 2 : {0}").format(sum_account))
 
 	if	np.array(sum_account_1) and np.array(sum_account_2):
-		sum_account = np.add(sum_account_01, sum_account_02)
+		sum_account = np.add(sum_1, sum_2)
 		
 
 	sum_account = str(sum_account).replace("[[","")
@@ -393,10 +393,12 @@ def get_sum_account(posting_date, company, bank_name):
 
 	sum_account = str(sum_account).replace("(","")
 	sum_account = (str(sum_account).replace(")","")).replace(",","")
+	sumaccount = str(sum_account)
+	sumaccount = hash(sumaccount) % 10**11
+	
+	frappe.msgprint(_("TOTAL : {0}").format(sumaccount))
 
-	frappe.msgprint(_("TOTAL : {0}").format(sum_account))
-
-	return sum_account
+	return sumaccount
 
 
 @frappe.whitelist()
@@ -406,23 +408,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	x = " "
 
 	curr_date = posting_date
-	if company == "FWC Education":
-		abbr = frappe.db.get_value("Company", company, "abbr")
-
-	elif company == "Tupou Tertiary Institute":
-		abbr = frappe.db.get_value("Company", company, "abbr")
-
-	elif company == "Tupou College Toloa":
-		abbr = frappe.db.get_value("Company", company, "abbr")
-
-	elif company == "Tupou College Toloa Faama":
-		abbr = frappe.db.get_value("Company", company, "abbr")
-		
-	elif company == "Queen Salote College":
-		abbr = frappe.db.get_value("Company", company, "abbr")
-		
-	elif company == "Tupou High School":
-		abbr = frappe.db.get_value("Company", company, "abbr")
+	abbr = frappe.db.get_value("Company", company, "abbr")
 	
 	fname = abbr+"_"+curr_date+"_DISDATA.PC1"
 
@@ -433,7 +419,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	ferp.file_name = fname
 	ferp.folder = "Home/QuickPay"
 	ferp.is_private = 1
-	ferp.file_url = "/public/files/"+abbr+"_"+curr_date+"_DISDATA.PC1"
+#	ferp.file_url = "/public/files/"+fname
 
 	f= open(file_name,"w+")
 	bank_data = []
@@ -446,21 +432,22 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		dr_account = ""
 
 		bank_data = get_bank_data(posting_date, company, bank_name)
+
 		account_total = get_sum_account(posting_date, company, bank_name)
 		frappe.msgprint(_("Account Total 1 : {0}").format(account_total))
-		account_total = (account_total.replace("(",""))
-		account_total = (account_total.replace(")","")).replace(",","").replace(".","")
-		frappe.msgprint(_("Account Total 2 : {0}").format(account_total))
+#		account_total = (account_total.replace("(",""))
+#		account_total = (account_total.replace(")","")).replace(",","").replace(".","")
+#		frappe.msgprint(_("Account Total 2 : {0}").format(account_total))
 #		account_total = ('%.11s' % account_total)
 		length = 11
 		fillchar = '0'
 
-		if len(account_total) == 11:
-			account_total = str(account_total)
-		if len(account_total) < 11:
-			account_total = str(account_total).rjust(length, fillchar)
-		if len(account_total) > 11:
-			account_total = str(account_total)[:11]
+#		if len(account_total) == 11:
+#			account_total = str(account_total)
+#		if len(account_total) < 11:
+#			account_total = str(account_total).rjust(length, fillchar)
+#		if len(account_total) > 11:
+		account_total = str(account_total)[:11]
 
 		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yyyy").replace("-", "")
 
@@ -492,9 +479,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769TOLOA FEES                                                                                                               \r\n"
-#			header = "EDS0769TCT                                                                                                                      \r\n"
 			spacer = "TOLOA        TOLOA FEES          EDS0769                               \r\n"
-#			spacer = "TCT                 EDS0769                               \r\n"
 
 		elif company == "Tupou College Toloa Faama":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -502,7 +487,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "212"
 			header = "EDS0769TCT                                                                                                                      \r\n"
-			spacer = "TCTF                EDS0769                               \r\n"
+			spacer = "TOLOA        TOLOA FARM          EDS0769                               \r\n"
 		
 		elif company == "Queen Salote College":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -540,7 +525,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		f.write(batch_no + 3*x)
 		f.write(str(netpay).zfill(10)+129*x+"\r\n")
 
-		f.write(account_total)
+#		f.write(account_total)
 #==================================================================== BSP END ====================================================================================
 
 
@@ -567,5 +552,6 @@ def create_bank_eft_file(posting_date, company, bank_name):
 #==================================================================== TDB END ====================================================================================
 
 	frappe.msgprint(_("Bank File created - Please download the file : {0}").format(fname))
+	ferp.file_url = "/public/files/"+fname
 	ferp.save()
 	f.close()
