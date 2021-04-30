@@ -375,16 +375,17 @@ def get_sum_account(posting_date, company, bank_name):
 	
 	
 	if np.array(sum_account_1):
-		sum_account = sum_account_1
-		frappe.msgprint(_("SUM 1 : {0}").format(sum_account_1))
+		sum_1 = np.array(sum_account_1)
+		sum_account_01 = sum_1.astype(int)
+		frappe.msgprint(_("SUM 1 : {0}").format(sum_account_01))
 
 	if np.array(sum_account_2):
-		sum_account = sum_account_2
-		frappe.msgprint(_("SUM 2 : {0}").format(sum_account_2))
-
+		sum_2 = np.array(sum_account_2)
+		sum_account_02 = sum_2.astype(int)
+		frappe.msgprint(_("SUM 1 : {0}").format(sum_account_02))
 
 	if	np.array(sum_account_1) and np.array(sum_account_2):
-		sum_account = np.add(np.array(sum_account_1), np.array(sum_account_2))
+		sum_account = np.add(sum_account_01, sum_account_02)
 		
 
 	sum_account = str(sum_account).replace("[[","")
@@ -392,8 +393,6 @@ def get_sum_account(posting_date, company, bank_name):
 
 	sum_account = str(sum_account).replace("(","")
 	sum_account = (str(sum_account).replace(")","")).replace(",","")
-#	sum_account = format(sum_account,'.11g')
-	sum_account = "{:11g}".format(sum_account)
 
 	frappe.msgprint(_("TOTAL : {0}").format(sum_account))
 
