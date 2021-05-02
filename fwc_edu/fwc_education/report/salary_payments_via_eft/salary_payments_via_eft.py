@@ -385,7 +385,9 @@ def get_sum_account(posting_date, company, bank_name):
 		frappe.msgprint(_("SUM 2 : {0}").format(sum_account))
 
 	if	np.array(sum_account_1) and np.array(sum_account_2):
-		sum_account = np.add(sum_1, sum_2)
+		sum_1 = np.array(sum_account_1)
+		sum_2 = np.array(sum_account_2)
+		sum_account = np.add(sum_1.astype(int), sum_2.astype(int))
 		
 
 	sum_account = str(sum_account).replace("[[","")
@@ -394,9 +396,9 @@ def get_sum_account(posting_date, company, bank_name):
 	sum_account = str(sum_account).replace("(","")
 	sum_account = (str(sum_account).replace(")","")).replace(",","")
 	sumaccount = str(sum_account)
-	sumaccount = hash(sumaccount) % 10**11
+	sumaccount = hash(int(sumaccount))
 	
-	frappe.msgprint(_("TOTAL : {0}").format(sumaccount))
+	frappe.msgprint(_("TOTAL : {0}").format(sum_account))
 
 	return sumaccount
 
@@ -413,15 +415,16 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	fname = abbr+"_"+curr_date+"_DISDATA.PC1"
 
 	save_path = 'edu.fwc.to/public/files'
-	file_name = os.path.join(save_path, fname)
+	filename = os.path.join(save_path, fname)
+
 	ferp = frappe.new_doc("File")
-	ferp.file_url = " "
 	ferp.file_name = fname
 	ferp.folder = "Home/QuickPay"
 	ferp.is_private = 1
 #	ferp.file_url = "/public/files/"+fname
 
-	f= open(file_name,"w+")
+
+	f= open(filename,"w+")
 	bank_data = []
 
 	netpay = get_sum_netpay(posting_date, company, bank_name)
@@ -552,6 +555,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 #==================================================================== TDB END ====================================================================================
 
 	frappe.msgprint(_("Bank File created - Please download the file : {0}").format(fname))
-	ferp.file_url = "/public/files/"+fname
+#	ferp.file_url = "/public/files/"+fname
 	ferp.save()
+	frappe.db.sql('''UPDATE `tabFile` SET file_url = %s WHERE file_name = %s''',("/files/"+fname, fname), as_dict=True)
 	f.close()

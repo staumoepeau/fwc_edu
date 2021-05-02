@@ -7,12 +7,16 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "column_break_2",
+  "payroll_entry",
   "section_break_2",
-  "payroll_no",
   "posting_date",
   "school",
   "batch_no",
+  "column_break_6",
+  "payroll_no",
   "account_debited",
+  "section_break_9",
   "total_payment",
   "amended_from"
  ],
@@ -21,27 +25,40 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
-   "options": "Lodgement.-.YY.MM.-.###"
+   "options": "Lodgement.-.YY.MM.-.###",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_2",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "posting_date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Date"
+   "fieldname": "payroll_no",
+   "fieldtype": "Data",
+   "label": "Payroll No",
+   "read_only": 1
   },
   {
+   "fieldname": "school",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "School",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "school.batch_no",
    "fieldname": "batch_no",
    "fieldtype": "Data",
-   "label": "Batch No"
+   "label": "Batch No",
+   "read_only": 1
   },
   {
+   "fetch_from": "school.account_debited",
    "fieldname": "account_debited",
    "fieldtype": "Data",
-   "label": "Account to be DEBITED"
+   "label": "Account to be DEBITED",
+   "read_only": 1
   },
   {
    "fieldname": "total_payment",
@@ -54,30 +71,45 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "FWC Lodgement Form",
+   "options": "Lodgement Form",
    "print_hide": 1,
    "read_only": 1
   },
   {
-   "fieldname": "school",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "School",
-   "options": "Company"
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
   },
   {
-   "fieldname": "payroll_no",
-   "fieldtype": "Data",
-   "label": "Payroll No"
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payroll_entry",
+   "fieldtype": "Link",
+   "label": "Payroll Entry",
+   "options": "Payroll Entry",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "payroll_entry.posting_date",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-05-01 09:44:56.795893",
+ "modified": "2021-05-01 15:36:01.782687",
  "modified_by": "Administrator",
  "module": "FWC Education",
- "name": "FWC Lodgement Form",
+ "name": "Lodgement Form",
  "owner": "Administrator",
  "permissions": [
   {

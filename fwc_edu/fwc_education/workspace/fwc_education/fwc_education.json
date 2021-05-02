@@ -85,7 +85,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-04-27 10:04:13.609413",
+ "modified": "2021-05-03 06:28:56.463805",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -108,7 +108,7 @@
   {
    "doc_view": "",
    "label": "BSP Lodgement Form",
-   "link_to": "FWC Lodgement Form",
+   "link_to": "Lodgement Form",
    "type": "DocType"
   },
   {
@@ -116,6 +116,12 @@
    "label": "Files",
    "link_to": "File",
    "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Summary Salary Register",
+   "link_to": "Summary Salary Register",
+   "type": "Report"
   }
  ],
  "shortcuts_label": "FWC Payroll"
