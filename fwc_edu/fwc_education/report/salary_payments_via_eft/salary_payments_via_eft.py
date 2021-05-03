@@ -258,7 +258,7 @@ def get_bank_data(postingdate, company, bankname):
 			}
 		)
 
-	other = frappe.db.sql(""" SELECT sal.employee, sal.employee_name, 
+	other = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
 			IF(ded.salary_component = "BSP", "BSP",
 				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
 					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
@@ -278,7 +278,7 @@ def get_bank_data(postingdate, company, bankname):
             HAVING bankname = %s
 			""", (postingdate, company, bankname), as_dict=1)
 	
-	entry = frappe.db.sql(""" SELECT employee, employee_name, net_pay as amount, 
+	entry = frappe.db.sql("""SELECT employee, employee_name, net_pay as amount, 
 		mode_of_payment, bank_account_no, bank_name, company, department, payment_details
 		FROM `tabSalary Slip`
 		WHERE net_pay != 0 
@@ -358,9 +358,10 @@ def get_sum_netpay(posting_date, company, bank_name):
 def get_sum_account(posting_date, company, bank_name):
 	sum_account = ""
 
-	sum_account_1 = frappe.db.sql(""" select sum(bank_account_no)
+	sum_account_1 = frappe.db.sql("""select sum(bank_account_no)
 		from `tabSalary Slip`
 		where docstatus = 1
+		and net_pay != 0
 		and posting_date = %s
 		and company = %s
 		and bank_name = %s """,(posting_date, company, bank_name))
@@ -445,12 +446,12 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		length = 11
 		fillchar = '0'
 
-#		if len(account_total) == 11:
-#			account_total = str(account_total)
-#		if len(account_total) < 11:
-#			account_total = str(account_total).rjust(length, fillchar)
-#		if len(account_total) > 11:
-		account_total = str(account_total)[:11]
+		if len(str(account_total)) == 11:
+			account_total = str(account_total)
+		if len(str(account_total)) < 11:
+			account_total = str(account_total).rjust(length, fillchar)
+		if len(str(account_total)) > 11:
+			account_total = str(account_total)[1:]
 
 		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yyyy").replace("-", "")
 
