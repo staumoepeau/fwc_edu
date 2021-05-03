@@ -490,24 +490,27 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = "0120232002"
 			dr_account = dr_account.zfill(12)
 			batch_no = "212"
-			header = "EDS0769TCT                                                                                                                      \r\n"
+			header = "EDS0769TOLOA FAAMA                                                                                                              \r\n"
 			spacer = "TOLOA        TOLOA FARM          EDS0769                               \r\n"
+			
+			
 		
 		elif company == "Queen Salote College":
 			abbr = frappe.db.get_value("Company", company, "abbr")
 			dr_account = "0117600301"
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0769QSC                                                                                                                      \r\n"
-			spacer = "QSC                 EDS0769                               \r\n"
+			header = "EDS0769QUEEN SALOTE                                                                                                             \r\n"
+			spacer = "QUEEN SALOTE QUEEN SALOTE        EDS0769                               \r\n"
+			
 		
 		elif company == "Tupou High School":
 			abbr = frappe.db.get_value("Company", company, "abbr")
 			dr_account = "0119259201"
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0769THS                                                                                                                      \r\n"
-			spacer = "THS                 EDS0769                               \r\n"
+			header = "EDS0769TUPOU HIGH SCOOL                                                                                                         \r\n"
+			spacer = "TUPOU HIGH   TUPOU HIGH          EDS0769                               \r\n"
 		
 		quickpay_header = direct_debit + bank_number + state_number + branch_number + dr_account + batch_no
 		
