@@ -57,10 +57,6 @@ frappe.query_reports["Salary Payments via EFT"] = {
 				var reporter = frappe.query_reports["Salary Payments via EFT"];
 					reporter.maketextfile(report);
 		},)
-		report.page.set_secondary_action('Download', function() {
-			window.open("/api/method/fwc_edu.fwc_education.report.salary_payments_via_eft.salary_payments_via_eft.download_file");
-		},)
-
 	},
 
 	isNumeric: function( obj ) {

@@ -23,7 +23,7 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		row = [ss.employee, ss.employee_name, basic_annual.get(ss.employee)]
+		row = [ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
 		
 #		row = [ss.name, ss.employee, ss.employee_name, basic_annual.get(ss.employee), ss.branch, ss.department, ss.designation,
 #			ss.company, ss.start_date, ss.end_date, ss.leave_without_pay, ss.payment_days]
@@ -68,36 +68,14 @@ def execute(filters=None):
 	return columns, data
 
 def get_columns(salary_slips):
-	"""
+
 	columns = [
-		_("Salary Slip ID") + ":Link/Salary Slip:150",
+
+		_("Branch") + ":Link/Branch:100",
 		_("Employee") + ":Link/Employee:120",
 		_("Employee Name") + "::140",
 		_("Basic Salary") + ":Currency:120",
-		_("Branch") + ":Link/Branch:120",
-		_("Department") + ":Link/Department:120",
-		_("Designation") + ":Link/Designation:120",
-		_("Company") + ":Link/Company:120",
-		_("Start Date") + "::80",
-		_("End Date") + "::80",
-		_("Leave Without Pay") + ":Float:130",
-		_("Payment Days") + ":Float:120",
-		_("Currency") + ":Link/Currency:80"
-	]
-	"""
-	columns = [
-#		_("Salary Slip ID") + ":Link/Salary Slip:150",
-		_("Employee") + ":Link/Employee:120",
-		_("Employee Name") + "::140",
-		_("Basic Salary") + ":Currency:120",
-#		_("Branch") + ":Link/Branch:-1",
-#		_("Department") + ":Link/Department:-1",
-#		_("Designation") + ":Link/Designation:120",
-#		_("Company") + ":Link/Company:120",
-#		_("Start Date") + "::80",
-#		_("End Date") + "::80",
-#		_("Leave Without Pay") + ":Float:50",
-#		_("Payment Days") + ":Float:120"
+
 	]
 
 	salary_components = {_("Earning"): [], _("Deduction"): []}

@@ -173,8 +173,11 @@ def get_data(filters):
 		bank_account_no, bank_name, company, department, payment_details
 		from `tabSalary Slip`
 		where docstatus = 1
-		and net_pay > 0 %s """
-		%(conditions), as_dict =1)
+		and net_pay > 0 
+		AND posting_date = %s
+		AND company = %s
+        AND bank_name = %s
+		""", (postingdate, company, bankname), as_dict=1)
 
 	for e in other:
 		employee = {
@@ -223,9 +226,7 @@ def get_bank_data(postingdate, company, bankname):
 
 			}
 		)
-
-
-	employee_list = frappe.db.sql(""" SELECT sal.employee, sal.employee_name, 
+	employee_list = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
 			IF(ded.salary_component = "BSP", "BSP",
 				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
 					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
@@ -281,7 +282,7 @@ def get_bank_data(postingdate, company, bankname):
 	entry = frappe.db.sql("""SELECT employee, employee_name, net_pay as amount, 
 		mode_of_payment, bank_account_no, bank_name, company, department, payment_details
 		FROM `tabSalary Slip`
-		WHERE net_pay != 0 
+		WHERE net_pay > 0
 		AND posting_date = %s
 		AND company = %s
 		AND docstatus = 1
@@ -292,7 +293,7 @@ def get_bank_data(postingdate, company, bankname):
 		employee = {
 			"employee_name" : ((d.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 #			"employee" : d.employee,
-			"amount" : (str(int((d.amount)*100))).zfill(10),
+			"amount" : str(int(round(d.amount*100))).zfill(10),
 			"payment_details" : d.payment_details,
 			"bank_name" : d.bank_name,
 			"account_number": d.bank_account_no.replace("-",""),
@@ -304,7 +305,7 @@ def get_bank_data(postingdate, company, bankname):
 		employee = {
 			"employee_name" : ((e.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 			"employee": e.employee,
-			"amount" : (str(int((e.amount)*100))).zfill(10),
+			"amount" : str(int(round(e.amount*100))).zfill(10),
 			"bank_name" : e.bankname,
 			"account_number": e.account_number.replace("-",""),
 			"company": e.company
@@ -318,15 +319,17 @@ def get_sum_netpay(posting_date, company, bank_name):
 	netpay = ""
 	netpay_1, netpay_2 = [], []
 
-	netpay_1 = frappe.db.sql(""" select sum(net_pay)
+	netpay_1 = frappe.db.sql("""select sum(net_pay)
 		from `tabSalary Slip`
 		where docstatus = 1
+		and net_pay > 0
 		and posting_date = %s
 		and company = %s
 		and bank_name = %s """,(posting_date, company, bank_name))
 	
 	netpay_2 = frappe.db.sql("""SELECT sum(tsd.amount) from `tabSalary Detail` tsd, `tabSalary Slip` tss
 			WHERE tsd.parent = tss.name
+			AND tsd.amount > 0
 			AND tsd.salary_component = %s
 			AND tsd.docstatus = 1
             AND tss.posting_date = %s
@@ -351,8 +354,17 @@ def get_sum_netpay(posting_date, company, bank_name):
 	netpay = (str(netpay).replace("]]","")).replace(",","")
 	netpay = str(netpay).replace("(","")
 	netpay = (str(netpay).replace(")","")).replace(",","")
-	netpay = ((str(netpay)).replace(".","")).zfill(10)
 
+	netpay = int(float(netpay)*100)
+
+	frappe.msgprint(_("NET1: {0}").format(netpay))
+
+	netpay = ((str(netpay)).replace(".",""))
+	frappe.msgprint(_("NET2: {0}").format(netpay))
+	
+	netpay = str(netpay).zfill(10)
+
+	frappe.msgprint(_("NET: {0}").format(netpay))
 	return netpay
 
 def get_sum_account(posting_date, company, bank_name):
@@ -429,8 +441,8 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	bank_data = []
 
 	netpay = get_sum_netpay(posting_date, company, bank_name)
-	netpay = (netpay.replace("(",""))
-	netpay = (netpay.replace(")","")).replace(",","")
+#	netpay = (netpay.replace("(",""))
+#	netpay = (netpay.replace(")","")).replace(",","")
 
 	if bank_name == "BSP":
 		dr_account = ""
@@ -463,7 +475,8 @@ def create_bank_eft_file(posting_date, company, bank_name):
 
 		if company == "FWC Education":
 			abbr = frappe.db.get_value("Company", company, "abbr")
-			dr_account = "113903701"
+#			dr_account = "113903701"
+		
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0679TTI                                                                                                                      \r\n"

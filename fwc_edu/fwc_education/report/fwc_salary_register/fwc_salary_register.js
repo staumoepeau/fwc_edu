@@ -19,21 +19,6 @@ frappe.query_reports["FWC Salary Register"] = {
 			"reqd": 1,
 			"width": "100px"
 		},
-//		{
-//			"fieldname": "currency",
-//			"fieldtype": "Link",
-//			"options": "Currency",
-//			"label": __("Currency"),
-//			"default": erpnext.get_currency(frappe.defaults.get_default("Company")),
-//			"width": "50px"
-//		},
-//		{
-//			"fieldname":"employee",
-//			"label": __("Employee"),
-//			"fieldtype": "Link",
-//			"options": "Employee",
-//			"width": "100px"
-//		},
 		{
 			"fieldname":"docstatus",
 			"label":__("Document Status"),
@@ -52,5 +37,27 @@ frappe.query_reports["FWC Salary Register"] = {
 			"reqd": 1
 		},
 
-	]
+	],
+	"formatter": function (value, row, column, data, default_formatter) {
+        if (column.fieldname == "company") {
+            value = data.branch;
+            column.is_tree = true;
+        }
+
+        value = default_formatter(value, row, column, data);
+        if (!data.branch) {
+            var $value = $(value).css("font-weight", "bold");
+            if (data.warn_if_negative && data[column.fieldname] < 0) {
+                $value.addClass("text-danger");
+            }
+
+            value = $value.wrap("<p></p>").parent().html();
+        }
+        return value
+    },
+	
+	"treeView": true,
+	"name_field": "branch",
+	"parent_field": "branch",
+	"initial_depth": 2
 }
