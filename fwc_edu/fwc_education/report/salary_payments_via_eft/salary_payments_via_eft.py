@@ -505,8 +505,6 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			batch_no = "212"
 			header = "EDS0769TOLOA FAAMA                                                                                                              \r\n"
 			spacer = "TOLOA        TOLOA FARM          EDS0769                               \r\n"
-			
-			
 		
 		elif company == "Queen Salote College":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -543,7 +541,8 @@ def create_bank_eft_file(posting_date, company, bank_name):
 #		f.write("00000000000")
 		f.write(account_total)
 		f.write(batch_no + 3*x)
-		f.write(str(netpay).zfill(10)+129*x+"\r\n")
+		f.write(netpay+129*x+"\r\n")
+#		f.write(str(netpay).zfill(10)+129*x+"\r\n")
 
 #		f.write(account_total)
 #==================================================================== BSP END ====================================================================================
