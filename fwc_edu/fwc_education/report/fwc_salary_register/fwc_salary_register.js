@@ -38,26 +38,26 @@ frappe.query_reports["FWC Salary Register"] = {
 		},
 
 	],
-	"formatter": function (value, row, column, data, default_formatter) {
-        if (column.fieldname == "company") {
-            value = data.branch;
-            column.is_tree = true;
-        }
+//	"formatter": function (value, row, column, data, default_formatter) {
+//        if (column.fieldname == "company") {
+//            value = data.company;
+//            column.is_tree = true;
+//        }
 
-        value = default_formatter(value, row, column, data);
-        if (!data.branch) {
-            var $value = $(value).css("font-weight", "bold");
-            if (data.warn_if_negative && data[column.fieldname] < 0) {
-                $value.addClass("text-danger");
-            }
+//        value = default_formatter(value, row, column, data);
+//        if (!data.branch) {
+//            var $value = $(value).css("font-weight", "bold");
+//            if (data.warn_if_negative && data[column.fieldname] < 0) {
+//                $value.addClass("text-danger");
+//            }
 
-            value = $value.wrap("<p></p>").parent().html();
-        }
-        return value
-    },
+//            value = $value.wrap("<p></p>").parent().html();
+//        }
+//        return value
+//    },
 	
-	"treeView": true,
-	"name_field": "branch",
-	"parent_field": "branch",
-	"initial_depth": 2
+//	"treeView": true,
+//	"name_field": "company",
+//	"parent_field": "branch",
+//	"initial_depth": 2
 }

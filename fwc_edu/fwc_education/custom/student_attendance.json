@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Student Attendance",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2021-05-10 14:44:18.952930",
+   "default_value": null,
+   "doc_type": "Student Attendance",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "naming_series",
+   "idx": 0,
+   "modified": "2021-05-10 14:44:18.952930",
+   "modified_by": "Administrator",
+   "name": "Student Attendance-naming_series-options",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "options",
+   "property_type": "Text",
+   "row_name": null,
+   "value": "FWC.YYYY.\nEDU-ATT-.YYYY.-"
+  }
+ ],
+ "sync_on_migrate": 1
+}

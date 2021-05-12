@@ -23,7 +23,7 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		row = [ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
+		row = [ss.company,ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
 		
 #		row = [ss.name, ss.employee, ss.employee_name, basic_annual.get(ss.employee), ss.branch, ss.department, ss.designation,
 #			ss.company, ss.start_date, ss.end_date, ss.leave_without_pay, ss.payment_days]
@@ -70,7 +70,7 @@ def execute(filters=None):
 def get_columns(salary_slips):
 
 	columns = [
-
+		_("Company") + ":Link/Company:100",
 		_("Branch") + ":Link/Branch:100",
 		_("Employee") + ":Link/Employee:120",
 		_("Employee Name") + "::140",

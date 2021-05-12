@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Fees",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2021-05-12 09:47:49.349287",
+   "default_value": null,
+   "doc_type": "Fees",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "academic_term",
+   "idx": 0,
+   "modified": "2021-05-12 09:47:49.349287",
+   "modified_by": "Administrator",
+   "name": "Fees-academic_term-in_list_view",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "in_list_view",
+   "property_type": "Check",
+   "row_name": null,
+   "value": "1"
+  }
+ ],
+ "sync_on_migrate": 1
+}
