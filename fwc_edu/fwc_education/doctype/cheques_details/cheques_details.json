@@ -1,0 +1,65 @@
+{
+ "actions": [],
+ "creation": "2021-05-20 12:20:10.020730",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "cheque_no",
+  "cheque_owner",
+  "bank",
+  "account_no",
+  "amount",
+  "serial_no"
+ ],
+ "fields": [
+  {
+   "fieldname": "cheque_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Cheque No"
+  },
+  {
+   "fieldname": "cheque_owner",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Cheque Owner"
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Bank",
+   "options": "\nANZ\nBSP\nTDB\nMBF"
+  },
+  {
+   "fieldname": "account_no",
+   "fieldtype": "Data",
+   "label": "Account No"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "serial_no",
+   "fieldtype": "Data",
+   "label": "Serial No"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-05-20 12:27:03.256826",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "Cheques Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

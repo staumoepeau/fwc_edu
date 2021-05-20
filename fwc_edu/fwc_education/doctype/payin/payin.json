@@ -1,0 +1,235 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2021-05-20 10:25:35.900022",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "naming_series",
+  "posting_date",
+  "column_break_4",
+  "status",
+  "section_break_6",
+  "payment_entry_table",
+  "section_break_8",
+  "column_break_7",
+  "column_break_8",
+  "column_break_9",
+  "total_entry_payment",
+  "section_break_9",
+  "cash_details",
+  "section_break_11",
+  "data_12",
+  "data_13",
+  "data_14",
+  "total_cash",
+  "data_17",
+  "cheques_details",
+  "section_break_18",
+  "column_break_20",
+  "column_break_21",
+  "total_cheques",
+  "column_break_22",
+  "different_amount",
+  "column_break_24",
+  "grand_total",
+  "payin_account_section",
+  "account_no",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Series",
+   "options": "PAYIN.-.YY.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nOpen\nApprove\nPayIn\nReview\nRejected"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break",
+   "label": "Payment Entry"
+  },
+  {
+   "fieldname": "payment_entry_table",
+   "fieldtype": "Table",
+   "label": "Payment Entry Table",
+   "options": "Payin Payment Entry"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "PAYIN",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_entry_payment",
+   "fieldtype": "Currency",
+   "label": "Total Payment",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break",
+   "label": "Cash Details"
+  },
+  {
+   "fieldname": "cash_details",
+   "fieldtype": "Table",
+   "label": "Cash",
+   "options": "Denomination Table"
+  },
+  {
+   "fieldname": "total_cash",
+   "fieldtype": "Currency",
+   "label": "Total Cash"
+  },
+  {
+   "fieldname": "data_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "data_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "data_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "data_17",
+   "fieldtype": "Section Break",
+   "label": "Cheque Details"
+  },
+  {
+   "fieldname": "cheques_details",
+   "fieldtype": "Table",
+   "label": "Cheque",
+   "options": "Cheques Details"
+  },
+  {
+   "fieldname": "section_break_18",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_cheques",
+   "fieldtype": "Currency",
+   "label": "Total Cheques",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "column_break_20",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "different_amount",
+   "fieldtype": "Currency",
+   "label": "Different",
+   "options": "Curerncy"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "GRAND TOTAL",
+   "options": "Curerncy"
+  },
+  {
+   "fieldname": "payin_account_section",
+   "fieldtype": "Section Break",
+   "label": "Payin Account"
+  },
+  {
+   "fieldname": "account_no",
+   "fieldtype": "Link",
+   "label": "Account  No",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2021-05-20 15:34:54.592713",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "PAYIN",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

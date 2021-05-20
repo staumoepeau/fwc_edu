@@ -12,7 +12,7 @@
  "html": "{%- from \"templates/print_formats/standard_macros.html\" import add_header -%}\n\n<div class=\"row\">\n    <div class=\"container-fluid\">\n        <div class=\"col-xs-12 text-left\">\n            {{ frappe.db.get_value(\"Letter Head\", \"FWC Education\", \"content\") }}    \n        </div>\n    </div>\n<br>\n    <div class=\"container-fluid\">\n        <div class=\"col-xs-6 text-left\">\n            <H5>RECEIPT</H5>\n        </div>\n          <div class=\"col-xs-6 text-right\">\n            {{ doc.name }}    \n        </div>\n    </div>\n</div>\n<div class=\"row\">\n    <div class=\"container-fluid\">\n        <div class=\"col-xs-6 text-left\">\n        </div>\n          <div class=\"col-xs-6 text-right\">\n            Date: {{ frappe.utils.formatdate(doc.posting_date) }}    \n        </div>\n    </div>\n</div>\n<div class=\"row\">\n    <div class=\"container-fluid\">\n        <div class=\"col-xs-6\">\n            <div class=\"col-xs-6 text-left\">\n                Sudent : \n            </div>\n             <div class=\"col-xs-6 text-left\">\n                {{ frappe.utils.formatdate(doc.posting_date) }}    \n            </div>\n        </div>\n        <div class=\"col-xs-12\">\n            <div class=\"col-xs-6 text-left\">\n                Received from\n            </div>\n             <div class=\"col-xs-6 text-right\">\n                {{ frappe.utils.formatdate(doc.posting_date) }}    \n            </div>\n        </div>\n    </div>\n</div>\n<hr>",
  "idx": 0,
  "line_breaks": 0,
- "modified": "2021-05-18 08:16:55.551793",
+ "modified": "2021-05-19 09:01:29.739437",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC School Fees Receipt",

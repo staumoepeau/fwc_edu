@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "creation": "2021-05-20 12:13:36.567428",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "denomination",
+  "qty",
+  "total"
+ ],
+ "fields": [
+  {
+   "fieldname": "denomination",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Denomination",
+   "options": "\n100\n50\n20\n10\n5\n2\n1\n0.5\n0.2\n0.1\n0.05"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total",
+   "options": "Currency"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-05-20 12:27:26.965086",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "Denomination Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
