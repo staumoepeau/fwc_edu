@@ -85,7 +85,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-05-03 06:28:56.463805",
+ "modified": "2021-05-20 15:57:23.405581",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -115,6 +115,12 @@
    "doc_view": "",
    "label": "Files",
    "link_to": "File",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "PAYIN",
+   "link_to": "PAYIN",
    "type": "DocType"
   },
   {
