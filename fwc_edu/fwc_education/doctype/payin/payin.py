@@ -37,7 +37,9 @@ class PAYIN(Document):
 #		self.cancel_pos()
 		self.cancel_payment_entry()
 #		self.update_status()
-	
+
+	def updates_list(self):
+		self.get_mode_of_payment()
 
 #	def update_status(self):
 #		frappe.db.sql("""Update `tabPayIn` set status='Review' where name=%s""", (self.name))
@@ -84,10 +86,29 @@ class PAYIN(Document):
 #	def update_status_payin(self):
 #		frappe.db.sql("""Update `tabPayIn` set status='PayIn' where name=%s""", (self.name))
 
-	def cancel_payment_entry(self):
-		for d in self.get("payment_entry_table"):
-			frappe.db.sql("""Update `tabPayment Entry` set payin=0 where name=%s""", (d.receipt_document))
+#	def cancel_payment_entry(self):
+#		for d in self.get("payment_entry_table"):
+#			frappe.db.sql("""Update `tabPayment Entry` set payin=0 where name=%s""", (d.receipt_document))
 	
-#	def cancel_pos(self):
-#		for d in self.get("pos_closing_voucher_table"):
-#			frappe.db.sql("""Update `tabPOS Closing Voucher` set payin=0 where name=%s""", (d.receipt_document))
+
+#	def get_mode_of_payment(self):
+#		paymentmode = frappe.db.sql("""SELECT mode_of_payment, SUM(paid_amount) as total
+#			FROM `tabPayment Entry`
+#			WHERE docstatus = 1
+#			AND posting_date
+#			GROUP BY mode_of_payment""", (self.posting_date), as_dict=1)
+		
+#		grandtotal = 0.0
+#		for d in paymentmode:
+#			self.append("payment_reconciliation", {
+#			"mode_of_payment": d.mode_of_payment,
+#			"expected_amount": d.total
+#			})
+#		grandtotal += flt(d.total)
+#		self.grand_total = grandtotal
+	def get_transactions(self):
+		return frappe.db.sql("""SELECT SUM(amount) AS amount, school
+			FROM `tabPayin Payment Entry`
+			WHERE `tabWharf Fee Item`.`item` = `tabWharf Fees`.`name`
+			AND payin = 0
+			GROUP BY `tabWharf Fees`.`wharf_fee_category`""", (posting_date), as_dict = 1)

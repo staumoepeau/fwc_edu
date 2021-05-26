@@ -23,7 +23,7 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		row = [ss.company,ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
+		row = [ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
 		
 #		row = [ss.name, ss.employee, ss.employee_name, basic_annual.get(ss.employee), ss.branch, ss.department, ss.designation,
 #			ss.company, ss.start_date, ss.end_date, ss.leave_without_pay, ss.payment_days]
@@ -70,7 +70,7 @@ def execute(filters=None):
 def get_columns(salary_slips):
 
 	columns = [
-		_("Company") + ":Link/Company:100",
+
 		_("Branch") + ":Link/Branch:100",
 		_("Employee") + ":Link/Employee:120",
 		_("Employee Name") + "::140",
@@ -137,8 +137,8 @@ def get_employee_doj_map():
 				"""))
 
 def get_ss_earning_map(salary_slips, currency, company_currency):
-	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, sd.amount, ss.exchange_rate, ss.name
-		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s)""" %
+	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, sum(sd.amount) as amount, ss.exchange_rate, ss.name
+		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s) group by sd.parent, sd.salary_component""" %
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
 
 	ss_earning_map = {}
@@ -152,8 +152,8 @@ def get_ss_earning_map(salary_slips, currency, company_currency):
 	return ss_earning_map
 
 def get_ss_ded_map(salary_slips, currency, company_currency):
-	ss_deductions = frappe.db.sql("""select sd.parent, sd.salary_component, sd.amount, ss.exchange_rate, ss.name
-		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s)""" %
+	ss_deductions = frappe.db.sql("""select sd.parent, sd.salary_component, sum(sd.amount) as amount, ss.exchange_rate, ss.name
+		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s) group by sd.parent, sd.salary_component""" %
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
 
 	ss_ded_map = {}

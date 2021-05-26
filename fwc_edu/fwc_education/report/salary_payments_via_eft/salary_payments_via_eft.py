@@ -338,16 +338,16 @@ def get_sum_netpay(posting_date, company, bank_name):
 	
 	if np.array(netpay_1):
 		netpay = netpay_1
-		frappe.msgprint(_("PAY 1 : {0}").format(netpay_1))
+#		frappe.msgprint(_("PAY 1 : {0}").format(netpay_1))
 
 	if np.array(netpay_2):
 		netpay = netpay_2
-		frappe.msgprint(_("PAY 2 : {0}").format(netpay_2))
+#		frappe.msgprint(_("PAY 2 : {0}").format(netpay_2))
 
 
 	if	np.array(netpay_1) and np.array(netpay_2):
 		netpay = np.add(netpay_1, netpay_2)
-		frappe.msgprint(_("NAT PAY : {0}").format(netpay))
+#		frappe.msgprint(_("NAT PAY : {0}").format(netpay))
 
 
 	netpay = str(netpay).replace("[[","")
@@ -357,14 +357,14 @@ def get_sum_netpay(posting_date, company, bank_name):
 
 	netpay = int(float(netpay)*100)
 
-	frappe.msgprint(_("NET1: {0}").format(netpay))
+#	frappe.msgprint(_("NET1: {0}").format(netpay))
 
 	netpay = ((str(netpay)).replace(".",""))
-	frappe.msgprint(_("NET2: {0}").format(netpay))
+#	frappe.msgprint(_("NET2: {0}").format(netpay))
 	
 	netpay = str(netpay).zfill(10)
 
-	frappe.msgprint(_("NET: {0}").format(netpay))
+#	frappe.msgprint(_("NET: {0}").format(netpay))
 	return netpay
 
 def get_sum_account(posting_date, company, bank_name):
@@ -390,12 +390,12 @@ def get_sum_account(posting_date, company, bank_name):
 	if np.array(sum_account_1):
 		sum_1 = np.array(sum_account_1)
 		sum_account = sum_1.astype(int)
-		frappe.msgprint(_("SUM 1 : {0}").format(sum_account))
+#		frappe.msgprint(_("SUM 1 : {0}").format(sum_account))
 
 	if np.array(sum_account_2):
 		sum_2 = np.array(sum_account_2)
 		sum_account = sum_2.astype(int)
-		frappe.msgprint(_("SUM 2 : {0}").format(sum_account))
+#		frappe.msgprint(_("SUM 2 : {0}").format(sum_account))
 
 	if	np.array(sum_account_1) and np.array(sum_account_2):
 		sum_1 = np.array(sum_account_1)
@@ -411,7 +411,7 @@ def get_sum_account(posting_date, company, bank_name):
 	sumaccount = str(sum_account)
 	sumaccount = hash(int(sumaccount))
 	
-	frappe.msgprint(_("TOTAL : {0}").format(sum_account))
+#	frappe.msgprint(_("TOTAL : {0}").format(sum_account))
 
 	return sumaccount
 

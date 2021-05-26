@@ -14,29 +14,33 @@
   "section_break_6",
   "payment_entry_table",
   "section_break_8",
-  "column_break_7",
   "column_break_8",
   "column_break_9",
   "total_entry_payment",
   "section_break_9",
   "cash_details",
   "section_break_11",
-  "data_12",
   "data_13",
   "data_14",
   "total_cash",
   "data_17",
   "cheques_details",
   "section_break_18",
-  "column_break_20",
   "column_break_21",
-  "total_cheques",
   "column_break_22",
-  "different_amount",
-  "column_break_24",
+  "total_cheques",
+  "column_break_23",
+  "payment_total",
+  "column_break_26",
   "grand_total",
+  "column_break_24",
+  "different_amount",
   "payin_account_section",
   "account_no",
+  "transction_summary_section",
+  "get_transactions",
+  "payment_summary",
+  "section_break_34",
   "amended_from"
  ],
  "fields": [
@@ -96,7 +100,8 @@
    "fieldname": "total_entry_payment",
    "fieldtype": "Currency",
    "label": "Total Payment",
-   "options": "Currency"
+   "options": "Currency",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_9",
@@ -112,7 +117,8 @@
   {
    "fieldname": "total_cash",
    "fieldtype": "Currency",
-   "label": "Total Cash"
+   "label": "Total Cash",
+   "read_only": 1
   },
   {
    "fieldname": "data_13",
@@ -121,10 +127,6 @@
   {
    "fieldname": "section_break_11",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "data_12",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "data_14",
@@ -149,11 +151,8 @@
    "fieldname": "total_cheques",
    "fieldtype": "Currency",
    "label": "Total Cheques",
-   "options": "Currency"
-  },
-  {
-   "fieldname": "column_break_20",
-   "fieldtype": "Column Break"
+   "options": "Currency",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_21",
@@ -161,13 +160,14 @@
   },
   {
    "fieldname": "column_break_22",
-   "fieldtype": "Section Break"
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "different_amount",
    "fieldtype": "Currency",
    "label": "Different",
-   "options": "Curerncy"
+   "options": "Curerncy",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_24",
@@ -176,8 +176,9 @@
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
-   "label": "GRAND TOTAL",
-   "options": "Curerncy"
+   "label": "Cash + Cheques",
+   "options": "Curerncy",
+   "read_only": 1
   },
   {
    "fieldname": "payin_account_section",
@@ -191,10 +192,6 @@
    "options": "Account"
   },
   {
-   "fieldname": "column_break_7",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "column_break_8",
    "fieldtype": "Column Break"
   },
@@ -205,12 +202,49 @@
   {
    "fieldname": "section_break_8",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_23",
+   "fieldtype": "Section Break",
+   "label": "Payment Reconcilication"
+  },
+  {
+   "fieldname": "payment_total",
+   "fieldtype": "Currency",
+   "label": "Total Payment",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_26",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transction_summary_section",
+   "fieldtype": "Section Break",
+   "label": "Transction Summary"
+  },
+  {
+   "fieldname": "payment_summary",
+   "fieldtype": "Table",
+   "label": "Payment Summary",
+   "options": "FWC Payment Summary"
+  },
+  {
+   "fieldname": "section_break_34",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "get_transactions",
+   "fieldtype": "Button",
+   "label": "Get Transactions"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-05-20 15:34:54.592713",
+ "modified": "2021-05-26 13:32:44.807960",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "PAYIN",

@@ -43,6 +43,12 @@ frappe.ui.form.on('PAYIN', {
 		
 	},
 
+	payment_total: function(frm){
+		calculate_different(frm);
+	},
+
+	
+
 	total_cheques: function(frm){
 
 		if (!frm.doc.total_cheques || frm.doc.total_cheques == ""){
@@ -54,8 +60,18 @@ frappe.ui.form.on('PAYIN', {
 
 		get_grand_total(frm);
 	},
+
+	get_transactions: function(frm) {
+        get_summary(frm);
+    },
 	
 });
+
+var calculate_different = function(frm){
+	frm.doc.different_amount = frm.doc.payment_total - frm.doc.grand_total
+	refresh_field("different_amount")
+	
+};
 
 var get_total = function(frm){
 	frm.doc.total = frm.doc.total_pos_amount + frm.doc.total_entry_payment
@@ -65,8 +81,31 @@ var get_total = function(frm){
 
 var get_grand_total = function(frm){
 	frm.doc.grand_total = frm.doc.total_cash + frm.doc.total_cheques
+	calculate_different(frm)
 	refresh_field("grand_total")
 };
+
+var get_summary = function(frm) {
+
+    frappe.call({
+        method: "fwc_edu.fwc_education.doctype.payin.payin.get_transaction_summary",
+        args: {
+            "posting_date": frm.doc.posting_date,
+        },
+        callback: function(r) {
+            console.log(r.message)
+            if (r.message) {
+                $.each(r.message, function(i, item) {
+                    var item_row = frm.add_child("payment_summary")
+                    item_row.school = item.school,
+                        item_row.amount = item.total
+                });
+                frm.refresh()
+            }
+
+        }
+
+});
 
 $.extend(fwc_edu.payin, {
 	setup_queries: function(frm) {
@@ -98,6 +137,7 @@ frappe.ui.form.on("Payin Payment Entry", "receipt_document", function(frm, cdt, 
 				frappe.model.set_value(d.doctype, d.name, "posting_date",  data.message["posting_date"]);
 				frappe.model.set_value(d.doctype, d.name, "cashier", data.message["owner"]);
 				frappe.model.set_value(d.doctype, d.name, "payin", "1");
+				frappe.model.set_value(d.doctype, d.name, "mode_of_payment", data.message["mode_of_payment"]);
 				frappe.model.set_value(d.doctype, d.name, "total_payment", data.message["paid_amount"]);
 			}
 	})
@@ -143,6 +183,7 @@ frappe.ui.form.on("Cheques Details", {
 		frm.doc.cheques_details.forEach(function(d) { totalcheques += d.amount; });
 
 		frm.set_value("total_cheques", totalcheques);
+//		frm.set_value("grand_total")
 		cur_frm.refresh();
 	}
 });
@@ -155,6 +196,7 @@ frappe.ui.form.on("Payin Payment Entry", {
 	frm.doc.payment_entry_table.forEach(function(d) { totalpayment += d.total_payment; });
 
 	frm.set_value("total_entry_payment", totalpayment);
+	frm.set_value("payment_total", totalpayment);
 	cur_frm.refresh();
 	},
 	
@@ -163,6 +205,7 @@ frappe.ui.form.on("Payin Payment Entry", {
 		var totalpayment = 0;
 		frm.doc.payment_entry_table.forEach(function(d) { totalpayment += d.total_payment; });
 		frm.set_value("total_entry_payment", totalpayment);
+		frm.set_value("payment_total", totalpayment);
 		cur_frm.refresh();
 	}
 });

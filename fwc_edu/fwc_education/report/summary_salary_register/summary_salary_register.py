@@ -12,12 +12,12 @@ def execute(filters=None):
 	if filters.get('currency'):
 		currency = filters.get('currency')
 	company_currency = erpnext.get_company_currency(filters.get("company"))
-	salary_slips = get_salary_slips(filters, company_currency)
+	salary_slips = get_salary_slips(filters)
 	if not salary_slips: return [], []
 
 	columns, earning_types, ded_types = get_columns(salary_slips)
 	ss_earning_map = get_ss_earning_map(salary_slips, currency, company_currency)
-	ss_ded_map = get_ss_ded_map(salary_slips,currency, company_currency)
+	ss_ded_map = get_ss_ded_map(salary_slips)
 	doj_map = get_employee_doj_map()
 	basic_annual = get_branch_annual_basic(filters)
 
@@ -101,7 +101,7 @@ def get_columns(salary_slips):
 #		_("Payment Days") + ":Float:120"
 	]
 
-	salary_components = {_("Earning"): [], _("Deduction"): []}
+#	salary_components = {_("Earning"): [], _("Deduction"): []}
 
 #	for component in frappe.db.sql("""select distinct sd.salary_component, sc.type
 #		from `tabSalary Detail` sd, `tabSalary Component` sc
@@ -109,28 +109,51 @@ def get_columns(salary_slips):
 #		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
 #		salary_components[_(component.type)].append(component.salary_component)
 	
-	for component in frappe.db.sql("""SELECT distinct name, parenttype, branch, salary_component, 
-		IF (parentfield = "deductions", "Deduction",
-			IF (parentfield = "earnings", "Earning","")) as type, 
-			sum(amount), start_date, end_date, company
-		FROM(SELECT
-		ss.name,
-		sd.parenttype,
-		sd.salary_component,
-		sd.parentfield,
-		sd.amount,
-		ss.branch,
-		ss.company,
-		ss.start_date,
-		ss.end_date
-		FROM
-		`tabSalary Detail` sd
-		LEFT JOIN `tabSalary Slip` ss ON sd.parent = ss.name
-		WHERE ss.branch IS NOT null
-		and ss.name in (%s)) t1
-		GROUP BY branch, salary_component""" %
-		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
-		salary_components[_(component.type)].append(component.salary_component)
+#	for component in frappe.db.sql("""SELECT distinct name, parenttype, branch, salary_component, 
+#		IF (parentfield = "deductions", "Deduction",
+#			IF (parentfield = "earnings", "Earning","")) as type, 
+#			sum(amount), start_date, end_date, company
+#		FROM(SELECT
+#		ss.name,
+#		sd.parenttype,
+#		sd.salary_component,
+#		sd.parentfield,
+#		sd.amount,
+#		ss.branch,
+#		ss.company,
+#		ss.start_date,
+#		ss.end_date
+#		FROM
+#		`tabSalary Detail` sd
+#		LEFT JOIN `tabSalary Slip` ss ON sd.parent = ss.name
+#		WHERE ss.branch IS NOT null
+#		and ss.name in (%s)) t1
+#		GROUP BY branch, salary_component""" %
+#		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
+#		salary_components[_(component.type)].append(component.salary_component)
+
+#	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + \
+#		[_("Gross Pay") + ":Currency:120"] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
+#		[_("Net Pay") + ":Currency:120"]
+
+#	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + \
+#		[_("Gross Pay") + ":Currency:120"] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
+#		[_("Loan Repayment") + ":Currency:120", _("Total Deduction") + ":Currency:120", _("Net Pay") + ":Currency:120"]
+
+#	return columns, salary_components[_("Earning")], salary_components[_("Deduction")]
+
+	salary_components = {_("Earning"): [], _("Deduction"): []}
+
+	for component in frappe.db.sql("""select distinct sd.salary_component, sc.type
+		from `tabSalary Detail` sd, `tabSalary Component` sc
+		where sc.name=sd.salary_component and sd.amount != 0 
+		and sd.parent in (select distinct sd.salary_component, sc.type
+		from `tabSalary Detail` sd, `tabSalary Component` sc
+		where sc.name=sd.salary_component and sd.amount != 0)""", as_dict=1)
+		
+		#%
+		#(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
+		#salary_components[_(component.type)].append(component.salary_component)
 
 	columns = columns + [(e + ":Currency:120") for e in salary_components[_("Earning")]] + \
 		[_("Gross Pay") + ":Currency:120"] + [(d + ":Currency:120") for d in salary_components[_("Deduction")]] + \
@@ -142,7 +165,7 @@ def get_columns(salary_slips):
 
 	return columns, salary_components[_("Earning")], salary_components[_("Deduction")]
 
-def get_salary_slips(filters, company_currency):
+def get_salary_slips(filters):
 #	filters.update({"from_date": filters.get("from_date"), "to_date":filters.get("to_date")})
 #	conditions, filters = get_conditions(filters, company_currency)
 	company = filters.get("company")
@@ -179,10 +202,11 @@ def get_branch_annual_basic(filters):
 	return	frappe._dict(frappe.db.sql("""
 				SELECT
 					branch,
-					basic_salary
+					sum(basic_salary) as basic_salary
 				FROM `tabEmployee`
 				WHERE company = %s
 				AND status = 'Active'
+				GROUP BY branch
 				""", company))
 			
 def get_employee_doj_map():
@@ -195,7 +219,7 @@ def get_employee_doj_map():
 
 def get_ss_earning_map(salary_slips, currency, company_currency):
 	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, sum(sd.amount) as amount, ss.exchange_rate, ss.name
-		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s) group by branch""" %
+		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parentfield = 'earnings' and sd.parent in (%s) group by branch""" %
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
 
 	ss_earning_map = {}
@@ -205,21 +229,22 @@ def get_ss_earning_map(salary_slips, currency, company_currency):
 			ss_earning_map[d.parent][d.salary_component] = flt(d.amount) * flt(d.exchange_rate if d.exchange_rate else 1)
 		else:
 			ss_earning_map[d.parent][d.salary_component] = flt(d.amount)
-
+#	frappe.msgprint(_("SS Earning {0}"). format(ss_earning_map))
 	return ss_earning_map
 
-def get_ss_ded_map(salary_slips, currency, company_currency):
-	ss_deductions = frappe.db.sql("""select sd.parent, sd.salary_component, sum(sd.amount) as amount, ss.exchange_rate, ss.name
-		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s) group by branch""" %
+def get_ss_ded_map(salary_slips):
+	ss_deductions = frappe.db.sql("""select sd.parent, sd.salary_component, sum(sd.amount) as amount, ss.name
+		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parentfield = 'deductions' and sd.parent in (%s) group by branch""" %
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
 
+	
 	ss_ded_map = {}
 	for d in ss_deductions:
 		ss_ded_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
-		if currency == company_currency:
-			ss_ded_map[d.parent][d.salary_component] = flt(d.amount) * flt(d.exchange_rate if d.exchange_rate else 1)
-		else:
-			ss_ded_map[d.parent][d.salary_component] = flt(d.amount)
+#		ss_ded_map[d.parent][d.salary_component] = flt(d.amount) * flt(d.exchange_rate if d.exchange_rate else 1)
+		
+		ss_ded_map[d.parent][d.salary_component] = flt(d.amount)
 
+#	frappe.msgprint(_("SS Deduction {0}"). format(ss_ded_map))
 	return ss_ded_map
 
