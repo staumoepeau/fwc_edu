@@ -86,26 +86,21 @@ var get_grand_total = function(frm){
 };
 
 var get_summary = function(frm) {
-
     frappe.call({
         method: "fwc_edu.fwc_education.doctype.payin.payin.get_transaction_summary",
-        args: {
-            "posting_date": frm.doc.posting_date,
-        },
         callback: function(r) {
             console.log(r.message)
             if (r.message) {
                 $.each(r.message, function(i, item) {
                     var item_row = frm.add_child("payment_summary")
                     item_row.school = item.school,
-                        item_row.amount = item.total
+                        item_row.amount = item.amount
                 });
                 frm.refresh()
             }
-
         }
-
-});
+	})
+};
 
 $.extend(fwc_edu.payin, {
 	setup_queries: function(frm) {

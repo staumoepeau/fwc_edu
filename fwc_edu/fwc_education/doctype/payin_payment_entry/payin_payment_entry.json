@@ -8,11 +8,12 @@
   "receipt_document",
   "posting_date",
   "cashier",
-  "column_break_4",
   "payin",
+  "column_break_4",
   "total_payment",
   "mode_of_payment",
-  "school"
+  "school",
+  "payin_process"
  ],
  "fields": [
   {
@@ -39,11 +40,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "payin",
-   "fieldtype": "Data",
-   "label": "PayIn"
-  },
-  {
    "fieldname": "total_payment",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -62,12 +58,28 @@
    "fieldname": "school",
    "fieldtype": "Data",
    "label": "School"
+  },
+  {
+   "default": "1",
+   "fieldname": "payin_process",
+   "fieldtype": "Check",
+   "label": "Process",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fetch_from": "receipt_document.payin",
+   "fieldname": "payin",
+   "fieldtype": "Check",
+   "label": "Payin",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-05-26 13:20:14.652883",
+ "modified": "2021-05-26 15:15:27.430672",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "Payin Payment Entry",
