@@ -35,7 +35,7 @@
    "insert_after": "payment_type",
    "label": "School Fee Payment By",
    "length": 0,
-   "mandatory_depends_on": null,
+   "mandatory_depends_on": "eval: doc.party_type == 'Student';",
    "modified": "2021-05-19 09:00:00.680258",
    "modified_by": "Administrator",
    "name": "Payment Entry-school_fee_payment_by",

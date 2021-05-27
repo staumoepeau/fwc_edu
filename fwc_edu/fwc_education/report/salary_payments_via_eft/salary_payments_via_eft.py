@@ -320,22 +320,36 @@ def get_sum_netpay(posting_date, company, bank_name):
 	netpay_1, netpay_2 = [], []
 
 	netpay_1 = frappe.db.sql("""select sum(net_pay)
-		from `tabSalary Slip`
+		FROM `tabSalary Slip`
 		where docstatus = 1
 		and net_pay > 0
 		and posting_date = %s
 		and company = %s
 		and bank_name = %s """,(posting_date, company, bank_name))
 	
-	netpay_2 = frappe.db.sql("""SELECT sum(tsd.amount) from `tabSalary Detail` tsd, `tabSalary Slip` tss
-			WHERE tsd.parent = tss.name
-			AND tsd.amount > 0
-			AND tsd.salary_component = %s
-			AND tsd.docstatus = 1
-            AND tss.posting_date = %s
-			AND tss.company = %s
-			""", (bank_name, posting_date, company))
+	if company == "Tupou Tertiary Institute" and bank_name == "BSP":
+		netpay_2 = frappe.db.sql("""SELECT sum(tsd.amount)
+				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
+				WHERE tsd.parent = tss.name
+				AND tsd.amount > 0
+				AND tsd.docstatus = 1
+				AND tsd.salary_component in ("BSP", "TTI STAFF ASSOCIATION", "TTI ACCOUNT", "SIA Finance")
+				AND tss.posting_date = %s
+				AND tss.company = %s
+				""", (posting_date, company))
 	
+	if company != "Tupou Tertiary Institute":
+		netpay_2 = frappe.db.sql("""SELECT sum(tsd.amount)
+				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
+				WHERE tsd.parent = tss.name
+				AND tsd.amount > 0
+				AND tsd.docstatus = 1
+				AND tsd.salary_component = %s
+				AND tss.posting_date = %s
+				AND tss.company = %s
+				""", (bank_name, posting_date, company))
+	
+
 	if np.array(netpay_1):
 		netpay = netpay_1
 #		frappe.msgprint(_("PAY 1 : {0}").format(netpay_1))
@@ -378,15 +392,28 @@ def get_sum_account(posting_date, company, bank_name):
 		and company = %s
 		and bank_name = %s """,(posting_date, company, bank_name))
 	
-	sum_account_2 = frappe.db.sql("""SELECT sum(account_number) from `tabSalary Detail` tsd, `tabSalary Slip` tss
-			WHERE tsd.parent = tss.name
-			AND tsd.salary_component = %s
-			AND tsd.docstatus = 1
-            AND tss.posting_date = %s
-			AND tss.company = %s
-			""", (bank_name, posting_date, company))
+	if company == "Tupou Tertiary Institute" and bank_name == "BSP":
+		sum_account_2 = frappe.db.sql("""SELECT sum(account_number) 
+				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
+				WHERE tsd.parent = tss.name
+				AND tsd.salary_component in ("BSP", "TTI STAFF ASSOCIATION", "TTI ACCOUNT", "SIA Finance")
+				AND tsd.docstatus = 1
+				AND tss.posting_date = %s
+				AND tss.company = %s
+				""", (posting_date, company))
 	
+	if company != "Tupou Tertiary Institute":
+		sum_account_2 = frappe.db.sql("""SELECT sum(account_number) 
+				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
+				WHERE tsd.parent = tss.name
+				AND tsd.salary_component = %s
+				AND tsd.docstatus = 1
+				AND tss.posting_date = %s
+				AND tss.company = %s
+				""", (bank_name, posting_date, company))
 	
+
+
 	if np.array(sum_account_1):
 		sum_1 = np.array(sum_account_1)
 		sum_account = sum_1.astype(int)
@@ -450,7 +477,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		bank_data = get_bank_data(posting_date, company, bank_name)
 
 		account_total = get_sum_account(posting_date, company, bank_name)
-		frappe.msgprint(_("Account Total 1 : {0}").format(account_total))
+#		frappe.msgprint(_("Account Total 1 : {0}").format(account_total))
 #		account_total = (account_total.replace("(",""))
 #		account_total = (account_total.replace(")","")).replace(",","").replace(".","")
 #		frappe.msgprint(_("Account Total 2 : {0}").format(account_total))

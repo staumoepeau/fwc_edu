@@ -41,6 +41,8 @@ class PAYIN(Document):
 	def updates_list(self):
 		self.get_mode_of_payment()
 
+	def make_payin_entries(self):
+		frappe.db.sql("""Update `tabPayment Entry` set status="PayIn" where name=%s""", (self.name))
 
 	def update_payment_entry(self):
 		for d in self.get("payment_entry_table"):
