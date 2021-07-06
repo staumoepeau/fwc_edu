@@ -24,7 +24,7 @@ frappe.query_reports["Salary Payments via EFT"] = {
 			"fieldname":"bank_name",
 			"label":__("Bank Name"),
 			"fieldtype":"Select",
-			"options":[" ", "BSP", "TDB", "ANZ", "MBF"],
+			"options":[" ", "BSP", "TDB", "ANZ", "MBF","SIA"],
 			"width": "90px",
 //			"reqd": 1
 		},

@@ -122,7 +122,8 @@ def get_data(filters):
 					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
 						IF (ded.salary_component = "TDB", "TDB",
 							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
+								IF(ded.salary_component = "SIA Finance", "SIA",
+									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
@@ -155,7 +156,8 @@ def get_data(filters):
 					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
 						IF (ded.salary_component = "TDB", "TDB",
 							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
+								IF(ded.salary_component = "SIA Finance", "SIA",
+									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
@@ -232,7 +234,8 @@ def get_bank_data(postingdate, company, bankname):
 					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
 						IF (ded.salary_component = "TDB", "TDB",
 							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
+								IF(ded.salary_component = "SIA Finance", "SIA",
+									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
@@ -265,7 +268,8 @@ def get_bank_data(postingdate, company, bankname):
 					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
 						IF (ded.salary_component = "TDB", "TDB",
 							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF (ded.salary_component = "MBF", "MBF", ded.salary_component))))))
+								IF(ded.salary_component = "SIA Finance", "SIA",
+									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
 			as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
@@ -449,20 +453,19 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	batch_no = ""
 	x = " "
 
-	curr_date = posting_date
-	abbr = frappe.db.get_value("Company", company, "abbr")
-	
-	fname = abbr+"_"+curr_date+"_DISDATA.PC1"
+	if bank_name == "BSP":
+		curr_date = posting_date
+		abbr = frappe.db.get_value("Company", company, "abbr")
+		
+		fname = abbr+"_"+curr_date+"_DISDATA.PC1"
 
-	save_path = 'edu.fwc.to/public/files'
-	filename = os.path.join(save_path, fname)
+		save_path = 'edu.fwc.to/public/files'
+		filename = os.path.join(save_path, fname)
 
-	ferp = frappe.new_doc("File")
-	ferp.file_name = fname
-	ferp.folder = "Home/QuickPay"
-	ferp.is_private = 1
-#	ferp.file_url = "/public/files/"+fname
-
+		ferp = frappe.new_doc("File")
+		ferp.file_name = fname
+		ferp.folder = "Home/QuickPay"
+		ferp.is_private = 1
 
 	f= open(filename,"w+")
 	bank_data = []
@@ -578,23 +581,23 @@ def create_bank_eft_file(posting_date, company, bank_name):
 #==================================================================== TDB START ==================================================================================
 #	filler = "0000000000"
 #	numbers = len(bank_data)
-#	if bank_name == "TDB":
-#		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yy").replace("-", "")
-#		f.write("0                             FWC                       077100            ")
-#		f.write(posting_date)
-#		f.write("s")
-#		f.write("\n")
-#		for data in bank_data:
-#			f.write('1077-100')
-#			f.write('{0} 53{1}{2}'.format(data['account_number'].rjust(9), data['amount'], data['employee_name'].ljust(32)))
-#			f.write("Pay"+posting_date+"-FWC     077-100\n")
-#		f.write("7")
-#		f.write("                   ")
-#		f.write(str(netpay).zfill(10))
-#		f.write(str(netpay).zfill(10))
-#		f.write(filler + "                        ")
-#		f.write(str(numbers).zfill(6))
-#		f.write(str(len(bank_data))).zfill(6)
+	if bank_name == "TDB":
+		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yy").replace("-", "")
+		f.write("0                             FWC                       077100            ")
+		f.write(posting_date)
+		f.write("s")
+		f.write("\n")
+		for data in bank_data:
+			f.write('1077-100')
+			f.write('{0} 53{1}{2}'.format(data['account_number'].rjust(9), data['amount'], data['employee_name'].ljust(32)))
+			f.write("Pay"+posting_date+"-FWC     077-100\n")
+		f.write("7")
+		f.write("                   ")
+		f.write(str(netpay).zfill(10))
+		f.write(str(netpay).zfill(10))
+		f.write(filler + "                        ")
+		f.write(str(numbers).zfill(6))
+		f.write(str(len(bank_data))).zfill(6)
 #==================================================================== TDB END ====================================================================================
 
 	frappe.msgprint(_("Bank File created - Please download the file : {0}").format(fname))
