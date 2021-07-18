@@ -173,7 +173,7 @@ def get_ss_ded_map(salary_slips, currency, company_currency):
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]) , as_dict=1)
 
 	ss_ded_map = {}
-	msgprint(_("Deduction {0}").format(ss_deductions))
+#	msgprint(_("Deduction {0}").format(ss_deductions))
 
 	for d in ss_deductions:
 		ss_ded_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
