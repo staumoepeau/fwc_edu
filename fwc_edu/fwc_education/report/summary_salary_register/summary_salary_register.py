@@ -16,14 +16,19 @@ def execute(filters=None):
 #	frappe.msgprint(_('No data!!!').format(company))
 
 	salary_summarysql = """
-	select ss.name, ss.branch, sd.salary_component, sum(sd.amount) as amount
+	select ss.name, ss.branch, 
+	IF(sd.salary_component LIKE 'BSP%', 'BSP', 
+		IF(sd.salary_component LIKE 'MBF%', 'MBF', 
+			IF(sd.salary_component LIKE 'TDB%', 'TDB',
+				IF(sd.salary_component LIKE 'ANZ%', 'ANZ', sd.salary_component)))) as salary_component,
+	sum(sd.amount) as amount
 	from `tabSalary Slip` ss, `tabSalary Detail` sd
 	where ss.name = sd.parent
 	AND ({companysql})
 	AND ({fromdatesql})
 	AND ({todatesql})
 	AND ss.branch IS NOT NULL
-	GROUP BY ss.branch, sd.salary_component
+	GROUP BY ss.branch, salary_component
 	""".format( companysql=companysql, todatesql = todatesql, fromdatesql = fromdatesql)
 
 	data = frappe.db.sql(salary_summarysql, as_dict=1)

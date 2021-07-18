@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 import frappe, erpnext
 from frappe.utils import flt
-from frappe import _
+from frappe import msgprint, _
 
 def execute(filters=None):
 	if not filters: filters = {}
@@ -20,7 +20,6 @@ def execute(filters=None):
 	columns, earning_types, ded_types = get_columns(employee_salary)
 	ss_earning_map = get_ss_earning_map()
 	ss_ded_map = get_ss_ded_map()
-#	doj_map = get_employee_doj_map()
 
 	data = []
 	for ss in employee_salary:
@@ -132,17 +131,22 @@ def get_ss_earning_map():
 		ss_earning_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
 		ss_earning_map[d.parent][d.salary_component] = flt(d.amount)
 
+	
 	return ss_earning_map
 
 def get_ss_ded_map():
-	ss_deductions = frappe.db.sql(""" SELECT temp.employee, temp.employee_name, tssa.salary_structure, tsd.salary_component, tsd.amount, tsd.parent
+	ss_deductions = frappe.db.sql(""" SELECT temp.employee, temp.employee_name, tssa.salary_structure,
+			IF(tsd.salary_component LIKE 'MBF%', 'MBF', 
+				IF(sd.salary_component LIKE 'BSP%, 'BSP',
+				  IF(sd.salary_component LIKE 'TDB%', 'TDB', sd.salary_component))) as salary_component, sum(tsd.amount), tsd.parent
 			FROM `tabEmployee` temp
 				INNER JOIN `tabSalary Structure Assignment` tssa ON temp.employee = tssa.employee
 				INNER JOIN `tabSalary Detail` tsd ON temp.employee = tsd.parent
+			GROUP BY tsd.salary_component
 			ORDER BY temp.employee""", as_dict=1)
 	ss_ded_map = {}
 	for d in ss_deductions:
 		ss_ded_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
 		ss_ded_map[d.parent][d.salary_component] = flt(d.amount)
-
+	msgprint(_("Data {0}"). format(ss_ded_map))
 	return ss_ded_map

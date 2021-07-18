@@ -83,9 +83,35 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Eucation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "School Fees",
+   "link_to": "Fees",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Student",
+   "link_to": "Student",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2021-05-27 12:54:25.755887",
+ "modified": "2021-07-18 21:56:50.615482",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -101,6 +127,12 @@
   },
   {
    "doc_view": "",
+   "label": "FWC Summary Salary Register",
+   "link_to": "Summary Salary Register",
+   "type": "Report"
+  },
+  {
+   "doc_view": "",
    "label": "Generate Bank File",
    "link_to": "Salary Payments via EFT",
    "type": "Report"
@@ -109,6 +141,12 @@
    "doc_view": "",
    "label": "BSP Lodgement Form",
    "link_to": "Lodgement Form",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Create Payroll",
+   "link_to": "Payroll Entry",
    "type": "DocType"
   },
   {
@@ -128,13 +166,7 @@
    "label": "PAYIN",
    "link_to": "PAYIN",
    "type": "DocType"
-  },
-  {
-   "doc_view": "",
-   "label": "Summary Salary Register",
-   "link_to": "Summary Salary Register",
-   "type": "Report"
   }
  ],
- "shortcuts_label": "FWC Payroll"
+ "shortcuts_label": "FWC Education"
 }

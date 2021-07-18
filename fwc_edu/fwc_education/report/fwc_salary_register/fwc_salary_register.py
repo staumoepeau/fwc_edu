@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 import frappe, erpnext
 from frappe.utils import flt
-from frappe import _
+from frappe import msgprint, _
 
 def execute(filters=None):
 	if not filters: filters = {}
@@ -62,7 +62,7 @@ def execute(filters=None):
 #		else:
 		row += [ss.net_pay]
 
-		row.append(currency or company_currency)
+#		row.append(currency or company_currency)
 		data.append(row)
 
 	return columns, data
@@ -80,7 +80,11 @@ def get_columns(salary_slips):
 
 	salary_components = {_("Earning"): [], _("Deduction"): []}
 
-	for component in frappe.db.sql("""select distinct sd.salary_component, sc.type
+	for component in frappe.db.sql("""select distinct sc.type,
+		IF(sd.salary_component IN ('MBF', 'MBF02','MBF03','MBF04', 'MBF05'),'MBF',
+			IF(sd.salary_component IN ('BSP', 'BSP02','BSP03','BSP04', 'BSP05'),'BSP',
+				IF(sd.salary_component IN ('TDB', 'TDB02','TDB03','TDB04', 'TDB05'), 'TDB', 
+					IF(sd.salary_component IN ('Retirement Fund', 'Retirement Fund - Voluntary'),'Retirement Fund', sd.salary_component)))) as salary_component
 		from `tabSalary Detail` sd, `tabSalary Component` sc
 		where sc.name=sd.salary_component and sd.amount != 0 and sd.parent in (%s)""" %
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
@@ -137,11 +141,13 @@ def get_employee_doj_map():
 				"""))
 
 def get_ss_earning_map(salary_slips, currency, company_currency):
-	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, sum(sd.amount) as amount, ss.exchange_rate, ss.name
+	ss_earnings = frappe.db.sql("""select sd.parent, sd.salary_component, 
+	sum(sd.amount) as amount, ss.exchange_rate, ss.name
 		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s) group by sd.parent, sd.salary_component""" %
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
 
 	ss_earning_map = {}
+	
 	for d in ss_earnings:
 		ss_earning_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
 		if currency == company_currency:
@@ -152,16 +158,26 @@ def get_ss_earning_map(salary_slips, currency, company_currency):
 	return ss_earning_map
 
 def get_ss_ded_map(salary_slips, currency, company_currency):
-	ss_deductions = frappe.db.sql("""select sd.parent, sd.salary_component, sum(sd.amount) as amount, ss.exchange_rate, ss.name
-		from `tabSalary Detail` sd, `tabSalary Slip` ss where sd.parent=ss.name and sd.parent in (%s) group by sd.parent, sd.salary_component""" %
-		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1)
+	ss_deductions = frappe.db.sql("""select distinct sd.parent,
+		IF(sd.salary_component IN ('MBF', 'MBF02','MBF03','MBF04', 'MBF05'),'MBF',
+			IF(sd.salary_component IN ('BSP', 'BSP02','BSP03','BSP04', 'BSP05'),'BSP',
+				IF(sd.salary_component IN ('TDB', 'TDB02','TDB03','TDB04', 'TDB05'), 'TDB', 
+                   IF(sd.salary_component IN ('Retirement Fund', 'Retirement Fund - Voluntary'),'Retirement Fund', sd.salary_component)))) as salary_component,
+		IF(sd.salary_component IN ('MBF', 'MBF02','MBF03','MBF04', 'MBF05'),'MBF',
+			IF(sd.salary_component IN ('BSP', 'BSP02','BSP03','BSP04', 'BSP05'),'BSP',
+				IF(sd.salary_component IN ('TDB', 'TDB02','TDB03','TDB04', 'TDB05'), 'TDB', 
+                   IF(sd.salary_component IN ('Retirement Fund', 'Retirement Fund - Voluntary'),'Retirement Fund', sd.salary_component)))) as salarycomponent,
+		sum(sd.amount) as amount, ss.name
+		from `tabSalary Detail` sd, `tabSalary Slip` ss 
+		where sd.parent=ss.name and sd.parent in (%s) group by salarycomponent, sd.parent""" %
+		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]) , as_dict=1)
 
 	ss_ded_map = {}
+	msgprint(_("Deduction {0}").format(ss_deductions))
+
 	for d in ss_deductions:
 		ss_ded_map.setdefault(d.parent, frappe._dict()).setdefault(d.salary_component, [])
-		if currency == company_currency:
-			ss_ded_map[d.parent][d.salary_component] = flt(d.amount) * flt(d.exchange_rate if d.exchange_rate else 1)
-		else:
-			ss_ded_map[d.parent][d.salary_component] = flt(d.amount)
-
+		
+		ss_ded_map[d.parent][d.salary_component] = flt(d.amount)
+	
 	return ss_ded_map

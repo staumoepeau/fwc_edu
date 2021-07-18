@@ -21,6 +21,14 @@ format = "%Y-%m-%d %H:%M:%S"
 
 
 def execute(filters=None):
+	global BSP_Bank 
+	global MBF_Bank
+	global TDB_Bank
+	global SIA
+	BSP_Bank = "BSP%"
+	MBF_Bank = "MBF%"
+	TDB_Bank = "TDB%"
+	SIA = "SIA%"
 	global netpay
 	netpay = []
 
@@ -28,6 +36,7 @@ def execute(filters=None):
 	data = get_data(filters)
 
 	return columns, data
+
 
 def get_columns(filters):
 	columns = [
@@ -117,14 +126,7 @@ def get_data(filters):
 	company = filters.get("company")
 
 	employee_list = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
-			IF(ded.salary_component = "BSP", "BSP",
-				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
-					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
-						IF (ded.salary_component = "TDB", "TDB",
-							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF(ded.salary_component = "SIA Finance", "SIA",
-									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
-			as bankname, ded.amount, ded.account_number
+			ded.salary_component as bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -150,15 +152,12 @@ def get_data(filters):
 			}
 		)
 
-	other = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
-			IF(ded.salary_component = "BSP", "BSP",
-				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
-					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
-						IF (ded.salary_component = "TDB", "TDB",
-							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF(ded.salary_component = "SIA Finance", "SIA",
-									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
-			as bankname, ded.amount, ded.account_number
+	other = frappe.db.sql("""SELECT sal.employee, sal.employee_name,
+			IF(ded.salary_component LIKE %s, "BSP",
+				IF(ded.salary_component LIKE %s, "MBF",
+					IF(ded.salary_component LIKE %s, "TDB", 
+						IF(ded.salary_component LIKE %s, "SIA", ded.salary_component)))) AS bankname,
+			ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -166,10 +165,10 @@ def get_data(filters):
 			AND ded.parenttype = 'Salary Slip'
 			AND ded.docstatus = 1
 			AND ded.amount > 0
-            AND sal.posting_date = %s
+			AND sal.posting_date = %s
 			AND sal.company = %s
-            HAVING bankname = %s
-			""", (postingdate, company, bankname), as_dict=1)
+			HAVING bankname = %s
+			""", (BSP_Bank, MBF_Bank, TDB_Bank, SIA, postingdate, company, bankname), as_dict=1)
 	
 	entry = frappe.db.sql("""select employee, employee_name, net_pay as amount, mode_of_payment, 
 		bank_account_no, bank_name, company, department, payment_details
@@ -181,6 +180,7 @@ def get_data(filters):
         AND bank_name = %s
 		""", (postingdate, company, bankname), as_dict=1)
 
+	employee = {}
 	for e in other:
 		employee = {
 			"employee_name" : e.employee_name,
@@ -203,12 +203,98 @@ def get_data(filters):
 			"company": d.company
 
 		}
+		data.append(employee)
+	tti_account = []
+	
+	if company == "Tupou Tertiary Institute":
+		tti_account = frappe.db.sql("""SELECT sal.employee, 
+			IF(ded.salary_component = "TTI ACCOUNT","TTI ACCOUNT", sal.employee_name) AS employee_name, 
+			IF(ded.salary_component = "TTI ACCOUNT", "BSP", ded.salary_component) AS bankname,
+			SUM(ded.amount) AS amount, 
+			ded.account_number as account_number
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND ded.salary_component = "TTI ACCOUNT"
+				AND sal.posting_date = %s
+				AND sal.company = %s
+				GROUP BY ded.salary_component
+				HAVING bankname = %s
+			""", (postingdate, company, bankname), as_dict=1)
 
+		for t in tti_account:
+			employee = {
+			"employee_name" : t.employee_name,
+			"employee": t.employee,
+			"amount" : t.amount,
+			"bank_name" : t.bankname,
+			"account_number": t.account_number,
+			"company": t.company
+			}
+		data.append(employee)
+
+		tti_association = frappe.db.sql("""SELECT sal.employee, 
+			IF(ded.salary_component = "TTI STAFF ASSOCIATION","TTI STAFF ASSOCIATION", sal.employee_name) AS employee_name, 
+				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP", ded.salary_component) AS bankname, 
+				SUM(ded.amount) AS amount, ded.account_number as account_number
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND ded.salary_component = "TTI STAFF ASSOCIATION"
+				AND sal.posting_date = %s
+				AND sal.company = %s
+				GROUP BY ded.salary_component
+				HAVING bankname = %s
+			""", (postingdate, company, bankname), as_dict=1)
+
+		for a in tti_association:
+			employee = {
+			"employee_name" : a.employee_name,
+			"employee": a.employee,
+			"amount" : a.amount,
+			"bank_name" : a.bankname,
+			"account_number": a.account_number,
+			"company": a.company
+			}
+		data.append(employee)
+
+		SIA_Finance = frappe.db.sql("""SELECT sal.employee, 
+			IF(ded.salary_component = "SIA Finance","SIA Finance", sal.employee_name) AS employee_name, 
+				IF(ded.salary_component = "SIA Finance", "BSP", ded.salary_component) AS bankname, 
+				SUM(ded.amount) AS amount, ded.account_number as account_number
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND ded.salary_component = "SIA Finance"
+				AND sal.posting_date = %s
+				AND sal.company = %s
+				GROUP BY ded.salary_component
+				HAVING bankname = %s
+			""", (postingdate, company, bankname), as_dict=1)
+
+		for sia in SIA_Finance:
+			employee = {
+			"employee_name" : sia.employee_name,
+			"employee": sia.employee,
+			"amount" : sia.amount,
+			"bank_name" : sia.bankname,
+			"account_number": sia.account_number,
+			"company": sia.company
+			}
 		data.append(employee)
 	return data
 
 def get_bank_data(postingdate, company, bankname):
-
+	data = []
 	bankdata = []
 	bank_data = []
 
@@ -229,14 +315,7 @@ def get_bank_data(postingdate, company, bankname):
 			}
 		)
 	employee_list = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
-			IF(ded.salary_component = "BSP", "BSP",
-				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
-					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
-						IF (ded.salary_component = "TDB", "TDB",
-							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF(ded.salary_component = "SIA Finance", "SIA",
-									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
-			as bankname, ded.amount, ded.account_number
+			ded.salary_component AS bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -263,14 +342,7 @@ def get_bank_data(postingdate, company, bankname):
 		)
 
 	other = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
-			IF(ded.salary_component = "BSP", "BSP",
-				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP",
-					IF(ded.salary_component = "TTI ACCOUNT", "BSP",
-						IF (ded.salary_component = "TDB", "TDB",
-							IF(ded.salary_component = "SIA Finance" AND company = "Tupou Tertiary Institute", "BSP",
-								IF(ded.salary_component = "SIA Finance", "SIA",
-									IF (ded.salary_component = "MBF", "MBF", ded.salary_component)))))))
-			as bankname, ded.amount, ded.account_number
+			ded.salary_component AS bankname, ded.amount, ded.account_number
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -316,6 +388,92 @@ def get_bank_data(postingdate, company, bankname):
 		}
 
 		bank_data.append(employee)
+		tti_account = []
+
+	if company == "Tupou Tertiary Institute":
+		tti_account = frappe.db.sql("""SELECT sal.employee, 
+			IF(ded.salary_component = "TTI STAFF ASSOCIATION","TTI STAFF ASSOCIATION", sal.employee_name) AS employee_name, 
+				IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP", ded.salary_component) AS bankname,  
+				SUM(ded.amount) AS amount, ded.account_number as account_number
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND ded.salary_component = "TTI ACCOUNT"
+				AND sal.posting_date = %s
+				AND sal.company = %s
+				GROUP BY ded.salary_component
+				HAVING bankname = %s
+			""", (postingdate, company, bankname), as_dict=1)
+
+		for t in tti_account:
+			employee = {
+			"employee_name" : ((t.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
+			"employee": t.employee,
+			"amount" : str(int(round(t.amount*100))).zfill(10),
+			"bank_name" : t.bankname,
+			"account_number": t.account_number.replace("-",""),
+			"company": t.company
+			}
+
+		bank_data.append(employee)
+
+		tti_association = frappe.db.sql("""SELECT sal.employee, IF(ded.salary_component = "TTI STAFF ASSOCIATION","TTI STAFF ASSOCIATION", sal.employee_name)
+				AS employee_name, IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP", ded.salary_component)
+				AS bankname, SUM(ded.amount) AS amount, ded.account_number as account_number
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND ded.salary_component = "TTI STAFF ASSOCIATION"
+				AND sal.posting_date = %s
+				AND sal.company = %s
+				GROUP BY ded.salary_component
+				HAVING bankname = %s
+			""", (postingdate, company, bankname), as_dict=1)
+
+		for a in tti_association:
+			employee = {
+			"employee_name" : ((a.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
+			"employee": a.employee,
+			"amount" : str(int(round(a.amount*100))).zfill(10),
+			"bank_name" : a.bankname,
+			"account_number": a.account_number.replace("-",""),
+			"company": a.company
+			}
+		bank_data.append(employee)
+
+		SIA_Finance = frappe.db.sql("""SELECT sal.employee, 
+			IF(ded.salary_component = "SIA Finance","SIA Finance", sal.employee_name) AS employee_name, 
+				IF(ded.salary_component = "SIA Finance", "BSP", ded.salary_component) AS bankname,
+				SUM(ded.amount) AS amount, ded.account_number as account_number
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND ded.salary_component = "SIA Finance"
+				AND sal.posting_date = %s
+				AND sal.company = %s
+				GROUP BY ded.salary_component
+				HAVING bankname = %s
+			""", (postingdate, company, bankname), as_dict=1)
+
+		for sia in SIA_Finance:
+			employee = {
+			"employee_name" : ((sia.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
+			"employee": sia.employee,
+			"amount" : str(int(round(sia.amount*100))).zfill(10),
+			"bank_name" : sia.bankname,
+			"account_number": sia.account_number.replace("-",""),
+			"company": sia.company
+			}
+		bank_data.append(employee)
 
 	return bank_data
 
@@ -337,7 +495,7 @@ def get_sum_netpay(posting_date, company, bank_name):
 				WHERE tsd.parent = tss.name
 				AND tsd.amount > 0
 				AND tsd.docstatus = 1
-				AND tsd.salary_component in ("BSP", "TTI STAFF ASSOCIATION", "TTI ACCOUNT", "SIA Finance")
+				AND tsd.salary_component IN ("BSP", "TTI STAFF ASSOCIATION", "TTI ACCOUNT", "SIA Finance", "BSP02", "BSP03","BSP04")
 				AND tss.posting_date = %s
 				AND tss.company = %s
 				""", (posting_date, company))
@@ -400,24 +558,22 @@ def get_sum_account(posting_date, company, bank_name):
 		sum_account_2 = frappe.db.sql("""SELECT sum(account_number) 
 				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
 				WHERE tsd.parent = tss.name
-				AND tsd.salary_component in ("BSP", "TTI STAFF ASSOCIATION", "TTI ACCOUNT", "SIA Finance")
+				AND tsd.salary_component in ("BSP","TTI STAFF ASSOCIATION","TTI ACCOUNT", "SIA Finance","BSP02", "BSP03","BSP04","BSP05")
 				AND tsd.docstatus = 1
 				AND tss.posting_date = %s
 				AND tss.company = %s
 				""", (posting_date, company))
 	
-	if company != "Tupou Tertiary Institute":
+	if company != "Tupou Tertiary Institute" and bank_name == "BSP":
 		sum_account_2 = frappe.db.sql("""SELECT sum(account_number) 
 				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
 				WHERE tsd.parent = tss.name
-				AND tsd.salary_component = %s
+				AND tsd.salary_component IN ("BSP","BSP02","BSP03","BSP04","BSP05")
 				AND tsd.docstatus = 1
 				AND tss.posting_date = %s
 				AND tss.company = %s
-				""", (bank_name, posting_date, company))
+				""", (posting_date, company))
 	
-
-
 	if np.array(sum_account_1):
 		sum_1 = np.array(sum_account_1)
 		sum_account = sum_1.astype(int)
