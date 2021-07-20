@@ -206,7 +206,7 @@ def get_data(filters):
 		data.append(employee)
 	tti_account = []
 	
-	if company == "Tupou Tertiary Institute":
+	if company == "Tupou Tertiary Institute" and bankname == "BSP":
 		tti_account = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "TTI ACCOUNT","TTI ACCOUNT", sal.employee_name) AS employee_name, 
 			IF(ded.salary_component = "TTI ACCOUNT", "BSP", ded.salary_component) AS bankname,
