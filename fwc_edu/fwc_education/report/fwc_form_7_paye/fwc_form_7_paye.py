@@ -10,7 +10,8 @@ import sys
 import datetime
 import pandas as pd
 import xlsxwriter
-import openpyxl
+import openpyxl 
+import numpy as np
 
 from openpyxl import load_workbook
 from frappe import _, msgprint, utils
@@ -19,6 +20,7 @@ from frappe.utils import flt, getdate, datetime, comma_and
 from collections import defaultdict
 from werkzeug.wrappers import Response
 import frappe, erpnext
+from collections import Counter
 
 
 def execute(filters=None):
@@ -63,9 +65,6 @@ def get_columns(filters):
 def get_conditions(filters):
 	conditions = [""]
 
-	if filters.get("department"):
-		conditions.append("department = '%s' " % (filters["department"]) )
-
 	if filters.get("branch"):
 		conditions.append("branch = '%s' " % (filters["branch"]) )
 
@@ -84,8 +83,12 @@ def get_conditions(filters):
 def get_data(filters):
 
 	data = []
+	taxdata = []
+	empdata = []
+	dictA = []
+	dictB = []
 
-	fields = ["employee", "tin", "department"]
+	fields = ["employee", "tin", "company"]
 
 	employee_details = frappe.get_list("Employee", fields = fields)
 	employee_data_dict = {}
@@ -95,7 +98,7 @@ def get_data(filters):
 			d.employee,{
 				"employee" : d.employee,
 				"tin": d.tin,
-				"department": d.department
+				"company": d.company
 			}
 		)
 
@@ -103,50 +106,67 @@ def get_data(filters):
 
 	posting_month = filters.get("month")
 	posting_year = filters.get("year")
-	department = filters.get("department")
+	company = filters.get("company")
 	
-	if department == "All Departments":
-		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-					tmp.tax, tmp.gross, tmp.department
-					FROM `tabEmployee` temp INNER JOIN
-					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
-					FROM `tabSalary Slip` sal LEFT JOIN 
-					`tabSalary Detail` ded ON sal.name = ded.parent
-					AND ded.docstatus = 1
-					AND ded.parentfield = 'deductions'
-					AND ded.parenttype = 'Salary Slip'
-					AND ded.salary_component = 'PAYE-TAX'
-					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
-					WHERE tmp.month = %s
-					AND tmp.year = %s 
-			""", (posting_month, posting_year), as_dict=1)
+	get_gross = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
+			sal.company, sum(sal.gross_pay) as gross_pay
+			FROM `tabSalary Slip` sal
+			WHERE month(sal.posting_date) = %s
+			AND year(sal.posting_date) = %s
+			AND sal.company = %s
+			GROUP BY sal.employee
+			""", (posting_month, posting_year, company), as_dict=1)
 
-	if department != "All Departments":
-		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-					tmp.tax, tmp.gross, tmp.department
-					FROM `tabEmployee` temp INNER JOIN
-					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
-					FROM `tabSalary Slip` sal LEFT JOIN 
-					`tabSalary Detail` ded ON sal.name = ded.parent
-					AND ded.docstatus = 1
-					AND ded.parentfield = 'deductions'
-					AND ded.parenttype = 'Salary Slip'
-					AND ded.salary_component = 'PAYE-TAX'
-					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
-					WHERE temp.department = %s
-					AND tmp.month = %s
-					AND tmp.year = %s 
-			""", (department, posting_month, posting_year), as_dict=1)
-
-	for e in entry:
+	for e in get_gross:
 		employee = {
+			"emp_id": e.employee,
 			"employee_name" : e.employee_name,
 			"tin" : employee_data_dict.get(e.employee).get("tin"),
-			"it_amount" : e.tax,
-			"gross_pay": e.gross,
-			"department": e.department
+			"it_amount" : 0,
+			"gross_pay": e.gross_pay,
+			"company": e.company
 		}
 		data.append(employee)
+	
+	get_tax = frappe.db.sql("""SELECT sal.employee, 
+			sal.employee_name, 
+			sum(ded.amount) as "tax"
+			FROM `tabSalary Slip` sal
+			INNER JOIN `tabSalary Detail` ded ON
+			sal.name = ded.parent
+			AND ded.parentfield = 'deductions'
+			AND ded.parenttype = 'Salary Slip'
+			AND ded.salary_component = "PAYE-TAX"
+			AND ded.docstatus = 1
+			AND ded.amount > 0
+			AND month(sal.posting_date) = %s
+			AND year(sal.posting_date) = %s
+			AND sal.company = %s
+			GROUP BY sal.employee
+			""", (posting_month, posting_year, company), as_dict=1)
+
+	for e in get_tax:
+		employee = {
+			"emp_id": e.employee,
+			"employee_name" : e.employee_name,
+			"tin" : 0,
+			"it_amount" : e.tax,
+			"gross_pay": 0,
+			"company": e.company
+		}
+
+		taxdata.append(employee)
+
+#	msgprint(_("Tx {0}").format(taxdata))
+
+#	df1 = pd.DataFrame.from_dict(empdata)
+#	df2 = pd.DataFrame.from_dict(taxdata)
+#	msgprint(_("EMP {0}").format(df))
+
+#	data = pd.merge(df1, df2, on='emp_id')
+
+#	msgprint(_("EMP {0}").format(empdata))
+
 	return data
 
 def get_paye_data(posting_month, posting_year, department):
