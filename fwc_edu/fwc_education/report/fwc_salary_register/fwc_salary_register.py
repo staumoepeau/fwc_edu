@@ -103,15 +103,15 @@ def get_columns(salary_slips):
 def get_salary_slips(filters, company_currency):
 	filters.update({"from_date": filters.get("from_date"), "to_date":filters.get("to_date")})
 	conditions, filters = get_conditions(filters, company_currency)
-	salaryslips = frappe.db.sql("""select * from `tabSalary Slip` where %s
+	salary_slips = frappe.db.sql("""select * from `tabSalary Slip` where %s
 		order by employee""" % conditions, filters, as_dict=1)
 	
-	addtional_salary = frappe.db.sql("""select * from `tabFWC Additional Deduction` where %s
-		order by employee""" % conditions, filters, as_dict=1)
+#	addtional_salary = frappe.db.sql("""select * from `tabFWC Additional Deduction` where %s
+#		order by employee""" % conditions, filters, as_dict=1)
 	
-	msgprint(_("Salary Slip {0}").format(addtional_salary))
-	
-	salary_slips.append(salaryslips)
+#	msgprint(_("Salary Slip {0}").format(addtional_salary))
+
+#	salary_slips.append(salaryslips)
 
 	return salary_slips or []
 
