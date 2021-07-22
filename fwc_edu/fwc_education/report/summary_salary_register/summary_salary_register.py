@@ -42,14 +42,16 @@ def execute(filters=None):
 
 	salary_components = dataframe.salary_component.unique().tolist()
 
-	dataframe = dataframe.pivot(index="branch", columns="salary_component", values="amount")
+	dataframe = dataframe.pivot_table(index="branch", columns="salary_component", values="amount")
 
 	dataframe.fillna(0, inplace = True)
-	dataframe['total']=dataframe.loc[:, salary_components].sum(axis=1) - dataframe.loc[:, 'Basic']
+	dataframe['total'] = dataframe.loc[:, salary_components].sum(axis=1) - dataframe.loc[:, 'Basic']
+#	dataframe['total'] = dataframe.loc[:, salary_components].sum(axis=1)
 	dataframe['basicsalary'] = dataframe.loc[:, 'Basic'] * 26
 	
 	salary_components = [{"fieldname": salary_component, "label": _(salary_component), "fieldtype": "Currency", "width": 120, } for salary_component in salary_components]
-
+#
+# 	frappe.msgprint(_("Test {0}").format(salary_components))
 	columns  = [ { "fieldname": "branch", "label": _("Branch"), "fieldtype": "Data", "width": 200 }]
 	columns += [ { "fieldname": "basicsalary", "label": _("Basic Salary"), "fieldtype": "Currency", "width": 100 }]
 	columns += salary_components
@@ -57,6 +59,7 @@ def execute(filters=None):
 
 	
 	data = dataframe.reset_index().to_dict('records')
+#	data = dataframe.reset_index().pivot_table(values="amount", index="branch", columns="salary_component")
 	
 	return columns, data
 
