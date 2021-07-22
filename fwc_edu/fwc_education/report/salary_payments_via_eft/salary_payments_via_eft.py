@@ -532,11 +532,12 @@ def get_sum_netpay(posting_date, company, bank_name):
 				WHERE tsd.parent = tss.name
 				AND tsd.amount > 0
 				AND tsd.docstatus = 1
-				AND tsd.salary_component = %s
+				AND tsd.salary_component IN ("BSP","BSP02", "BSP03","BSP04")
 				AND tss.posting_date = %s
 				AND tss.company = %s
-				""", (bank_name, posting_date, company))
-	
+				""", (posting_date, company))
+				
+	frappe.msgprint(_("PAY 2 : {0}").format(netpay_2))
 
 	if np.array(netpay_1):
 		netpay = netpay_1
@@ -691,7 +692,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
-			header = "EDS0679TTI                                                                                                                      \r\n"
+			header = "EDS0679FWC                                                                                                                      \r\n"
 			spacer = "FWC                 EDS0679                              \r\n"
 		
 		elif company == "Tupou Tertiary Institute":
