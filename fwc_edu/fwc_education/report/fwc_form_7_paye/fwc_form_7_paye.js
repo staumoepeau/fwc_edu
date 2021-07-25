@@ -76,12 +76,12 @@ frappe.query_reports["FWC FORM 7 PAYE"] = {
     },
     maketextfile: function(report) {
         var filters = report.get_values();
-        if (filters.department) {
+        if (filters.company) {
             return frappe.call({
                 method: "fwc_edu.fwc_education.report.fwc_form_7_paye.fwc_form_7_paye.save_data_to_Excel",
                 args: {
                     "month": filters.month,
-                    "department": filters.department,
+                    "company": filters.company,
                     "year": filters.year
                 },
                 callback: function(r) {

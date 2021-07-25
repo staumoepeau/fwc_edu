@@ -20,7 +20,7 @@ from frappe.utils import flt, getdate, datetime, comma_and
 from collections import defaultdict
 from werkzeug.wrappers import Response
 import frappe, erpnext
-from collections import Counter
+from collections import defaultdict
 
 
 def execute(filters=None):
@@ -82,11 +82,9 @@ def get_conditions(filters):
 
 def get_data(filters):
 
+	get_tax = {}
 	data = []
 	taxdata = []
-	empdata = []
-	dictA = []
-	dictB = []
 
 	fields = ["employee", "tin", "company"]
 
@@ -108,14 +106,18 @@ def get_data(filters):
 	posting_year = filters.get("year")
 	company = filters.get("company")
 	
-	get_gross = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
+	get_gross = frappe.db.sql("""SELECT temp.employee, 
+			Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
 			sal.company, sum(sal.gross_pay) as gross_pay
-			FROM `tabSalary Slip` sal
-			WHERE month(sal.posting_date) = %s
+			FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
+			ON temp.employee = sal.employee
+			AND month(sal.posting_date) = %s
 			AND year(sal.posting_date) = %s
 			AND sal.company = %s
-			GROUP BY sal.employee
+			GROUP BY temp.employee
 			""", (posting_month, posting_year, company), as_dict=1)
+	
+	employee = {}
 
 	for e in get_gross:
 		employee = {
@@ -145,33 +147,32 @@ def get_data(filters):
 			GROUP BY sal.employee
 			""", (posting_month, posting_year, company), as_dict=1)
 
+
 	for e in get_tax:
 		employee = {
 			"emp_id": e.employee,
 			"employee_name" : e.employee_name,
-			"tin" : 0,
+#			"tin" : 0,
 			"it_amount" : e.tax,
-			"gross_pay": 0,
+#			"gross_pay": 0,
 			"company": e.company
 		}
 
-		taxdata.append(employee)
+		data.append(employee)
 
-#	msgprint(_("Tx {0}").format(taxdata))
+	combined = defaultdict(dict)
+	
+	for item in data:
+		combined[item['emp_id']].update(item)
+	
+	taxdata = (list(combined.values()))
 
-#	df1 = pd.DataFrame.from_dict(empdata)
-#	df2 = pd.DataFrame.from_dict(taxdata)
-#	msgprint(_("EMP {0}").format(df))
+	return taxdata
 
-#	data = pd.merge(df1, df2, on='emp_id')
-
-#	msgprint(_("EMP {0}").format(empdata))
-
-	return data
-
-def get_paye_data(posting_month, posting_year, department):
+def get_paye_data(posting_month, posting_year, company):
 	data = []
-	fields = ["employee", "tin", "department"]
+	fields = ["employee", "tin", "company"]
+	Month = datetime.date(1900, int(posting_month), 1).strftime('%B')
 
 	employee_details = frappe.get_list("Employee", fields = fields)
 	employee_data_dict = {}
@@ -181,112 +182,131 @@ def get_paye_data(posting_month, posting_year, department):
 			d.employee,{
 				"tin": d.tin,
 				"employee" : d.employee,
-				"department": d.department
+				"date_of_payment" : '',
+				"pay_period": 'Fortnightly',
+				"company": d.company
 			}
 		)
 
-	if department == "All Departments":
-		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-					tmp.tax, tmp.gross, tmp.department
-					FROM `tabEmployee` temp INNER JOIN
-					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
-					FROM `tabSalary Slip` sal LEFT JOIN  
-					`tabSalary Detail` ded ON sal.name = ded.parent
-					AND ded.docstatus = 1
-					AND ded.parentfield = 'deductions'
-					AND ded.parenttype = 'Salary Slip'
-					AND ded.salary_component = 'PAYE-TAX'
-					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
-					WHERE tmp.month = %s
-					AND tmp.year = %s 
-			""", (posting_month, posting_year), as_dict=1)
+	get_gross = frappe.db.sql("""SELECT temp.employee, 
+			Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+			sal.company, sum(sal.gross_pay) as gross_pay
+			FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
+			ON temp.employee = sal.employee
+			AND month(sal.posting_date) = %s
+			AND year(sal.posting_date) = %s
+			AND sal.company = %s
+			GROUP BY temp.employee
+			""", (posting_month, posting_year, company), as_dict=1)
 	
-	if department != "All Departments":
-		entry = frappe.db.sql("""SELECT tmp.employee, Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-					tmp.tax, tmp.gross, tmp.department
-					FROM `tabEmployee` temp INNER JOIN
-					(SELECT sal.employee, sal.employee_name, (ded.amount*2)as tax, (sal.gross_pay*2) as gross, sal.department, month(sal.posting_date) as month, year(sal.posting_date) as year
-					FROM `tabSalary Slip` sal LEFT JOIN 
-					`tabSalary Detail` ded ON sal.name = ded.parent
-					AND ded.docstatus = 1
-					AND ded.parentfield = 'deductions'
-					AND ded.parenttype = 'Salary Slip'
-					AND ded.salary_component = 'PAYE-TAX'
-					GROUP BY sal.employee) tmp ON tmp.employee = temp.employee
-					WHERE temp.department = %s
-					AND tmp.month = %s
-					AND tmp.year = %s 
-			""", (department, posting_month, posting_year), as_dict=1)
+	employee = {}
 
-	for e in entry:
+	for e in get_gross:
 		employee = {
+			"emp_id": e.employee,
 			"tin" : employee_data_dict.get(e.employee).get("tin"),
 			"employee_name" : e.employee_name,
-			"payment_date" : None,
-			"payment_period" : "Monthly",
-			"gross_pay": e.gross,
-			"total_benefit": None,
-			"it_amount" : e.tax,
-			
+			"date_of_payment" : '',
+			"pay_period": 'Fortnightly',
+			"gross_pay": e.gross_pay,
+			"benefit" : 0,
+			"it_amount" : 0,
 		}
-
 		data.append(employee)
+	
+	get_tax = frappe.db.sql("""SELECT sal.employee, 
+			sal.employee_name, 
+			sum(ded.amount) as "tax"
+			FROM `tabSalary Slip` sal
+			INNER JOIN `tabSalary Detail` ded ON
+			sal.name = ded.parent
+			AND ded.parentfield = 'deductions'
+			AND ded.parenttype = 'Salary Slip'
+			AND ded.salary_component = "PAYE-TAX"
+			AND ded.docstatus = 1
+			AND ded.amount > 0
+			AND month(sal.posting_date) = %s
+			AND year(sal.posting_date) = %s
+			AND sal.company = %s
+			GROUP BY sal.employee
+			""", (posting_month, posting_year, company), as_dict=1)
 
-	return data
+
+	for e in get_tax:
+		employee = {
+			"emp_id": e.employee,
+#			"employee_name" : e.employee_name,
+			"date_of_payment" : '',
+			"pay_period": "Fortnightly",
+			"it_amount" : e.tax
+		}
+	
+		data.append(employee)
+#	frappe.msgprint(_("TAX {0}").format(get_tax))
+	combined = defaultdict(dict)
+	
+	for item in data:
+		combined[item['emp_id']].update(item)
+	
+	taxdata = (list(combined.values()))
+#	frappe.msgprint(_("TAX {0}").format(taxdata))
+	return taxdata
 
 
 @frappe.whitelist()
-def save_data_to_Excel(month, department, year):
+def save_data_to_Excel(month, company, year):
 
-	filename = "PAYE.xltm"
+	filename = "PAYE.xlsm"
+	Month = datetime.date(1900, int(month), 1).strftime('%B')
+	Abbr = frappe.db.get_value("Company", company, "abbr")
 
-	new_filename = "FWC-FORM7-PAYE-" + month + year+".xlsm"
+	new_filename = Abbr +"-PAYE-" + Month + "-" + year+".xls"
 
-	save_path = 'fwc.edu/private/files/Form_7'
+	save_path = 'edu.fwc.to/private/files/'
 	file_name = os.path.join(save_path, filename)
 	new_file_name = os.path.join(save_path, new_filename)
-	ferp = frappe.new_doc("File")
-	ferp.file_name = filename
 
-	fileerp = frappe.new_doc("File")
-	fileerp.new_file_name = new_filename
-	fileerp.folder = "Home/Form_7"
-	fileerp.is_private = 1
-	fileerp.file_url = "/private/files/Form_7/"+new_filename
+	ferp = frappe.new_doc("File")
+	ferp.file_name = new_filename
+	ferp.folder = "Home/PAYE_TAX"
+	ferp.is_private = 0
+	ferp.file_url = "/private/files/PAYE_TAX/"+new_filename
 
 #	ferp.folder = "Home"
 #	ferp.is_private = 1
 #	ferp.file_url = "/private/files/Form_7/"+new_filename
 
-	Month = datetime.date(1900, int(month), 1).strftime('%B')
-
 	paye_data = []
-	paye_data = get_paye_data(month, year, department)
+	paye_data = get_paye_data(month, year, company)
 
 	df = pd.DataFrame(paye_data)
 
+	df = df.drop('emp_id', axis=1)
+
+#	frappe.msgprint(_("Data {0}").format(df))
 	workbook1 = openpyxl.load_workbook(file_name, read_only=False, keep_vba= True)
 	workbook1.template = True
 	sheetname = workbook1.get_sheet_by_name('PAYE')
-	sheetname['B5']= str('263317')
-	sheetname['B7']= str(Month)
-	sheetname['D7']= str(year)
-	sheetname['B9']= str('FWC Education')
+	sheetname['C5']= str('263317')
+	sheetname['C7']= str(Month)
+	sheetname['E7']= str(year)
+	sheetname['C9']= str('FWC Education')
 
 	writer = pd.ExcelWriter(new_file_name, engine='openpyxl')
 	writer.book = workbook1
 	writer.sheets = dict((ws.title, ws) for ws in workbook1.worksheets)
 
-	df.to_excel(writer, sheet_name='PAYE', index=False, header=False, startrow=12, startcol=1)
+	df.to_excel(writer, sheet_name='PAYE', index=False, header=False, startrow=12, startcol=2)
 
 #	with pd.ExcelWriter(file_name) as writer:
 #		writer.book = openpyxl.load_workbook(file_name, read_only=False, keep_vba= True)
 #		df.to_excel(writer, sheet_name=sheetname, index=False, header=False, startrow=13, startcol=1)
-    
 
-#	frappe.msgprint(_("File created - Please check File List to download the file"))
-#	writer.save()
-	frappe.msgprint(_("Form 7 have been created"))
+	writer.save()
+	ferp.save()
+	frappe.db.sql('''UPDATE `tabFile` SET file_url = %s WHERE file_name = %s''',("/files/"+new_filename, new_filename), as_dict=True)
+	frappe.msgprint(_("File created - {0}").format(new_filename))
+#	frappe.msgprint(_("Form 7 have been created"))
 	
 #	writer.close()
 #	frappe.msgprint(_("Executing the below:"))

@@ -111,7 +111,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-07-18 21:56:50.615482",
+ "modified": "2021-07-24 13:40:55.827925",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -166,6 +166,12 @@
    "label": "PAYIN",
    "link_to": "PAYIN",
    "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "PAYE TAX",
+   "link_to": "FWC FORM 7 PAYE",
+   "type": "Report"
   }
  ],
  "shortcuts_label": "FWC Education"

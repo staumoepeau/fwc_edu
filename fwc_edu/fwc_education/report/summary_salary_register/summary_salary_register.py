@@ -13,53 +13,84 @@ def execute(filters=None):
 	fromdatesql = "ss.start_date >= DATE('{from_date}')".format( from_date=filters.from_date) if filters.from_date else '1=1'
 	todatesql = "ss.end_date <= DATE('{to_date}')".format( to_date=filters.to_date) if filters.to_date else '1=1'
 	
-#	frappe.msgprint(_('No data!!!').format(company))
-
-	salary_summarysql = """
-	select ss.name, ss.branch, 
-	IF(sd.salary_component LIKE 'BSP%', 'BSP', 
-		IF(sd.salary_component LIKE 'MBF%', 'MBF', 
-			IF(sd.salary_component LIKE 'TDB%', 'TDB',
-				IF(sd.salary_component LIKE 'ANZ%', 'ANZ', sd.salary_component)))) as salary_component,
-	sum(sd.amount) as amount
-	from `tabSalary Slip` ss, `tabSalary Detail` sd
-	where ss.name = sd.parent
+	net_amountsql = """SELECT ss.branch,
+	SUM(ss.net_pay) AS net_pay
+	FROM `tabSalary Slip` ss
+	WHERE ss.docstatus = 1
 	AND ({companysql})
 	AND ({fromdatesql})
 	AND ({todatesql})
 	AND ss.branch IS NOT NULL
-	GROUP BY ss.branch, salary_component
-	""".format( companysql=companysql, todatesql = todatesql, fromdatesql = fromdatesql)
+	GROUP BY ss.branch""".format( companysql=companysql, todatesql = todatesql, fromdatesql = fromdatesql)
 
+	salary_summarysql = """
+	select ss.branch, 
+	IF(sd.salary_component LIKE 'BSP%', 'BSP', 
+		IF(sd.salary_component LIKE 'MBF%', 'MBF', 
+			IF(sd.salary_component LIKE 'TDB%', 'TDB',
+				IF(sd.salary_component LIKE 'ANZ%', 'ANZ', 
+                   IF(sd.salary_component LIKE  'Retirement%','Retirement Fund', sd.salary_component))))) as salary_component,
+    IF(sd.salary_component LIKE 'BSP%', 'BSP', 
+		IF(sd.salary_component LIKE 'MBF%', 'MBF', 
+			IF(sd.salary_component LIKE 'TDB%', 'TDB',
+				IF(sd.salary_component LIKE 'ANZ%', 'ANZ', 
+                   IF(sd.salary_component LIKE  'Retirement%','Retirement Fund', sd.salary_component))))) as salarycomponent,
+	SUM(sd.amount) as amount
+	FROM `tabSalary Slip` ss, `tabSalary Detail` sd
+	WHERE ss.name = sd.parent
+	AND ss.docstatus = 1
+	AND ({companysql})
+	AND ({fromdatesql})
+	AND ({todatesql})
+	AND ss.branch IS NOT NULL
+	GROUP BY ss.branch, salarycomponent
+	""".format( companysql=companysql, todatesql = todatesql, fromdatesql = fromdatesql)
+	
+	net_data = frappe.db.sql(net_amountsql, as_dict=1)
 	data = frappe.db.sql(salary_summarysql, as_dict=1)
 
-#	frappe.msgprint(_("Data : {0}").format(data))
+#	data = sqldata.append(net_data)
+#	frappe.msgprint(_("Data : {0}").format(net_data))
+
 	if len(data) == 0:
 		frappe.msgprint('No data yet')
 		return [], []
 
+	
 	dataframe = pd.DataFrame.from_records(data)
+	df_net = pd.DataFrame.from_records(net_data)
 
 	salary_components = dataframe.salary_component.unique().tolist()
 
+	df_net = df_net.pivot_table(index="branch", values="net_pay")
 	dataframe = dataframe.pivot_table(index="branch", columns="salary_component", values="amount")
 
-	dataframe.fillna(0, inplace = True)
-	dataframe['total'] = dataframe.loc[:, salary_components].sum(axis=1) - dataframe.loc[:, 'Basic']
-#	dataframe['total'] = dataframe.loc[:, salary_components].sum(axis=1)
-	dataframe['basicsalary'] = dataframe.loc[:, 'Basic'] * 26
+#	frappe.msgprint(_("Data : {0}").format(df_net))
 	
+#	dataframe.insert(11, "netpay", df_net, True)
+	dataframe['NetPay'] = df_net
+
+#	frappe.msgprint(_("Dataframe {0}").format(dataframe))
+
+	dataframe.fillna(0, inplace = True)
+
+	dataframe['basicsalary'] = dataframe.loc[:, 'Basic'] * 26
+#	dataframe['netpay'] = dataframe.loc[:, salary_components].sum(axis=1) - dataframe.loc[:, 'Basic']
+#	dataframe['total'] = dataframe.loc[:, salary_components].sum(axis=1)
+	
+#	frappe.msgprint(_("Dataframe {0}").format(dataframe))
 	salary_components = [{"fieldname": salary_component, "label": _(salary_component), "fieldtype": "Currency", "width": 120, } for salary_component in salary_components]
 #
-# 	frappe.msgprint(_("Test {0}").format(salary_components))
+#	frappe.msgprint(_("Test {0}").format(salary_components))
+
 	columns  = [ { "fieldname": "branch", "label": _("Branch"), "fieldtype": "Data", "width": 200 }]
 	columns += [ { "fieldname": "basicsalary", "label": _("Basic Salary"), "fieldtype": "Currency", "width": 100 }]
 	columns += salary_components
-	columns+=[ { "fieldname": "total", "label": _("Net Pay"), "fieldtype": "Currency", "width": 100 }]
+	columns+=[ { "fieldname": "NetPay", "label": _("Net Pay"), "fieldtype": "Currency", "width": 100 }]
 
-	
+#	netdata = pd.merge(dataframe, df_net, on=['branch'])
 	data = dataframe.reset_index().to_dict('records')
-#	data = dataframe.reset_index().pivot_table(values="amount", index="branch", columns="salary_component")
+
 	
 	return columns, data
 
