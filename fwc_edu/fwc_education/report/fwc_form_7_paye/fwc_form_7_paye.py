@@ -260,7 +260,7 @@ def save_data_to_Excel(month, company, year):
 	Month = datetime.date(1900, int(month), 1).strftime('%B')
 	Abbr = frappe.db.get_value("Company", company, "abbr")
 
-	new_filename = Abbr +"-PAYE-" + Month + "-" + year+".xls"
+	new_filename = Abbr +"-PAYE-" + Month + "-" + year+".xlsm"
 
 	save_path = 'edu.fwc.to/private/files/'
 	file_name = os.path.join(save_path, filename)
@@ -306,13 +306,3 @@ def save_data_to_Excel(month, company, year):
 	ferp.save()
 	frappe.db.sql('''UPDATE `tabFile` SET file_url = %s WHERE file_name = %s''',("/files/"+new_filename, new_filename), as_dict=True)
 	frappe.msgprint(_("File created - {0}").format(new_filename))
-#	frappe.msgprint(_("Form 7 have been created"))
-	
-#	writer.close()
-#	frappe.msgprint(_("Executing the below:"))
-#	frappe.local.response.filename = new_file_name
-#	with open(new_file_name, "rb") as fileobj:
-#		filedata = fileobj.read()
-#	frappe.logger().debug("Inside") 
-#	frappe.local.response.filecontent = filedata
-#	frappe.local.response.type = "download"
