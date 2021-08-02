@@ -1241,7 +1241,7 @@
    "name": "Employee-reports_group",
    "no_copy": 0,
    "non_negative": 0,
-   "options": "\nG1\nG2\nG3\nG4\nG5\nG6",
+   "options": "\nG1\nG2\nG3\nG4\nG5\nG6\nG7\nG8\nG9\nG10",
    "owner": "Administrator",
    "parent": null,
    "parentfield": null,

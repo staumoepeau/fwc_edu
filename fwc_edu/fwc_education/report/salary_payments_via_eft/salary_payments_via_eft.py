@@ -326,7 +326,7 @@ def get_bank_data(postingdate, company, bankname):
 		)
 
 	employee_list = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
-			ded.salary_component AS bankname, ded.amount, ded.account_number
+			ded.salary_component AS bankname, ded.amount, ded.account_number, ded.description
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -357,7 +357,7 @@ def get_bank_data(postingdate, company, bankname):
 				IF(ded.salary_component LIKE %s, "MBF",
 					IF(ded.salary_component LIKE %s, "TDB", 
 						IF(ded.salary_component LIKE %s, "SIA", ded.salary_component)))) AS bankname,
-			ded.amount, ded.account_number
+			ded.amount, ded.account_number, ded.description
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -390,18 +390,24 @@ def get_bank_data(postingdate, company, bankname):
 			"payment_details" : d.payment_details,
 			"bank_name" : d.bank_name,
 			"account_number": d.bank_account_no.replace("-",""),
+#			"description": ''
 		}
 
 		bank_data.append(employee)
 	
 	for e in other:
+		if e.description: 
+			description = e.description.upper() 
+		else:
+			description = e.description
 		employee = {
 			"employee_name" : ((e.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 			"employee": e.employee,
 			"amount" : str(int(round(e.amount*100))).zfill(10),
 			"bank_name" : e.bankname,
 			"account_number": e.account_number.replace("-",""),
-			"company": e.company
+			"company": e.company,
+			"description" : description
 		}
 
 		bank_data.append(employee)
@@ -500,7 +506,7 @@ def get_bank_data(postingdate, company, bankname):
 
 			}
 		bank_data.append(employee)
-
+#	frappe.msgprint(_("BANK {0}").format(bank_data))
 	return bank_data
 
 def get_sum_netpay(posting_date, company, bank_name):
@@ -537,7 +543,7 @@ def get_sum_netpay(posting_date, company, bank_name):
 				AND tss.company = %s
 				""", (posting_date, company))
 				
-	frappe.msgprint(_("PAY 2 : {0}").format(netpay_2))
+#	frappe.msgprint(_("PAY 2 : {0}").format(netpay_2))
 
 	if np.array(netpay_1):
 		netpay = netpay_1
@@ -694,6 +700,9 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			batch_no = "211"
 			header = "EDS0679FWC                                                                                                                      \r\n"
 			spacer = "FWC                 EDS0679                              \r\n"
+			#Mone Fakahua FWC                 EDS0769                               
+			#spacer = "TTI          TUPOU TERTIARY      EDS0679                               \r\n"
+			
 		
 		elif company == "Tupou Tertiary Institute":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -701,7 +710,8 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0679TTI                                                                                                                      \r\n"
-			spacer = "TTI                 EDS0679                               \r\n"
+			spacer = "TTI          TUPOU TERTIARY      EDS0679                               \r\n"
+
 		
 		elif company == "Tupou College Toloa":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -745,9 +755,12 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		
 #		for data in range(len(bank_data)):
 		for data in bank_data:
-
+			if not data['description']:
+					data['description'] = ''
 			f.write('1303900100')
-			f.write('{0}053{1}{2}000000000000{3}'.format(data['account_number'], data['amount'], data['employee_name'].ljust(20), filler.ljust(24)))
+#			f.write('{0}053{1}{2}000000000000{3}'.format(data['account_number'], data['amount'], data['employee_name'].ljust(20), filler.ljust(24), data['description']))
+			f.write('{0}053{1}{2}000000000000{3}'.format(data['account_number'], data['amount'], data['employee_name'].ljust(20), data['description'].rjust(36)))
+			f.write(filler)
 			f.write(spacer)
 			
 		f.write("1399")
