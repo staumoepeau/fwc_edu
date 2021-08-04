@@ -383,6 +383,12 @@ def get_bank_data(postingdate, company, bankname):
 	employee = {}
 
 	for d in entry:
+		if not d.account_number:
+			d.account_number = ''
+		if d.description: 
+			d.description = d.description.upper() 
+		else:
+			d.description = ''
 		employee = {
 			"employee_name" : ((d.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 			"employee" : d.employee,
@@ -390,16 +396,16 @@ def get_bank_data(postingdate, company, bankname):
 			"payment_details" : d.payment_details,
 			"bank_name" : d.bank_name,
 			"account_number": d.bank_account_no.replace("-",""),
-#			"description": ''
+			"description": d.description
 		}
 
 		bank_data.append(employee)
 	
 	for e in other:
 		if e.description: 
-			description = e.description.upper() 
+			e.description = e.description.upper() 
 		else:
-			description = e.description
+			e.description = ''
 		employee = {
 			"employee_name" : ((e.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 			"employee": e.employee,
@@ -407,7 +413,7 @@ def get_bank_data(postingdate, company, bankname):
 			"bank_name" : e.bankname,
 			"account_number": e.account_number.replace("-",""),
 			"company": e.company,
-			"description" : description
+			"description" : e.description
 		}
 
 		bank_data.append(employee)
