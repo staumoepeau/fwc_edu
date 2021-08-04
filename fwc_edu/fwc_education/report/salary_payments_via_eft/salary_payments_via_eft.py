@@ -700,7 +700,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 
 		if company == "FWC Education":
 			abbr = frappe.db.get_value("Company", company, "abbr")
-#			dr_account = "113903701"
+			dr_account = "113903701"
 		
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
