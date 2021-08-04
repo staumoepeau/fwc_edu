@@ -775,14 +775,18 @@ def create_bank_eft_file(posting_date, company, bank_name):
 
 
 #==================================================================== TDB START ==================================================================================
-#	filler = "0000000000"
-#	numbers = len(bank_data)
+
+
 	if bank_name == "TDB":
+		filler = "0000000000"
+		numbers = len(bank_data)
 		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yy").replace("-", "")
+		
 		f.write("0                             FWC                       077100            ")
 		f.write(posting_date)
 		f.write("s")
 		f.write("\n")
+		
 		for data in bank_data:
 			f.write('1077-100')
 			f.write('{0} 53{1}{2}'.format(data['account_number'].rjust(9), data['amount'], data['employee_name'].ljust(32)))
