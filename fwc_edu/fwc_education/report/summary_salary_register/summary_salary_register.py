@@ -63,12 +63,12 @@ def execute(filters=None):
 
 	salary_components = dataframe.salary_component.unique().tolist()
 
-	df_net = df_net.pivot_table(index=["branch"], values="net_pay")
+	df_net = df_net.pivot_table(index=["branch","reports_group"], values="net_pay")
 
-	if mycompany == "FWC Education":
-		dataframe = dataframe.pivot_table(index=["branch","reports_group"], columns="salary_component", values="amount")
-	if mycompany != "FWC Education":
-		dataframe = dataframe.pivot_table(index="branch", columns="salary_component", values="amount")
+#	if mycompany == "FWC Education":
+	dataframe = dataframe.pivot_table(index=["branch","reports_group"], columns="salary_component", values="amount")
+#	if mycompany != "FWC Education":
+#		dataframe = dataframe.pivot_table(index="branch", columns="salary_component", values="amount")
 #	frappe.msgprint(_("Data : {0}").format(df_net))
 	
 #	dataframe.insert(11, "netpay", df_net, True)
@@ -88,8 +88,8 @@ def execute(filters=None):
 
 
 	columns  = [ { "fieldname": "branch", "label": _("Branch"), "fieldtype": "Data", "width": 200 }]
-	if mycompany == "FWC Education":
-		columns  += [ { "fieldname": "reports_group", "label": _("Group"), "fieldtype": "Data", "width": 80 }]
+#	if mycompany == "FWC Education":
+	columns  += [ { "fieldname": "reports_group", "label": _("Group"), "fieldtype": "Data", "width": 80 }]
 	columns += [ { "fieldname": "basicsalary", "label": _("Basic Salary"), "fieldtype": "Currency", "width": 100 }]
 	columns += salary_components
 	columns+=[ { "fieldname": "NetPay", "label": _("Net Pay"), "fieldtype": "Currency", "width": 100 }]
