@@ -128,7 +128,7 @@ def get_data(filters):
 	company = filters.get("company")
 
 	employee_list = frappe.db.sql("""SELECT sal.employee, sal.employee_name, 
-			ded.salary_component as bankname, ded.amount, ded.account_number
+			ded.salary_component as bankname, ded.amount, ded.account_number, ded.description
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -159,7 +159,7 @@ def get_data(filters):
 				IF(ded.salary_component LIKE %s, "MBF",
 					IF(ded.salary_component LIKE %s, "TDB", 
 						IF(ded.salary_component LIKE %s, "SIA", ded.salary_component)))) AS bankname,
-			ded.amount, ded.account_number
+			ded.amount, ded.account_number, ded.description
 			FROM `tabSalary Slip` sal
 			INNER JOIN `tabSalary Detail` ded ON
 				sal.name = ded.parent
@@ -184,25 +184,55 @@ def get_data(filters):
 
 	employee = {}
 	for e in other:
+		if not e.account_number:
+				e.account_number = ''
+		
+		if bankname == 'TDB' or bankname == 'MBF':	
+			if e.description:
+				e.employee_name = e.description
+				e.description = e.description.upper() 
+			else:
+				e.description = ''
+		if bankname == 'BSP':
+			if e.description:
+				e.description = e.description.upper() 
+			else:
+				e.description = ''
 		employee = {
 			"employee_name" : e.employee_name,
 			"employee": e.employee,
 			"amount" : e.amount,
 			"bank_name" : e.bankname,
 			"account_number": e.account_number,
-			"company": e.company
+			"company": e.company,
+			"description" : e.description
 		}
 
 		data.append(employee)
 	
 	for d in entry:
+		if not d.account_number:
+				d.account_number = ''
+		
+		if bankname == 'TDB' or bankname == 'MBF':	
+			if d.description:
+				d.employee_name = d.description
+				d.description = d.description.upper() 
+			else:
+				d.description = ''
+		if bankname == 'BSP':
+			if d.description:
+				d.description = d.description.upper() 
+			else:
+				d.description = ''
 		employee = {
 			"employee_name" : d.employee_name,
 			"employee": d.employee,
 			"amount" : d.amount,
 			"bank_name" : d.bank_name,
 			"account_number": d.bank_account_no,
-			"company": d.company
+			"company": d.company,
+			"description": d.description
 
 		}
 		data.append(employee)
@@ -383,12 +413,20 @@ def get_bank_data(postingdate, company, bankname):
 	employee = {}
 
 	for d in entry:
+
 		if not d.account_number:
-			d.account_number = ''
-		if d.description: 
-			d.description = d.description.upper() 
-		else:
-			d.description = ''
+				d.account_number = ''
+		
+		if bankname == 'TDB' or bankname == 'MBF':	
+			if d.description:
+				d.description = d.description.upper() 
+			else:
+				d.description = ''
+		if bankname == 'BSP':
+			if d.description:
+				d.description = d.description.upper() 
+			else:
+				d.description = ''
 		employee = {
 			"employee_name" : ((d.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 			"employee" : d.employee,
