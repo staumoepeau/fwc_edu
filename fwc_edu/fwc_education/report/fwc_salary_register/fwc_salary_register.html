@@ -1,5 +1,6 @@
 {%
 	var report_columns = report.get_columns_for_print();
+	var school = filters.company
 %}
 
 <style>
@@ -8,13 +9,9 @@
 	}
 </style>
 
-
-
-
-<h2 class="text-center">{%= filters.company %}</h2>
-<h5 class="text-center">{{ __("Paryroll No:") }} {%= doc.name %}</h5>
-<h5 class="text-center">{{ __("From") }} {%= filters.from_date %} {{ __("to") }} {%= filters.to_date %}</h5>
+<h5 class="text-center">{{ __("Payroll From") }} {%= filters.from_date %} {{ __("to") }} {%= filters.to_date %}</h5>
 <hr>
+
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -24,7 +21,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for(var j=0, k=data.length; j<k; j++) { %}
+		{% for(var j=1, k=data.length; j<k; j++) { %}
 			{%
 				var row = data[j];
 			%}

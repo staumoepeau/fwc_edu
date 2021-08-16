@@ -2,7 +2,7 @@
 	var report_columns = report.get_columns_for_print();
 
 %}
-<h2 class="text-center">{%= filters.company %}{%= __(" Payroll") %}</h2>
+<h5 class="text-center">{%= filters.company %}{%= __(" Payroll") %}</h5>
 <h5 class="text-center">{{ __("BANK : ") }} {%= filters.bank_name %}</h5>
 <h5 class="text-center">{{ __("Posting Date : ") }} {%= filters.posting_date %}</h5>
 <hr>
@@ -19,10 +19,10 @@ border-collapse: collapse;
 	<thead>
 		<tr>
 			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
-				{% if (i==0){ %}
-				<th class="text-left">{%= report_columns[i].label %}</th>
+				{% if (i==0) { %}
+					<th class="text-left">{%= report_columns[i].label %}</th>
 				{% } else { %}
-				<th class="text-right">{%= report_columns[i].label %}</th>
+					<th class="text-right">{%= report_columns[i].label %}</th>
 				{% } %}
 			{% } %}
 		</tr>
@@ -34,18 +34,18 @@ border-collapse: collapse;
 			%}
 			<tr>
 				{% for(var i=0, l=report_columns.length; i<l; i++) { %}
-				{% if (i==0){ %}
-				<td class="text-left">
-					{% var fieldname = report_columns[i].fieldname; %}
-					{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
-						{%= format_currency(row[fieldname]) %}
-					{% } else { %}
-						{% if (!is_null(row[fieldname])) { %}
-							{%= row[fieldname] %}
+				{% if (i==0) { %}
+					<td class="text-left">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
+							{%= format_currency(row[fieldname]) %}
+						{% } else { %}
+							{% if (!is_null(row[fieldname])) { %}
+								{%= row[fieldname] %}
+							{% } %}
 						{% } %}
-					{% } %}
-				</td>
-				{% } else { %}
+					</td>
+					{% } else { %}
 					<td class="text-right">
 						{% var fieldname = report_columns[i].fieldname; %}
 						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}

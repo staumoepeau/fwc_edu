@@ -65,6 +65,12 @@ def get_columns(filters):
 			"width": 140
 		},
 		{
+			"label": _("Reference"),
+			"fieldname": "description",
+			"fieldtype": "Data",
+			"width": 140
+		},
+		{
 			"label": _("Account No"),
 			"fieldname": "account_number",
 			"fieldtype": "Data",
@@ -146,7 +152,7 @@ def get_data(filters):
 	for e in employee_list:
 		employee_list_dict.setdefault(
 			e.employee,{
-				"employee_name": e.employee_name,
+				"employee_name": e.employee_name.upper(),
 				"employee": e.employee,
 				"account_number" : e.account_number,
 				"bank_name": e.bankname,
@@ -187,19 +193,24 @@ def get_data(filters):
 		if not e.account_number:
 				e.account_number = ''
 		
-		if bankname == 'TDB' or bankname == 'MBF':	
+		if bankname == 'TDB' or bankname == 'MBF':
+			description = e.description
+			emp_name = e.employee_name
+
 			if e.description:
-				e.employee_name = e.description
-				e.description = e.description.upper() 
+				e.employee_name = description
+				e.description = emp_name.upper() 
 			else:
 				e.description = ''
+#				e.e.employee_name = emp_name
 		if bankname == 'BSP':
 			if e.description:
 				e.description = e.description.upper() 
 			else:
 				e.description = ''
+
 		employee = {
-			"employee_name" : e.employee_name,
+			"employee_name" : e.employee_name.upper(),
 			"employee": e.employee,
 			"amount" : e.amount,
 			"bank_name" : e.bankname,
@@ -214,19 +225,23 @@ def get_data(filters):
 		if not d.account_number:
 				d.account_number = ''
 		
-		if bankname == 'TDB' or bankname == 'MBF':	
-			if d.description:
-				d.employee_name = d.description
-				d.description = d.description.upper() 
+		if bankname == 'TDB' or bankname == 'MBF':
+			description = e.description
+			emp_name = e.employee_name
+
+			if e.description:
+				e.employee_name = description
+				e.description = emp_name.upper() 
 			else:
-				d.description = ''
+				e.description = ''
+				e.e.employee_name = emp_name
 		if bankname == 'BSP':
 			if d.description:
 				d.description = d.description.upper() 
 			else:
 				d.description = ''
 		employee = {
-			"employee_name" : d.employee_name,
+			"employee_name" : d.employee_name.upper(),
 			"employee": d.employee,
 			"amount" : d.amount,
 			"bank_name" : d.bank_name,
@@ -262,7 +277,7 @@ def get_data(filters):
 
 		for t in tti_account:
 			employee = {
-			"employee_name" : t.employee_name,
+			"employee_name" : t.employee_name.upper(),
 			"employee": t.employee,
 			"amount" : t.amount,
 			"bank_name" : t.bankname,
@@ -290,7 +305,7 @@ def get_data(filters):
 
 		for a in tti_association:
 			employee = {
-			"employee_name" : a.employee_name,
+			"employee_name" : a.employee_name.upper(),
 			"employee": a.employee,
 			"amount" : a.amount,
 			"bank_name" : a.bankname,
@@ -318,7 +333,7 @@ def get_data(filters):
 
 		for sia in SIA_Finance:
 			employee = {
-			"employee_name" : sia.employee_name,
+			"employee_name" : sia.employee_name.upper(),
 			"employee": sia.employee,
 			"amount" : sia.amount,
 			"bank_name" : sia.bankname,
@@ -417,11 +432,11 @@ def get_bank_data(postingdate, company, bankname):
 		if not d.account_number:
 				d.account_number = ''
 		
-		if bankname == 'TDB' or bankname == 'MBF':	
-			if d.description:
-				d.description = d.description.upper() 
-			else:
-				d.description = ''
+#		if bankname == 'TDB' or bankname == 'MBF':	
+#			if d.description:
+#				d.description = d.description.upper() 
+#			else:
+#				d.description = ''
 		if bankname == 'BSP':
 			if d.description:
 				d.description = d.description.upper() 
@@ -440,10 +455,21 @@ def get_bank_data(postingdate, company, bankname):
 		bank_data.append(employee)
 	
 	for e in other:
-		if e.description: 
-			e.description = e.description.upper() 
-		else:
-			e.description = ''
+		if bankname == 'TDB' or bankname == 'MBF':
+			description = e.description
+			emp_name = e.employee_name
+
+			if e.description:
+				e.employee_name = description
+				e.description = emp_name.upper() 
+			else:
+				e.description = ''
+				e.employee_name = emp_name
+		if bankname == 'BSP':
+			if e.description:
+				e.description = e.description.upper() 
+			else:
+				e.description = ''
 		employee = {
 			"employee_name" : ((e.employee_name.upper()).replace(".","").replace("'","").replace("  "," ")[:20]),
 			"employee": e.employee,
@@ -464,7 +490,7 @@ def get_bank_data(postingdate, company, bankname):
 		tti_account = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "TTI ACCOUNT","TTI ACCOUNT", sal.employee_name) AS employee_name, 
 			IF(ded.salary_component = "TTI ACCOUNT", "BSP", ded.salary_component) AS bankname,
-				SUM(ded.amount) AS amount, ded.account_number as account_number
+				SUM(ded.amount) AS amount, ded.account_number as account_number,ded.description
 				FROM `tabSalary Slip` sal
 				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
 				AND ded.parentfield = 'deductions'
@@ -478,7 +504,7 @@ def get_bank_data(postingdate, company, bankname):
 				HAVING bankname = %s
 			""", (postingdate, company, bankname), as_dict=1)
 
-		msgprint(_("After TTI {0}"). format(tti_account))
+#		msgprint(_("After TTI {0}"). format(tti_account))
 
 		for ta in tti_account:
 			employee = {
@@ -487,7 +513,8 @@ def get_bank_data(postingdate, company, bankname):
 			"amount" : str(int(round(ta.amount*100))).zfill(10),
 			"bank_name" : ta.bankname,
 			"account_number": ta.account_number.replace("-",""),
-			"company": ta.company
+			"company": ta.company,
+			"description" : ta.description
 			}
 
 		bank_data.append(employee)
@@ -496,7 +523,7 @@ def get_bank_data(postingdate, company, bankname):
 
 		tti_association = frappe.db.sql("""SELECT sal.employee, IF(ded.salary_component = "TTI STAFF ASSOCIATION","TTI STAFF ASSOCIATION", sal.employee_name)
 				AS employee_name, IF(ded.salary_component = "TTI STAFF ASSOCIATION", "BSP", ded.salary_component)
-				AS bankname, SUM(ded.amount) AS amount, ded.account_number as account_number
+				AS bankname, SUM(ded.amount) AS amount, ded.account_number as account_number, ded.description
 				FROM `tabSalary Slip` sal
 				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
 				AND ded.parentfield = 'deductions'
@@ -517,7 +544,8 @@ def get_bank_data(postingdate, company, bankname):
 			"amount" : str(int(round(a.amount*100))).zfill(10),
 			"bank_name" : a.bankname,
 			"account_number": a.account_number.replace("-",""),
-			"company": a.company
+			"company": a.company,
+			"description" : a.description
 			}
 
 		bank_data.append(employee)
@@ -525,7 +553,7 @@ def get_bank_data(postingdate, company, bankname):
 		SIA_Finance = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "SIA Finance","SIA Finance", sal.employee_name) AS employee_name, 
 				IF(ded.salary_component = "SIA Finance", "BSP", ded.salary_component) AS bankname,
-				SUM(ded.amount) AS amount, ded.account_number as account_number
+				SUM(ded.amount) AS amount, ded.account_number as account_number, ded.description
 				FROM `tabSalary Slip` sal
 				INNER JOIN `tabSalary Detail` ded ON sal.name = ded.parent
 				AND ded.parentfield = 'deductions'
@@ -546,7 +574,8 @@ def get_bank_data(postingdate, company, bankname):
 			"amount" : str(int(round(sia.amount*100))).zfill(10),
 			"bank_name" : sia.bankname,
 			"account_number": sia.account_number.replace("-",""),
-			"company": sia.company
+			"company": sia.company,
+			"description" : sia.description
 
 			}
 		bank_data.append(employee)
@@ -711,6 +740,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		dr_account = ""
 
 		bank_data = get_bank_data(posting_date, company, bank_name)
+#		frappe.msgprint(_("Data : {0}").format(bank_data))
 
 		account_total = get_sum_account(posting_date, company, bank_name)
 #		frappe.msgprint(_("Account Total 1 : {0}").format(account_total))
@@ -799,7 +829,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		
 #		for data in range(len(bank_data)):
 		for data in bank_data:
-			if not data['description']:
+			if not data['description'] or data['description'] is None:
 					data['description'] = ''
 			f.write('1303900100')
 #			f.write('{0}053{1}{2}000000000000{3}'.format(data['account_number'], data['amount'], data['employee_name'].ljust(20), filler.ljust(24), data['description']))

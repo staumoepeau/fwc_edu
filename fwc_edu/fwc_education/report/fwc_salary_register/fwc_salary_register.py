@@ -15,16 +15,19 @@ def execute(filters=None):
 	salary_slips = get_salary_slips(filters, company_currency)
 	if not salary_slips: return [], []
 
-	columns, earning_types, ded_types = get_columns(salary_slips)
+	columns, earning_types, ded_types = get_columns(salary_slips, filters)
 	ss_earning_map = get_ss_earning_map(salary_slips, currency, company_currency)
 	ss_ded_map = get_ss_ded_map(salary_slips,currency, company_currency)
 	doj_map = get_employee_doj_map()
 	basic_annual = get_employee_annual_basic()
+	mycompany = filters.get("company")
 
 	data = []
 	for ss in salary_slips:
-		row = [ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
-		
+		if mycompany == "FWC Education":
+			row = [ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
+		else:
+			row = [ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
 #		row = [ss.name, ss.employee, ss.employee_name, basic_annual.get(ss.employee), ss.branch, ss.department, ss.designation,
 #			ss.company, ss.start_date, ss.end_date, ss.leave_without_pay, ss.payment_days]
 
@@ -67,17 +70,22 @@ def execute(filters=None):
 
 	return columns, data
 
-def get_columns(salary_slips):
-
-	columns = [
-
-		_("Branch") + ":Link/Branch:100",
-		_("Employee") + ":Link/Employee:120",
-		_("Employee Name") + "::140",
-		_("Basic Salary") + ":Currency:120",
-
-	]
-
+def get_columns(salary_slips, filters):
+	mycompany = filters.get("company")
+	if mycompany == "FWC Education":
+		columns = [
+			_("Branch") + ":Link/Branch:100",
+			_("Employee") + ":Link/Employee:120",
+			_("Employee Name") + "::140",
+			_("Basic Salary") + ":Currency:120",
+		]
+	else:
+		columns = [
+			_("Employee") + ":Link/Employee:120",
+			_("Employee Name") + "::140",
+			_("Basic Salary") + ":Currency:120",
+		]
+		
 	salary_components = {_("Earning"): [], _("Deduction"): []}
 
 	for component in frappe.db.sql("""select distinct sc.type,
