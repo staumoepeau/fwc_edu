@@ -234,7 +234,7 @@ def get_data(filters):
 				e.description = emp_name.upper() 
 			else:
 				e.description = ''
-				e.e.employee_name = emp_name
+				e.employee_name = emp_name
 		if bankname == 'BSP':
 			if d.description:
 				d.description = d.description.upper() 
