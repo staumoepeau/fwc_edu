@@ -769,7 +769,6 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		if company == "FWC Education":
 			abbr = frappe.db.get_value("Company", company, "abbr")
 			dr_account = "113903701"
-		
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0679FWC                                                                                                                      \r\n"
@@ -784,8 +783,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0679TTI                                                                                                                      \r\n"
-			spacer = "TTI          TUPOU TERTIARY      EDS0679                               \r\n"
-
+			spacer = "TTI TUPOU TERTIARY  EDS0679                              \r\n"
 		
 		elif company == "Tupou College Toloa":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -794,6 +792,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			batch_no = "211"
 			header = "EDS0769TOLOA FEES                                                                                                               \r\n"
 			spacer = "TOLOA        TOLOA FEES          EDS0769                               \r\n"
+			spacer = "FWC                 EDS0679                              \r\n"
 
 		elif company == "Tupou College Toloa Faama":
 			abbr = frappe.db.get_value("Company", company, "abbr")
