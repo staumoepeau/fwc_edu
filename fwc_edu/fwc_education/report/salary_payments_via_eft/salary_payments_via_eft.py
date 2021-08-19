@@ -773,9 +773,6 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			batch_no = "211"
 			header = "EDS0679FWC                                                                                                                      \r\n"
 			spacer = "FWC                 EDS0679                              \r\n"
-			#Mone Fakahua FWC                 EDS0769                               
-			#spacer = "TTI          TUPOU TERTIARY      EDS0679                               \r\n"
-			
 		
 		elif company == "Tupou Tertiary Institute":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -791,8 +788,8 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769TOLOA FEES                                                                                                               \r\n"
-			spacer = "TOLOA        TOLOA FEES          EDS0769                               \r\n"
-			spacer = "FWC                 EDS0679                              \r\n"
+			spacer = "TOLOA  TOLOA FEES   EDS0769                              \r\n"
+
 
 		elif company == "Tupou College Toloa Faama":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -800,7 +797,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "212"
 			header = "EDS0769TOLOA FAAMA                                                                                                              \r\n"
-			spacer = "TOLOA        TOLOA FARM          EDS0769                               \r\n"
+			spacer = "TOLOA  TOLOA FARM   EDS0769                              \r\n"
 		
 		elif company == "Queen Salote College":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -808,8 +805,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769QUEEN SALOTE                                                                                                             \r\n"
-			spacer = "QUEEN SALOTE QUEEN SALOTE        EDS0769                               \r\n"
-			
+			spacer = "QUEEN SALOTE        EDS0769                              \r\n"		
 		
 		elif company == "Tupou High School":
 			abbr = frappe.db.get_value("Company", company, "abbr")
@@ -817,7 +813,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 			dr_account = dr_account.zfill(12)
 			batch_no = "211"
 			header = "EDS0769TUPOU HIGH SCOOL                                                                                                         \r\n"
-			spacer = "TUPOU HIGH   TUPOU HIGH          EDS0769                               \r\n"
+			spacer = "TUPOU HIGH          EDS0769                              \r\n"
 		
 		quickpay_header = direct_debit + bank_number + state_number + branch_number + dr_account + batch_no
 		
