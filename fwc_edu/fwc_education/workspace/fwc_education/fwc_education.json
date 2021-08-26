@@ -147,7 +147,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-08-02 09:55:18.446473",
+ "modified": "2021-08-20 13:10:26.511082",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -155,6 +155,12 @@
  "pin_to_bottom": 0,
  "pin_to_top": 1,
  "shortcuts": [
+  {
+   "doc_view": "",
+   "label": "Student Fee",
+   "link_to": "Student Fees",
+   "type": "Report"
+  },
   {
    "doc_view": "",
    "label": "FWC Salary Register",

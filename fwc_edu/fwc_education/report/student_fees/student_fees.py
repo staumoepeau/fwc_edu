@@ -29,12 +29,7 @@ def execute(filters=None):
 	""".format( companysql=companysql, academic_yearsql = academic_yearsql, programsql = programsql)
 	
 	data = frappe.db.sql(feessql, as_dict=1)
-	
-#	if len(data) == 0:
-#		frappe.msgprint('No data yet')
-#	return [], []
-	
-	
+		
 	dataframe = pd.DataFrame.from_records(data)
 
 	term = dataframe.academic_term.unique().tolist()
@@ -42,9 +37,13 @@ def execute(filters=None):
 	dataframe = dataframe.pivot_table(index=["gender", "student_name"], columns="academic_term", values="amount", aggfunc = 'sum')
 
 	dataframe.fillna(0, inplace = True)
+	
+	mapping = { 0: 'PAID', 87 : 'UNPAID'}
+	dataframe['total_unpaid']=dataframe.loc[:,term].sum(axis=1)
+	dataframe = dataframe.replace(to_replace=0, value=1, regex=True)
+	dataframe = dataframe.replace(to_replace=[87,70], value=0, regex=True)
 
-	dataframe.replace({ 'academic_term': {'87', 'UNPAID'}})
-
+	
 #	dataframe = dataframe.assign(A='foo')
 #	frappe.msgprint(_("Data {0}").format(dataframe))
 #	columns  = [ { "fieldname": "program", "label": _("Program"), "fieldtype": "Link", "options": "Program", "width": 200 }]
@@ -53,6 +52,7 @@ def execute(filters=None):
 	columns += [ { "fieldname": "student_name", "label": _("Name"), "fieldtype": "Data", "width": 200 }]
 	term = [{"fieldname": academic_term, "label": _(academic_term), "fieldtype": "Int", "width": 150, } for academic_term in term]
 	columns += term
+	columns+=[ { "fieldname": "total_unpaid", "label": _("Outstanding"), "fieldtype": "Currency", "width": 100 }]
 
 	data = dataframe.reset_index().to_dict('records')
 #	frappe.msgprint(_("Data {0}").format(data))
