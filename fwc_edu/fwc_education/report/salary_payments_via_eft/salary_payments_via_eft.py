@@ -284,7 +284,7 @@ def get_data(filters):
 			"account_number": t.account_number,
 			"company": t.company
 			}
-		data.append(employee)
+			data.append(employee)
 
 		tti_association = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "TTI STAFF ASSOCIATION","TTI STAFF ASSOCIATION", sal.employee_name) AS employee_name, 
@@ -312,7 +312,7 @@ def get_data(filters):
 			"account_number": a.account_number,
 			"company": a.company
 			}
-		data.append(employee)
+			data.append(employee)
 
 		SIA_Finance = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "SIA Finance","SIA Finance", sal.employee_name) AS employee_name, 
@@ -340,7 +340,7 @@ def get_data(filters):
 			"account_number": sia.account_number,
 			"company": sia.company
 			}
-		data.append(employee)
+			data.append(employee)
  
 	return data
 
@@ -517,7 +517,7 @@ def get_bank_data(postingdate, company, bankname):
 			"description" : ta.description
 			}
 
-		bank_data.append(employee)
+			bank_data.append(employee)
 		
 #		msgprint(_("After TTI {0}"). format(bank_data))
 
@@ -548,7 +548,7 @@ def get_bank_data(postingdate, company, bankname):
 			"description" : a.description
 			}
 
-		bank_data.append(employee)
+			bank_data.append(employee)
 
 		SIA_Finance = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "SIA Finance","SIA Finance", sal.employee_name) AS employee_name, 
@@ -578,7 +578,7 @@ def get_bank_data(postingdate, company, bankname):
 			"description" : sia.description
 
 			}
-		bank_data.append(employee)
+			bank_data.append(employee)
 #	frappe.msgprint(_("BANK {0}").format(bank_data))
 	return bank_data
 
@@ -872,5 +872,5 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	frappe.msgprint(_("Bank File created - Please download the file : {0}").format(fname))
 #	ferp.file_url = "/public/files/"+fname
 	ferp.save()
-	frappe.db.sql('''UPDATE `tabFile` SET file_url = %s WHERE file_name = %s''',("/files/"+fname, fname), as_dict=True)
+	frappe.db.sql('''UPDATE `tabFile` SET company = %s, file_url = %s WHERE file_name = %s''',(company, "/files/"+fname, fname), as_dict=True)
 	f.close()

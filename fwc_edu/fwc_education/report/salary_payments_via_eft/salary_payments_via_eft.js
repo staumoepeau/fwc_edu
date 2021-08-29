@@ -50,8 +50,14 @@ frappe.query_reports["Salary Payments via EFT"] = {
 //				method: "fwc_edu.fwc_education.report.salary_payments_via_eft.salary_payments_via_eft.create_bank_eft_file",
 
 //window.open("/api/method/frappe.mypyfile.download_test");
+	refresh: function (report){
+
+		report.page.clear_secondary_action()	
+
+	},
 	onload: function(report) {
 
+			
 		report.page.set_primary_action('Transfer to Bank', function() {
 			var args = "as a draft"
 				var reporter = frappe.query_reports["Salary Payments via EFT"];
@@ -63,6 +69,7 @@ frappe.query_reports["Salary Payments via EFT"] = {
 	return !jQuery.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
 	},
 	maketextfile: function(report){
+
 	var filters = report.get_values();
 	if (filters.bank_name) {
 		return frappe.call({
@@ -79,6 +86,7 @@ frappe.query_reports["Salary Payments via EFT"] = {
 //				if(r.message) {
 //					frappe.set_route('List',r.message );
 //				}
+				report.page.clear_secondary_action()	
 			}
 		})
 	} else {
