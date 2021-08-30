@@ -111,9 +111,11 @@ def get_data(filters):
 			sal.company, sum(sal.gross_pay) as gross_pay
 			FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
 			ON temp.employee = sal.employee
+			AND sal.docstatus = 1
 			AND month(sal.posting_date) = %s
 			AND year(sal.posting_date) = %s
 			AND sal.company = %s
+			AND sal.reports_group != 'G7'
 			GROUP BY temp.employee
 			""", (posting_month, posting_year, company), as_dict=1)
 	
@@ -144,6 +146,7 @@ def get_data(filters):
 			AND month(sal.posting_date) = %s
 			AND year(sal.posting_date) = %s
 			AND sal.company = %s
+			AND sal.reports_group != 'G7'
 			GROUP BY sal.employee
 			""", (posting_month, posting_year, company), as_dict=1)
 
@@ -195,6 +198,7 @@ def get_paye_data(posting_month, posting_year, company):
 			ON temp.employee = sal.employee
 			AND month(sal.posting_date) = %s
 			AND year(sal.posting_date) = %s
+			AND sal.reports_group != 'G7'
 			AND sal.company = %s
 			GROUP BY temp.employee
 			""", (posting_month, posting_year, company), as_dict=1)
@@ -227,6 +231,7 @@ def get_paye_data(posting_month, posting_year, company):
 			AND ded.amount > 0
 			AND month(sal.posting_date) = %s
 			AND year(sal.posting_date) = %s
+			AND sal.reports_group != 'G7'
 			AND sal.company = %s
 			GROUP BY sal.employee
 			""", (posting_month, posting_year, company), as_dict=1)
