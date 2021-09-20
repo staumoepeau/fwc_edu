@@ -1406,14 +1406,14 @@
    "_comments": null,
    "_liked_by": null,
    "_user_tags": null,
-   "creation": "2021-09-20 21:08:46.585542",
+   "creation": "2021-09-20 22:17:42.253905",
    "default_value": null,
    "doc_type": "Employee",
    "docstatus": 0,
    "doctype_or_field": "DocField",
    "field_name": "naming_series",
    "idx": 0,
-   "modified": "2021-09-20 21:08:46.585542",
+   "modified": "2021-09-20 22:17:42.253905",
    "modified_by": "Administrator",
    "name": "Employee-naming_series-options",
    "owner": "Administrator",
@@ -1423,7 +1423,7 @@
    "property": "options",
    "property_type": "Text",
    "row_name": null,
-   "value": "EMP.####"
+   "value": "EMP.YY.####"
   },
   {
    "_assign": null,

@@ -492,8 +492,8 @@ h6 {
   overflow: hidden;
   border-radius: 10px;
   margin: 0 10px 40px 10px;
-  background: rgb(207, 205, 205);
-  box-shadow: 0 10px 29px 0 rgba(68, 88, 144, 0.1);
+  background: rgb(253, 253, 253);
+  box-shadow: 0 10px 29px 0 rgba(4, 35, 119, 0.1);
   transition: all 0.3s ease-in-out;
 }
 
