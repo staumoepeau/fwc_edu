@@ -486,6 +486,17 @@ h6 {
   padding: 60px 0;
 }
 
+#about .box {
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: 0 10px 40px 10px;
+  background: rgb(207, 205, 205);
+  box-shadow: 0 10px 29px 0 rgba(68, 88, 144, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
 #about .about-container .background {
   margin: 20px 0;
 }
@@ -579,6 +590,24 @@ h6 {
 #about .about-extra h4 {
   font-weight: 600;
   font-size: 24px;
+}
+
+#about .icon {
+  position: absolute;
+  left: -10px;
+  top: calc(50% - 32px);
+}
+
+#about .icon i {
+  font-size: 64px;
+  line-height: 1;
+  transition: 0.5s;
+}
+#about .description {
+  font-size: 14px;
+  margin-left: 40px;
+  line-height: 24px;
+  margin-bottom: 0;
 }
 
 /* Services Section
