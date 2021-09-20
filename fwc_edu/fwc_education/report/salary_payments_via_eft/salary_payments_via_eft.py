@@ -721,7 +721,7 @@ def create_bank_eft_file(posting_date, company, bank_name):
 		
 		fname = abbr+"_"+curr_date+"_DISDATA.PC1"
 
-		save_path = 'edu.fwc.to/public/files'
+		save_path = 'fwcedu.org/public/files'
 		filename = os.path.join(save_path, fname)
 
 		ferp = frappe.new_doc("File")
