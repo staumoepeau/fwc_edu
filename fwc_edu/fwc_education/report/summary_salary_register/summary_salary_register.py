@@ -94,7 +94,7 @@ def execute(filters=None):
 	columns += salary_components
 	columns+=[ { "fieldname": "NetPay", "label": _("Net Pay"), "fieldtype": "Currency", "width": 100 }]
 
-	if mycompany == "FWC Education":
+	if mycompany == "FWC Education" or mycompany == "Mailefihi Siuilikutapu College":
 		dataframe = pd.concat([d.append(d.sum().rename(('TOTAL', '')))
 		for k, d in dataframe.groupby(level=1)
 			]).append(dataframe.sum().rename(('Grand', 'Total')))

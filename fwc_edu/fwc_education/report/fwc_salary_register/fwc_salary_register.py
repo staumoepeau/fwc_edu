@@ -24,7 +24,7 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		if mycompany == "FWC Education":
+		if mycompany == "FWC Education" or mycompany == "Mailefihi Siuilikutapu College":
 			row = [ss.branch,ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
 		else:
 			row = [ss.employee,ss.employee_name, basic_annual.get(ss.employee)]
@@ -72,7 +72,7 @@ def execute(filters=None):
 
 def get_columns(salary_slips, filters):
 	mycompany = filters.get("company")
-	if mycompany == "FWC Education":
+	if mycompany == "FWC Education" or mycompany == "Mailefihi Siuilikutapu College":
 		columns = [
 			_("Branch") + ":Link/Branch:100",
 			_("Employee") + ":Link/Employee:120",
@@ -112,7 +112,7 @@ def get_salary_slips(filters, company_currency):
 	filters.update({"from_date": filters.get("from_date"), "to_date":filters.get("to_date")})
 	conditions, filters = get_conditions(filters, company_currency)
 	salary_slips = frappe.db.sql("""select * from `tabSalary Slip` where %s
-		order by employee""" % conditions, filters, as_dict=1)
+		order by reports_group""" % conditions, filters, as_dict=1)
 	
 #	addtional_salary = frappe.db.sql("""select * from `tabFWC Additional Deduction` where %s
 #		order by employee""" % conditions, filters, as_dict=1)
