@@ -106,18 +106,31 @@ def get_data(filters):
 	posting_year = filters.get("year")
 	company = filters.get("company")
 	
-	get_gross = frappe.db.sql("""SELECT temp.employee, 
-			Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-			sal.company, sum(sal.gross_pay) as gross_pay
-			FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
-			ON temp.employee = sal.employee
-			AND sal.docstatus = 1
-			AND month(sal.posting_date) = %s
-			AND year(sal.posting_date) = %s
-			AND sal.company = %s
-			AND sal.reports_group != 'G7'
-			GROUP BY temp.employee
-			""", (posting_month, posting_year, company), as_dict=1)
+	if company == "FWC Education":
+		get_gross = frappe.db.sql("""SELECT temp.employee, 
+				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+				sal.company, sum(sal.gross_pay) as gross_pay
+				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
+				ON temp.employee = sal.employee
+				AND sal.docstatus = 1
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.company = %s
+				AND sal.reports_group != 'G7'
+				GROUP BY temp.employee
+				""", (posting_month, posting_year, company), as_dict=1)
+	else:
+		get_gross = frappe.db.sql("""SELECT temp.employee, 
+				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+				sal.company, sum(sal.gross_pay) as gross_pay
+				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
+				ON temp.employee = sal.employee
+				AND sal.docstatus = 1
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.company = %s
+				GROUP BY temp.employee
+				""", (posting_month, posting_year, company), as_dict=1)
 	
 	employee = {}
 
@@ -131,24 +144,42 @@ def get_data(filters):
 			"company": e.company
 		}
 		data.append(employee)
-	
-	get_tax = frappe.db.sql("""SELECT sal.employee, 
-			sal.employee_name, 
-			sum(ded.amount) as "tax"
-			FROM `tabSalary Slip` sal
-			INNER JOIN `tabSalary Detail` ded ON
-			sal.name = ded.parent
-			AND ded.parentfield = 'deductions'
-			AND ded.parenttype = 'Salary Slip'
-			AND ded.salary_component = "PAYE-TAX"
-			AND ded.docstatus = 1
-			AND ded.amount > 0
-			AND month(sal.posting_date) = %s
-			AND year(sal.posting_date) = %s
-			AND sal.company = %s
-			AND sal.reports_group != 'G7'
-			GROUP BY sal.employee
-			""", (posting_month, posting_year, company), as_dict=1)
+
+	if company == "FWC Education":
+		get_tax = frappe.db.sql("""SELECT sal.employee, 
+				sal.employee_name, 
+				sum(ded.amount) as "tax"
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON
+				sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.salary_component = "PAYE-TAX"
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.company = %s
+				AND sal.reports_group != 'G7'
+				GROUP BY sal.employee
+				""", (posting_month, posting_year, company), as_dict=1)
+	else:
+		get_tax = frappe.db.sql("""SELECT sal.employee, 
+				sal.employee_name, 
+				sum(ded.amount) as "tax"
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON
+				sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.salary_component = "PAYE-TAX"
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.company = %s
+				GROUP BY sal.employee
+				""", (posting_month, posting_year, company), as_dict=1)
 
 
 	for e in get_tax:
@@ -190,18 +221,29 @@ def get_paye_data(posting_month, posting_year, company):
 				"company": d.company
 			}
 		)
-
-	get_gross = frappe.db.sql("""SELECT temp.employee, 
-			Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
-			sal.company, sum(sal.gross_pay) as gross_pay
-			FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
-			ON temp.employee = sal.employee
-			AND month(sal.posting_date) = %s
-			AND year(sal.posting_date) = %s
-			AND sal.reports_group != 'G7'
-			AND sal.company = %s
-			GROUP BY temp.employee
-			""", (posting_month, posting_year, company), as_dict=1)
+	if company == "FWC Education":
+		get_gross = frappe.db.sql("""SELECT temp.employee, 
+				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+				sal.company, sum(sal.gross_pay) as gross_pay
+				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
+				ON temp.employee = sal.employee
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.reports_group != 'G7'
+				AND sal.company = %s
+				GROUP BY temp.employee
+				""", (posting_month, posting_year, company), as_dict=1)
+	else:
+		get_gross = frappe.db.sql("""SELECT temp.employee, 
+				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
+				sal.company, sum(sal.gross_pay) as gross_pay
+				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
+				ON temp.employee = sal.employee
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.company = %s
+				GROUP BY temp.employee
+				""", (posting_month, posting_year, company), as_dict=1)
 	
 	employee = {}
 
@@ -217,24 +259,41 @@ def get_paye_data(posting_month, posting_year, company):
 			"it_amount" : 0,
 		}
 		data.append(employee)
-	
-	get_tax = frappe.db.sql("""SELECT sal.employee, 
-			sal.employee_name, 
-			sum(ded.amount) as "tax"
-			FROM `tabSalary Slip` sal
-			INNER JOIN `tabSalary Detail` ded ON
-			sal.name = ded.parent
-			AND ded.parentfield = 'deductions'
-			AND ded.parenttype = 'Salary Slip'
-			AND ded.salary_component = "PAYE-TAX"
-			AND ded.docstatus = 1
-			AND ded.amount > 0
-			AND month(sal.posting_date) = %s
-			AND year(sal.posting_date) = %s
-			AND sal.reports_group != 'G7'
-			AND sal.company = %s
-			GROUP BY sal.employee
-			""", (posting_month, posting_year, company), as_dict=1)
+	if company == "FWC Education":
+		get_tax = frappe.db.sql("""SELECT sal.employee, 
+				sal.employee_name, 
+				sum(ded.amount) as "tax"
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON
+				sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.salary_component = "PAYE-TAX"
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.reports_group != 'G7'
+				AND sal.company = %s
+				GROUP BY sal.employee
+				""", (posting_month, posting_year, company), as_dict=1)
+	else:
+		get_tax = frappe.db.sql("""SELECT sal.employee, 
+				sal.employee_name, 
+				sum(ded.amount) as "tax"
+				FROM `tabSalary Slip` sal
+				INNER JOIN `tabSalary Detail` ded ON
+				sal.name = ded.parent
+				AND ded.parentfield = 'deductions'
+				AND ded.parenttype = 'Salary Slip'
+				AND ded.salary_component = "PAYE-TAX"
+				AND ded.docstatus = 1
+				AND ded.amount > 0
+				AND month(sal.posting_date) = %s
+				AND year(sal.posting_date) = %s
+				AND sal.company = %s
+				GROUP BY sal.employee
+				""", (posting_month, posting_year, company), as_dict=1)
 
 
 	for e in get_tax:
