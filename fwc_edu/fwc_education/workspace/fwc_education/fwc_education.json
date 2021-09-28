@@ -147,7 +147,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-08-20 13:10:26.511082",
+ "modified": "2021-09-29 10:04:34.418978",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -157,9 +157,15 @@
  "shortcuts": [
   {
    "doc_view": "",
-   "label": "Student Fee",
-   "link_to": "Student Fees",
-   "type": "Report"
+   "label": "Order",
+   "link_to": "Purchase Order",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Invoice",
+   "link_to": "Purchase Invoice",
+   "type": "DocType"
   },
   {
    "doc_view": "",
