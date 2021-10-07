@@ -50,9 +50,10 @@ class PAYIN(Document):
 
 
 @frappe.whitelist()
-def get_transaction_summary():
+def get_transaction_summary(school):
 	return frappe.db.sql("""SELECT SUM(total_payment) AS amount, school
 		FROM `tabPayin Payment Entry`
 		WHERE payin_process = 1
+		AND school = %s
 		AND payin = 0
-		GROUP BY school""", as_dict = 1)
+		GROUP BY school""",school, as_dict = 1)

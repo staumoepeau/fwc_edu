@@ -7,7 +7,10 @@
  "engine": "InnoDB",
  "field_order": [
   "title",
+  "company",
+  "column_break_3",
   "naming_series",
+  "section_break_5",
   "posting_date",
   "column_break_4",
   "status",
@@ -239,12 +242,26 @@
    "fieldname": "get_transactions",
    "fieldtype": "Button",
    "label": "Get Transactions"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "School",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-05-27 10:36:48.794628",
+ "modified": "2021-10-07 06:50:34.684889",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "PAYIN",

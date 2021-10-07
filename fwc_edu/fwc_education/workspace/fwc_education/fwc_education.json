@@ -147,7 +147,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-09-29 10:04:34.418978",
+ "modified": "2021-10-07 07:13:47.779740",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -157,14 +157,20 @@
  "shortcuts": [
   {
    "doc_view": "",
-   "label": "Order",
+   "label": "Sales Order",
+   "link_to": "Sales Order",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Purchase Order",
    "link_to": "Purchase Order",
    "type": "DocType"
   },
   {
    "doc_view": "",
-   "label": "Invoice",
-   "link_to": "Purchase Invoice",
+   "label": "Payment",
+   "link_to": "Payment Entry",
    "type": "DocType"
   },
   {

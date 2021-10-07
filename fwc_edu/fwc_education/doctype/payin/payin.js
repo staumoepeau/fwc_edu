@@ -8,6 +8,17 @@ frappe.ui.form.on('PAYIN', {
 	// }
 	setup: function(frm){
 //		fwc_edu.setup_queries(frm);
+		frm.set_query("account_no", function() {
+			frm.events.validate_company(frm);
+
+			return {
+				filters: {
+					"account_type": ["in", ["Income Account"]],
+					"is_group": 0,
+					"company": frm.doc.company
+				}
+			}
+		});
 	},
 	on_submit: function(frm){
 		cur_frm.refresh();
@@ -64,6 +75,12 @@ frappe.ui.form.on('PAYIN', {
 	get_transactions: function(frm) {
         get_summary(frm);
     },
+
+	validate_company: (frm) => {
+		if (!frm.doc.company){
+			frappe.throw({message:__("Please select a School first."), title: __("Mandatory")});
+		}
+	},
 	
 });
 
@@ -88,6 +105,9 @@ var get_grand_total = function(frm){
 var get_summary = function(frm) {
     frappe.call({
         method: "fwc_edu.fwc_education.doctype.payin.payin.get_transaction_summary",
+		args:{
+			school: frm.doc.company
+		},
         callback: function(r) {
             console.log(r.message)
             if (r.message) {
@@ -104,13 +124,15 @@ var get_summary = function(frm) {
 
 $.extend(fwc_edu.payin, {
 	setup_queries: function(frm) {
-
+	
 	frm.fields_dict['payment_entry_table'].grid.get_field("receipt_document").get_query = function(doc, cdt, cdn) {
 		return {
 			filters: [
 				['Payment Entry', 'docstatus', '=', 1],
 				['Payment Entry', 'payment_type', '=', 'Receive'],
-				['Payment Entry', 'payin', '=', 0]
+				['Payment Entry', 'payin', '=', 0],
+				['Payment Entry', 'company', '=', frm.doc.company]
+
 			]
 			}
 		}
