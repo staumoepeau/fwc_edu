@@ -41,12 +41,38 @@ class PAYIN(Document):
 	def updates_list(self):
 		self.get_mode_of_payment()
 
-	def make_payin_entries(self):
-		frappe.db.sql("""Update `tabPayment Entry` set status="PayIn" where name=%s""", (self.name))
+#	def make_payin_entries(self):
+#		frappe.db.sql("""Update `tabPayment Entry` set status="PayIn" where name=%s""", (self.name))
 
 	def update_payment_entry(self):
 		for d in self.get("payment_entry_table"):
 			frappe.db.sql("""Update `tabPayment Entry` set payin=1 where name=%s""", (d.receipt_document))
+	
+	def make_payin_entries(self):
+#		paid_from_account = frappe.get_all('Account', filters={"account_name": "Undeposit Funds", "company": self.company}, fields=['name'])
+		paid_from_account = frappe.get_value('Account', {"account_name": "Undeposit Funds", "company": self.company}, ['name'])
+		doc = frappe.new_doc("Payment Entry")
+		doc.update({
+					"docstatus" : 1,
+					"mode_of_payment" : "Payin",
+					"payment_type" : "Internal Transfer",
+					"paid_from" : paid_from_account,
+					"paid_from_account_currency" : "TOP",
+					"paid_to" : self.account_no,
+					"paid_to_account_currency" : "TOP",
+					"paid_amount" : self.grand_total,
+					"received_amount" : self.grand_total,
+					"cost_center" : self.cost_center		
+				})
+		doc.insert()
+		doc.submit()
+
+	def on_cancel(self):
+		self.cancel_payment_entry()
+
+	def cancel_payment_entry(self):
+		for d in self.get("payment_entry_table"):
+			frappe.db.sql("""Update `tabPayment Entry` set payin=0 where name=%s""", (d.receipt_document))
 
 
 @frappe.whitelist()

@@ -40,6 +40,8 @@
   "different_amount",
   "payin_account_section",
   "account_no",
+  "column_break_35",
+  "cost_center",
   "transction_summary_section",
   "get_transactions",
   "payment_summary",
@@ -192,7 +194,8 @@
    "fieldname": "account_no",
    "fieldtype": "Link",
    "label": "Account  No",
-   "options": "Account"
+   "options": "Account",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_8",
@@ -256,12 +259,23 @@
   {
    "fieldname": "section_break_5",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_35",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-10-07 06:50:34.684889",
+ "modified": "2021-10-28 05:05:04.479659",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "PAYIN",
