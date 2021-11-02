@@ -15,7 +15,8 @@ def execute(filters=None):
 	todatesql = "ss.end_date <= DATE('{to_date}')".format( to_date=filters.to_date) if filters.to_date else '1=1'
 	
 	net_amountsql = """SELECT ss.branch,reports_group,
-	SUM(ss.net_pay) AS net_pay
+	SUM(ss.net_pay) AS net_pay,
+	SUM(ss.gross_pay) AS gross_pay
 	FROM `tabSalary Slip` ss
 	WHERE ss.docstatus = 1
 	AND ({companysql})
@@ -60,10 +61,12 @@ def execute(filters=None):
 	
 	dataframe = pd.DataFrame.from_records(data)
 	df_net = pd.DataFrame.from_records(net_data)
+	gross_net = pd.DataFrame.from_records(net_data)
 
 	salary_components = dataframe.salary_component.unique().tolist()
 
 	df_net = df_net.pivot_table(index=["branch","reports_group"], values="net_pay")
+	gross_net = gross_net.pivot_table(index=["branch","reports_group"], values="gross_pay")
 
 #	if mycompany == "FWC Education":
 	dataframe = dataframe.pivot_table(index=["branch","reports_group"], columns="salary_component", values="amount")
@@ -73,6 +76,7 @@ def execute(filters=None):
 	
 #	dataframe.insert(11, "netpay", df_net, True)
 	dataframe['NetPay'] = df_net
+	dataframe['GrossPay'] = gross_net
 
 #	frappe.msgprint(_("Dataframe {0}").format(dataframe))
 
@@ -91,6 +95,7 @@ def execute(filters=None):
 #	if mycompany == "FWC Education":
 	columns  += [ { "fieldname": "reports_group", "label": _("Group"), "fieldtype": "Data", "width": 80 }]
 	columns += [ { "fieldname": "basicsalary", "label": _("Basic Salary"), "fieldtype": "Currency", "width": 100 }]
+	columns += [ { "fieldname": "GrossPay", "label": _("Gross Pay"), "fieldtype": "Currency", "width": 100 }]
 	columns += salary_components
 	columns+=[ { "fieldname": "NetPay", "label": _("Net Pay"), "fieldtype": "Currency", "width": 100 }]
 
