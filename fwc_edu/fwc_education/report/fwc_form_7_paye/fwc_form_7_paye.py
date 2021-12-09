@@ -65,8 +65,8 @@ def get_columns(filters):
 def get_conditions(filters):
 	conditions = [""]
 
-	if filters.get("branch"):
-		conditions.append("branch = '%s' " % (filters["branch"]) )
+#	if filters.get("branch"):
+#		conditions.append("branch = '%s' " % (filters["branch"]) )
 
 	if filters.get("company"):
 		conditions.append("company = '%s' " % (filters["company"]) )
@@ -107,7 +107,7 @@ def get_data(filters):
 	company = filters.get("company")
 	
 	if company == "FWC Education":
-		get_gross = frappe.db.sql("""SELECT temp.employee, 
+		get_gross = frappe.db.sql("""SELECT temp.employee, temp.tin,
 				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
 				sal.company, sum(sal.gross_pay) as gross_pay
 				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
@@ -119,8 +119,9 @@ def get_data(filters):
 				AND sal.reports_group != 'G7'
 				GROUP BY temp.employee
 				""", (posting_month, posting_year, company), as_dict=1)
-	else:
-		get_gross = frappe.db.sql("""SELECT temp.employee, 
+	
+	if company != "FWC Education":
+		get_gross = frappe.db.sql("""SELECT temp.employee, temp.tin,
 				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
 				sal.company, sum(sal.gross_pay) as gross_pay
 				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
@@ -138,7 +139,8 @@ def get_data(filters):
 		employee = {
 			"emp_id": e.employee,
 			"employee_name" : e.employee_name,
-			"tin" : employee_data_dict.get(e.employee).get("tin"),
+			"tin": e.tin,
+#			"tin" : employee_data_dict.get(e.employee).get("tin"),
 			"it_amount" : 0,
 			"gross_pay": e.gross_pay,
 			"company": e.company
@@ -163,7 +165,8 @@ def get_data(filters):
 				AND sal.reports_group != 'G7'
 				GROUP BY sal.employee
 				""", (posting_month, posting_year, company), as_dict=1)
-	else:
+	
+	if company != "FWC Education":
 		get_tax = frappe.db.sql("""SELECT sal.employee, 
 				sal.employee_name, 
 				sum(ded.amount) as "tax"
@@ -222,7 +225,7 @@ def get_paye_data(posting_month, posting_year, company):
 			}
 		)
 	if company == "FWC Education":
-		get_gross = frappe.db.sql("""SELECT temp.employee, 
+		get_gross = frappe.db.sql("""SELECT temp.employee, temp.tin,
 				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
 				sal.company, sum(sal.gross_pay) as gross_pay
 				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
@@ -234,7 +237,7 @@ def get_paye_data(posting_month, posting_year, company):
 				GROUP BY temp.employee
 				""", (posting_month, posting_year, company), as_dict=1)
 	else:
-		get_gross = frappe.db.sql("""SELECT temp.employee, 
+		get_gross = frappe.db.sql("""SELECT temp.employee, temp.tin,
 				Concat(Ifnull(temp.last_name,' ') ,' ', Ifnull(temp.middle_name,' '),' ', Ifnull(temp.first_name,' ')) as employee_name,
 				sal.company, sum(sal.gross_pay) as gross_pay
 				FROM `tabEmployee` temp INNER JOIN `tabSalary Slip` sal
@@ -250,7 +253,8 @@ def get_paye_data(posting_month, posting_year, company):
 	for e in get_gross:
 		employee = {
 			"emp_id": e.employee,
-			"tin" : employee_data_dict.get(e.employee).get("tin"),
+			"tin": e.tin,
+#			"tin" : employee_data_dict.get(e.employee).get("tin"),
 			"employee_name" : e.employee_name,
 			"date_of_payment" : '',
 			"pay_period": 'Fortnightly',
@@ -323,6 +327,7 @@ def save_data_to_Excel(month, company, year):
 	filename = "PAYE.xlsm"
 	Month = datetime.date(1900, int(month), 1).strftime('%B')
 	Abbr = frappe.db.get_value("Company", company, "abbr")
+	tin = frappe.db.get_value("Company", company, "tax_id")
 
 	new_filename = Abbr +"-PAYE-" + Month + "-" + year+".xlsm"
 
@@ -347,14 +352,15 @@ def save_data_to_Excel(month, company, year):
 
 	df = df.drop('emp_id', axis=1)
 
+
 #	frappe.msgprint(_("Data {0}").format(df))
 	workbook1 = openpyxl.load_workbook(file_name, read_only=False, keep_vba= True)
 	workbook1.template = True
 	sheetname = workbook1.get_sheet_by_name('PAYE')
-	sheetname['C5']= str('263317')
+	sheetname['C5']= str(tin)
 	sheetname['C7']= str(Month)
 	sheetname['E7']= str(year)
-	sheetname['C9']= str('FWC Education')
+	sheetname['C9']= str(company)
 
 	writer = pd.ExcelWriter(new_file_name, engine='openpyxl')
 	writer.book = workbook1

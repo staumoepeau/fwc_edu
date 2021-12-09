@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "FWC Education",
- "modified": "2021-02-12 04:40:37.602014",
+ "modified": "2021-12-09 15:27:13.231948",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC FORM 7 PAYE",
@@ -27,7 +27,7 @@
    "role": "HR Manager"
   },
   {
-   "role": "Employee"
+   "role": "System Manager"
   }
  ]
 }
