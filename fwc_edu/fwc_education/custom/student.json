@@ -129,14 +129,14 @@
    "_comments": null,
    "_liked_by": null,
    "_user_tags": null,
-   "creation": "2021-05-10 15:17:06.104894",
+   "creation": "2021-12-10 10:02:01.432213",
    "default_value": null,
    "doc_type": "Student",
    "docstatus": 0,
    "doctype_or_field": "DocField",
    "field_name": "naming_series",
    "idx": 0,
-   "modified": "2021-05-10 15:17:06.104894",
+   "modified": "2021-12-10 10:02:01.432213",
    "modified_by": "Administrator",
    "name": "Student-naming_series-options",
    "owner": "Administrator",
@@ -146,7 +146,7 @@
    "property": "options",
    "property_type": "Text",
    "row_name": null,
-   "value": "FWC.YYYY.\nEDU-STU-.YYYY.-"
+   "value": "S.YY.######\nFWC.YYYY.\nEDU-STU-.YYYY.-\n"
   }
  ],
  "sync_on_migrate": 1
