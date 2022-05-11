@@ -27,13 +27,14 @@ def execute(filters=None):
 	global MBF_Bank
 	global TDB_Bank
 	global SIA
+	global CompanyList
 	BSP_Bank = "BSP%"
-	MBF_Bank = "MBF%"
+	MBF_Bank = ["MBF", "MBF01", "MBF02","MBF03","MBF04", "MBF05", "Pakiua Ma"]
 	TDB_Bank = "TDB%"
 	SIA = "SIA%"
 	global netpay
 	netpay = []
-
+	CompanyList = ["Tupou Tertiary Institute","FWC Education","Queen Salote College","Tupou High School","Tupou College Toloa","Tupou College Toloa Faama"]
 	columns = get_columns(filters)
 	data = get_data(filters)
 
@@ -162,7 +163,7 @@ def get_data(filters):
 
 	other = frappe.db.sql("""SELECT sal.employee, sal.employee_name,
 			IF(ded.salary_component LIKE %s, "BSP",
-				IF(ded.salary_component LIKE %s, "MBF",
+				IF(ded.salary_component IN %s, "MBF",
 					IF(ded.salary_component LIKE %s, "TDB", 
 						IF(ded.salary_component LIKE %s, "SIA", ded.salary_component)))) AS bankname,
 			ded.amount, ded.account_number, ded.description
@@ -256,7 +257,7 @@ def get_data(filters):
 	tti_association = []
 	SIA_Finance = []
 	
-	if company == "Tupou Tertiary Institute" and bankname == "BSP":
+	if company in CompanyList and bankname == "BSP":
 		tti_account = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "TTI ACCOUNT","TTI ACCOUNT", sal.employee_name) AS employee_name, 
 			IF(ded.salary_component = "TTI ACCOUNT", "BSP", ded.salary_component) AS bankname,
@@ -347,7 +348,7 @@ def get_data(filters):
 def get_bank_data(postingdate, company, bankname):
 
 	BSP_Bank = "BSP%"
-	MBF_Bank = "MBF%"
+#	MBF_Bank = "MBF%"
 	TDB_Bank = "TDB%"
 	SIA = "SIA%"
 
@@ -399,7 +400,7 @@ def get_bank_data(postingdate, company, bankname):
 
 	other = frappe.db.sql("""SELECT sal.employee, sal.employee_name,
 			IF(ded.salary_component LIKE %s, "BSP",
-				IF(ded.salary_component LIKE %s, "MBF",
+				IF(ded.salary_component IN %s, "MBF",
 					IF(ded.salary_component LIKE %s, "TDB", 
 						IF(ded.salary_component LIKE %s, "SIA", ded.salary_component)))) AS bankname,
 			ded.amount, ded.account_number, ded.description
@@ -486,7 +487,7 @@ def get_bank_data(postingdate, company, bankname):
 	tti_association = []
 	SIA_Finance = []
 
-	if company == "Tupou Tertiary Institute" and bankname == "BSP":
+	if company in CompanyList and bankname == "BSP":
 		tti_account = frappe.db.sql("""SELECT sal.employee, 
 			IF(ded.salary_component = "TTI ACCOUNT","TTI ACCOUNT", sal.employee_name) AS employee_name, 
 			IF(ded.salary_component = "TTI ACCOUNT", "BSP", ded.salary_component) AS bankname,
@@ -594,7 +595,7 @@ def get_sum_netpay(posting_date, company, bank_name):
 		and company = %s
 		and bank_name = %s """,(posting_date, company, bank_name))
 	
-	if company == "Tupou Tertiary Institute" and bank_name == "BSP":
+	if company in CompanyList and bank_name == "BSP":
 		netpay_2 = frappe.db.sql("""SELECT sum(tsd.amount)
 				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
 				WHERE tsd.parent = tss.name
@@ -605,7 +606,7 @@ def get_sum_netpay(posting_date, company, bank_name):
 				AND tss.company = %s
 				""", (posting_date, company))
 	
-	if company != "Tupou Tertiary Institute":
+	if company not in CompanyList:
 		netpay_2 = frappe.db.sql("""SELECT sum(tsd.amount)
 				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
 				WHERE tsd.parent = tss.name
@@ -660,7 +661,7 @@ def get_sum_account(posting_date, company, bank_name):
 		and company = %s
 		and bank_name = %s """,(posting_date, company, bank_name))
 	
-	if company == "Tupou Tertiary Institute" and bank_name == "BSP":
+	if company in CompanyList and bank_name == "BSP":
 		sum_account_2 = frappe.db.sql("""SELECT sum(account_number) 
 				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
 				WHERE tsd.parent = tss.name
@@ -670,7 +671,7 @@ def get_sum_account(posting_date, company, bank_name):
 				AND tss.company = %s
 				""", (posting_date, company))
 	
-	if company != "Tupou Tertiary Institute" and bank_name == "BSP":
+	if company not in CompanyList and bank_name == "BSP":
 		sum_account_2 = frappe.db.sql("""SELECT sum(account_number) 
 				FROM `tabSalary Detail` tsd, `tabSalary Slip` tss
 				WHERE tsd.parent = tss.name
@@ -874,3 +875,4 @@ def create_bank_eft_file(posting_date, company, bank_name):
 	ferp.save()
 	frappe.db.sql('''UPDATE `tabFile` SET company = %s, file_url = %s WHERE file_name = %s''',(company, "/files/"+fname, fname), as_dict=True)
 	f.close()
+

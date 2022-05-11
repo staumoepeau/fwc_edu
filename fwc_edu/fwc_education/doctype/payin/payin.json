@@ -8,6 +8,7 @@
  "field_order": [
   "title",
   "company",
+  "cost_center",
   "column_break_3",
   "naming_series",
   "section_break_5",
@@ -256,12 +257,18 @@
   {
    "fieldname": "section_break_5",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-10-28 14:37:49.830485",
+ "modified": "2022-05-11 14:33:58.651626",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "PAYIN",
@@ -277,6 +284,7 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
@@ -289,6 +297,19 @@
    "report": 1,
    "role": "Accounts Manager",
    "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Purchase Master Manager",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
