@@ -56,15 +56,15 @@ class PAYIN(Document):
 					"docstatus" : 1,
 					"mode_of_payment" : "Payin",
 					"payment_type" : "Internal Transfer",
-#					"paid_from" : paid_from_account,
+					"paid_from" : paid_from_account,
 					"paid_from_account_currency" : "TOP",
-					"paid_from" : self.account_no,
-					"paid_to" : paid_from_account,
-#					"paid_to" : self.account_no,
+					"paid_to" : self.account_no,
 					"paid_to_account_currency" : "TOP",
-					"paid_amount" : self.grand_total,
-					"received_amount" : self.grand_total,
-					"cost_center" : self.cost_center		
+					"paid_amount" : self.payment_total,
+					"received_amount" : self.payment_total,
+					"cost_center" : self.cost_center,
+					"reference_no" : self.name,
+					"reference_date" : self.posting_date	
 				})
 		doc.insert()
 		doc.submit()

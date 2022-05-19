@@ -7,13 +7,12 @@ frappe.ui.form.on('PAYIN', {
 
 	// }
 	setup: function(frm){
-//		fwc_edu.setup_queries(frm);
 		frm.set_query("account_no", function() {
 			frm.events.validate_company(frm);
 
 			return {
 				filters: {
-					"account_type": ["in", ["Income Account"]],
+					"account_type": ["in", ["Bank"]],
 					"is_group": 0,
 					"company": frm.doc.company
 				}
@@ -26,6 +25,7 @@ frappe.ui.form.on('PAYIN', {
 
 	onload: function(frm) {
 		fwc_edu.payin.setup_queries(frm);
+		frm.doc.cost_center = frappe.get_doc(":Company", frm.doc.company).cost_center;
 	},
 
 
@@ -122,22 +122,22 @@ var get_summary = function(frm) {
 	})
 };
 
-//$.extend(fwc_edu.payin, {
-//	setup_queries: function(frm) {
-	
-//	frm.fields_dict['payment_entry_table'].grid.get_field("receipt_document").get_query = function(doc, cdt, cdn) {
-//		return {
-//			filters: [
-//				['Payment Entry', 'docstatus', '=', 1],
-//				['Payment Entry', 'payment_type', '=', 'Receive'],
-//				['Payment Entry', 'payin', '=', 0],
-//				['Payment Entry', 'company', '=', frm.doc.company]
 
-//			]
-//			}
-//		}
-//	}
-//});
+$.extend(fwc_edu.payin, {
+
+setup_queries: function(frm) {
+	frm.fields_dict['payment_entry_table'].grid.get_field("receipt_document").get_query = function(doc, cdt, cdn) {
+		return {
+			filters: [
+				['Payment Entry', 'docstatus', '=', 1],
+				['Payment Entry', 'payment_type', '=', 'Receive'],
+				['Payment Entry', 'payin', '!=', 1],
+				['Payment Entry', 'company', '=', frm.doc.company]	
+				]
+			}
+		}
+	}
+});
 
 frappe.ui.form.on("Payin Payment Entry", "receipt_document", function(frm, cdt, cdn){
 	var d = locals[cdt][cdn];
@@ -160,19 +160,19 @@ frappe.ui.form.on("Payin Payment Entry", "receipt_document", function(frm, cdt, 
 	})
 });
 
-frappe.ui.form.on("Payin Payment Entry",{
-	payment_entry_table_add:  function(frm){
-		frm.fields_dict['payment_entry_table'].grid.get_field('receipt_document').get_query = function(doc) {
-			var receipt_document_list = [];
-			if(!doc.__islocal) receipt_document_list.push(doc.name);
-			$.each(doc.payment_entry_table, function(_idx, val) {
-				if (val.receipt_document) receipt_document_list.push(val.receipt_document);
-			});
-			return { filters: [['Payment Entry', 'name', 'not in', receipt_document_list]] };
-		};
-	
-		}
-});
+//frappe.ui.form.on("Payin Payment Entry",{
+//	payment_entry_table_add:  function(frm){
+//		frm.fields_dict['payment_entry_table'].grid.get_field('receipt_document').get_query = function(doc) {
+//			var receipt_document_list = [];
+//			if(!doc.__islocal) receipt_document_list.push(doc.name);
+//			$.each(doc.payment_entry_table, function(_idx, val) {
+//				if (val.receipt_document) receipt_document_list.push(val.receipt_document);
+//			});
+//			return { filters: [['Payment Entry', 'name', 'not in', receipt_document_list]] };
+//		};
+//	
+//		}
+//});
 
 frappe.ui.form.on("Denomination Table", {
 	qty: function(frm, cdt, cdn){
