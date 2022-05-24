@@ -41,7 +41,7 @@ def execute(filters=None):
 	mapping = { 0: 'PAID', 87 : 'UNPAID'}
 	dataframe['total_unpaid']=dataframe.loc[:,term].sum(axis=1)
 	dataframe = dataframe.replace(to_replace=0, value=1, regex=True)
-	dataframe = dataframe.replace(to_replace=[87,70], value=0, regex=True)
+	dataframe = dataframe.replace(to_replace=[87,70], value="UNPAID", regex=True)
 
 	
 #	dataframe = dataframe.assign(A='foo')
