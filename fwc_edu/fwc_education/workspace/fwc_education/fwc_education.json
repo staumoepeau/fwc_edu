@@ -113,6 +113,15 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Student",
+   "link_to": "Student",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "School Fees",
    "link_to": "Fees",
    "link_type": "DocType",
@@ -122,8 +131,8 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Student",
-   "link_to": "Student",
+   "label": "Student Applicant",
+   "link_to": "Student Applicant",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -191,7 +200,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-05-03 07:51:37.535063",
+ "modified": "2022-05-30 09:42:29.031933",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
