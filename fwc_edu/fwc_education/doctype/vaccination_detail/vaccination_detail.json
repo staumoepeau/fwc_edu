@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-08-20 08:50:49.014196",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "vaccinate_date",
+  "vaccinate_time",
+  "vaccine_type",
+  "serial_number",
+  "perform_the_vaccination"
+ ],
+ "fields": [
+  {
+   "fieldname": "vaccinate_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Vaccinate Date"
+  },
+  {
+   "fieldname": "vaccinate_time",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Vaccinate Time"
+  },
+  {
+   "fieldname": "vaccine_type",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Vaccine Type",
+   "options": "Vaccine Type"
+  },
+  {
+   "fieldname": "serial_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Serial Number"
+  },
+  {
+   "fieldname": "perform_the_vaccination",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Perform the Vaccination"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-08-20 08:52:09.410949",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "Vaccination Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
