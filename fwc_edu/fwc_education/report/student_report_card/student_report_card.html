@@ -1,0 +1,65 @@
+{%
+	var report_columns = report.get_columns_for_print();
+
+%}
+<h5 class="text-center">{%= filters.student %}</h5>
+<h5 class="text-center">{%= filters.program %}{{ __("&nbsp;for the Year&nbsp;") }}{%= filters.academic_year %}</h5>
+<hr>
+<style>
+table, td, th {
+border: 1px solid black;
+}
+
+table {
+border-collapse: collapse;
+}
+</style>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+				{% if (i==0) { %}
+					<th class="text-left">{%= report_columns[i].label %}</th>
+				{% } else { %}
+					<th class="text-right">{%= report_columns[i].label %}</th>
+				{% } %}
+			{% } %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for(var j=0, k=data.length; j<k; j++) { %}
+			{%
+				var row = data[j];
+			%}
+			<tr>
+				{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+				{% if (i==0) { %}
+					<td class="text-left">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
+							{%= format_currency(row[fieldname]) %}
+						{% } else { %}
+							{% if (!is_null(row[fieldname])) { %}
+								{%= row[fieldname] %}
+							{% } %}
+						{% } %}
+					</td>
+					{% } else { %}
+					<td class="text-right">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
+							{%= format_currency(row[fieldname]) %}
+						{% } else { %}
+							{% if (!is_null(row[fieldname])) { %}
+								{%= row[fieldname] %}
+							{% } %}
+						{% } %}
+					</td>
+					{% } %}
+				{% } %}
+			</tr>
+		{% } %}
+	</tbody>
+</table>
+
+<p class="text-right text-muted">{{ __("Printed On") }} {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}</p>

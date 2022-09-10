@@ -1,0 +1,27 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2022-09-10 10:12:37.775336",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "FWC Education",
+ "modified": "2022-09-10 10:16:04.649532",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "Student Report Card",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Assessment Result",
+ "report_name": "Student Report Card",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Academics User"
+  }
+ ]
+}
