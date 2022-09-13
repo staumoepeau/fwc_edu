@@ -29,7 +29,7 @@ app_license = "MIT"
 # webform_include_js = {"doctype": "public/js/doctype.js"}
 # webform_include_css = {"doctype": "public/css/doctype.css"}
 website_context = {
-	"splash_image": "/assets/fwc_edu/images/splash-screen.png"
+	"splash_image": "/assets/fwc_edu/images/splash_screen.png"
 }
 # include js in page
 # page_js = {"page" : "public/js/file.js"}

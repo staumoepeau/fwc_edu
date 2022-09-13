@@ -5,11 +5,90 @@
 frappe.query_reports["Student Report Card"] = {
 	"filters": [
 		{
+			"fieldname":"program",
+			"label": __("Class"),
+			"fieldtype": "Link",
+			"options" : 'Program',
+			"width": "100px",
+			"reqd": 0,
+			"hidden":1
+		},
+		{	
 			"fieldname": "student",
 			"label": __("Student"),
 			"fieldtype": "Link",
 			"options": "Student",
-			"reqd": 1
+			"reqd": 1,
+			on_change: () => {
+				var student = frappe.query_report.get_filter_value('student');				
+	
+				if (student) {
+					frappe.db.get_value('Student', student, ["title"], function(value) {
+					frappe.query_report.set_filter_value('title', value["title"]);
+					});
+
+					frappe.db.get_value('Program Enrollment', {'student': student}, ["program"], function(value) {
+					frappe.query_report.set_filter_value('program', value["program"]);
+
+					});
+
+					
+					frappe.call({
+						method: "fwc_edu.fwc_education.api.get_total_score",
+						args: {
+								"student": student,
+//								"academic_year": filters.academic_year,
+//								"academic_term": filters.academic_term,						
+							},
+							callback: function(e) {
+							//	console.log(data)
+								if(e.message) {
+									frappe.query_report.set_filter_value('total_score', e.message);
+								}
+					//			console.log(e.message)
+								//	report.page.clear_secondary_action()	
+							}
+					});
+
+					frappe.call({
+						method: "fwc_edu.fwc_education.api.get_midyear_score",
+						args: {
+							"student": student,
+							
+//									"academic_term": filters.academic_term,						
+						},
+						callback: function(data) {
+						//	console.log(data.message)
+							if(data.message) {
+								frappe.query_report.set_filter_value('score', data.message);
+							}
+						//	console.log(data.message)
+						//	report.page.clear_secondary_action()	
+						}
+					});
+
+					frappe.call({
+						method: "fwc_edu.fwc_education.api.get_midyear_position",
+						args: {
+							"student": student,
+//							"academic_term": filters.academic_term,						
+						},
+						callback: function(r) {
+							console.log(r)
+	//						if(data.message) {
+	//							frappe.query_report.set_filter_value('midyear_position', data.message);
+	//						}
+						//	console.log(r.message)
+						//	report.page.clear_secondary_action()	
+						}
+					});
+							
+				} else {
+					frappe.query_report.set_filter_value('title', "");
+					frappe.query_report.set_filter_value('program', "");
+					frappe.query_report.set_filter_value('total_score', "");
+				}
+			}
 
 		},
 		{
@@ -29,61 +108,46 @@ frappe.query_reports["Student Report Card"] = {
 			"width": "90px",
 			"reqd": 0
 		},
-//		{
-//			"fieldname":"branch",
-//			"label": __("Branch"),
-//			"fieldtype": "Link",
-//			"options": "Branch",
-//			"width": "100px",
-//			"reqd": 1
-//		},
-//		{
-//			"fieldname":"program",
-//			"label": __("Class"),
-//			"fieldtype": "Link",
-//			"options": "Program",
-//			"width": "100px",
-//			"reqd": 1
-//		},
+
+		{
+			"fieldname": "title",
+			"label": __("Student Name"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
+			"fieldname": "score",
+			"label": __("Mid Year Score"),
+			"fieldtype": "Data",
+			"hidden": 0
+		},
+		{
+			"fieldname": "total_score",
+			"label": __("Total Score"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
+			"fieldname": "overall_position",
+			"label": __("Overall Position"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
+			"fieldname": "midyear_position",
+			"label": __("Mid Year Position"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+
+
+
 	],
-//	refresh: function (report){
 
-//		report.page.clear_secondary_action()	
+	refresh: function (report){
 
-//	},
-//	onload: function(report) {
+		report.page.clear_secondary_action()	
 
-			
-//		report.page.set_primary_action('Print Report Card', function() {
-//			var args = "as a draft"
-//				var reporter = frappe.query_reports["Print Report Card"];
-//					reporter.printreportcard(report);
-//		},)
-//	},
-
-//	printreportcard: function(report){
-
-//		var filters = report.get_values();
-//		if (filters.student) {
-//			return frappe.call({
-//				method: "fwc_edu.fwc_education.report.student_report_card.student_report_card.print_report_card",
-//				args: {
-//					"student": filters.student,
-//					"academic_year": filters.academic_year,
-//					"academic_term": filters.academic_term,	
-					
-//				},
-//				callback: function(r) {
-//					console.log(r)
-	//				if(r.message) {
-	//					frappe.set_route('List',r.message );
-	//				}
-//					report.page.clear_secondary_action()	
-//				}
-//			})
-//		} else {
-//			frappe.msgprint("Please select all filters for creating Text File")
-//		}
-//	},
-}
+	},
+};
 

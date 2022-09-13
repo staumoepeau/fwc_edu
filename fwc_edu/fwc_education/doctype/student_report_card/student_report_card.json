@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-09-11 08:03:34.510516",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "academic_year",
+  "class",
+  "column_break_3",
+  "student_name",
+  "academic_term",
+  "student_mark_section",
+  "get_student_results",
+  "report_results",
+  "results",
+  "results_code"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Student"
+  },
+  {
+   "fieldname": "academic_year",
+   "fieldtype": "Link",
+   "label": "Academic Year",
+   "options": "Academic Year"
+  },
+  {
+   "fieldname": "academic_term",
+   "fieldtype": "Link",
+   "label": "Academic Term",
+   "options": "Academic Term"
+  },
+  {
+   "fieldname": "class",
+   "fieldtype": "Link",
+   "label": "Class",
+   "options": "Program"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "student.title",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_mark_section",
+   "fieldtype": "Section Break",
+   "label": "Student Mark"
+  },
+  {
+   "fieldname": "get_student_results",
+   "fieldtype": "Button",
+   "label": "Get Student Results"
+  },
+  {
+   "fieldname": "results",
+   "fieldtype": "HTML",
+   "label": "Results"
+  },
+  {
+   "fieldname": "results_code",
+   "fieldtype": "Code",
+   "label": "Result Code"
+  },
+  {
+   "fieldname": "report_results",
+   "fieldtype": "Table",
+   "label": "Results",
+   "options": "Student Report Results"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2022-09-11 11:55:54.860498",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "Student Report Card",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

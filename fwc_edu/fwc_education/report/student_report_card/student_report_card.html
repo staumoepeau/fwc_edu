@@ -1,27 +1,105 @@
 {%
 	var report_columns = report.get_columns_for_print();
-
 %}
-<h5 class="text-center">{%= filters.student %}</h5>
-<h5 class="text-center">{%= filters.program %}{{ __("&nbsp;for the Year&nbsp;") }}{%= filters.academic_year %}</h5>
-<hr>
+
 <style>
+	@media print 
+{
+    @page {
+      size: A4; 
+      margin:0;
+    }
+    html, body {
+        width: 210mm;
+        /* height: 297mm; */
+        height: 282mm;
+        background: #FFF;
+        overflow:visible;
+    }
+    body {
+        padding-top:5mm;
+    }
+}
 table, td, th {
 border: 1px solid black;
+}
+
+table, td {
+vertical-align:middle;
 }
 
 table {
 border-collapse: collapse;
 }
+.table td, .table th {
+    font-size: 10px;
+}
 </style>
+
+<!--------------------HEADING-------------------------------->
+<br>
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<label>STUDENT REPORT CARD</label>
+	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-xs-7">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-left">STUDENT NAME</label></div>
+			<div class="col-xs-6">{%= filters.title %}</div>
+		</div>
+	</div>
+	<div class="col-xs-5">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-right">STUDENT NO</label></div>
+			<div class="col-xs-6 text-right">{%= filters.student %}</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-7">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-left">CLASS</label></div>
+			<div class="col-xs-6">{%= filters.program %}</div>
+		</div>
+	</div>
+	<div class="col-xs-5">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-right">Term</label></div>
+			<div class="col-xs-6 text-right">{%= filters.academic_term %}</div>
+		</div>
+	</div>
+</div>
+<hr>
+
 <table class="table table-bordered">
 	<thead>
 		<tr>
 			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
-				{% if (i==0) { %}
-					<th class="text-left">{%= report_columns[i].label %}</th>
+			
+				{% if (report_columns[i].label=="Common Test") { %}
+					<th class="text-center" style="width:12%">Course Work<br><br>30%</th>
+				
+				{% } else if (report_columns[i].label=="Mid Year Exam") { %}
+				<th class="text-center" style="width:14%">Mid Year Exam<br><br>70%</th>
+				
+				{% } else if (report_columns[i].label=="Raw Marks") { %}
+				<th class="text-center" style="width:13%">Mid Year Exam<br>Raw Marks<br>100%</th>
+
+				{% } else if (report_columns[i].label=="Overall") { %}
+				<th class="text-center" style="width:13%">Overall<br><br>100%</th>
+
+				{% } else if (report_columns[i].label=="Subjects") { %}
+				<th class="text-center" style="width:16%"><br>Subjects</th>
+
+				{% } else if (report_columns[i].label=="Teacher's Comment") { %}
+				<th class="text-center" style="width:30%"><br>Teacher's Comment</th>
+
 				{% } else { %}
-					<th class="text-right">{%= report_columns[i].label %}</th>
+					<th class="text-center" >{%= report_columns[i].label %}</th>
 				{% } %}
 			{% } %}
 		</tr>
@@ -34,7 +112,7 @@ border-collapse: collapse;
 			<tr>
 				{% for(var i=0, l=report_columns.length; i<l; i++) { %}
 				{% if (i==0) { %}
-					<td class="text-left">
+					<td class="text-left" style="height:50px">
 						{% var fieldname = report_columns[i].fieldname; %}
 						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
 							{%= format_currency(row[fieldname]) %}
@@ -45,7 +123,7 @@ border-collapse: collapse;
 						{% } %}
 					</td>
 					{% } else { %}
-					<td class="text-right">
+					<td class="text-center">
 						{% var fieldname = report_columns[i].fieldname; %}
 						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
 							{%= format_currency(row[fieldname]) %}
@@ -61,5 +139,146 @@ border-collapse: collapse;
 		{% } %}
 	</tbody>
 </table>
+
+<!-----------------------------------------------Overall MARKS------------------------------------------------------------------------->
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th colspan="4" class="text-center">
+				ANALYSIS OF PERFORMANCE 
+			</th>
+		</tr>
+		<tr>
+			<th colspan="2" class="text-center">
+				MID YEAR EXAM
+			</th>
+			
+			
+			<th colspan="2" class="text-center">
+				OVERALL RESULTS
+			</th>
+			
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="text-center">
+			<td>
+				PERCENTAGE : <b>{%= filters.score %}%</b>
+			</td>
+	
+			<td>
+				POSITION :
+			</td>
+
+			<td>
+				PERCENTAGE : <b>{%= filters.total_score %}%</b>
+			</td>
+	
+			<td>
+				POSITION : 
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th class="text-center">
+				ATTENDANCE
+			</th>
+			
+			
+			<th class="text-center">
+				CONDUCT
+			</th>
+			
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="text-center">
+			<td>
+				<br>
+				<br>
+			</td>
+			<td>
+				
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>
+				FORM TEACHER’S COMMENTS: 
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<!-----------------------------------------------SINGNATURES------------------------------------------------------------------------->
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>
+				TEACHER'S REMARKS
+			</th>
+			<th>
+				
+			</th>
+			<th>
+				
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<br>
+				<br>
+				<br>
+			</td>
+	
+			<td>
+
+			</td>
+	
+			<td>
+
+			</td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td>
+				DATE
+			</td>
+	
+			<td>
+				SIGNATURE OF FORM TEACHER
+			</td>
+	
+			<td>
+				SIGNATURE OF PRINCIPAL
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+
 
 <p class="text-right text-muted">{{ __("Printed On") }} {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}</p>

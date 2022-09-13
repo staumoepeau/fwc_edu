@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-09-11 11:55:04.879781",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "subject",
+  "common_test",
+  "mid_year_exam",
+  "total_marks",
+  "raw_marks",
+  "grade"
+ ],
+ "fields": [
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Subject"
+  },
+  {
+   "fieldname": "common_test",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Common Test"
+  },
+  {
+   "fieldname": "mid_year_exam",
+   "fieldtype": "Data",
+   "label": "Mid Year Exam"
+  },
+  {
+   "fieldname": "total_marks",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Total Marks"
+  },
+  {
+   "fieldname": "raw_marks",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Raw Marks"
+  },
+  {
+   "fieldname": "grade",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Grade"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-09-11 11:56:32.961328",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "Student Report Results",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
