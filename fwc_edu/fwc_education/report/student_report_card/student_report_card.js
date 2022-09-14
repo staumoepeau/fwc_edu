@@ -75,9 +75,11 @@ frappe.query_reports["Student Report Card"] = {
 						},
 						callback: function(r) {
 							console.log(r)
-	//						if(data.message) {
-	//							frappe.query_report.set_filter_value('midyear_position', data.message);
-	//						}
+							if(r.message) {
+								frappe.query_report.set_filter_value('midyear_position', r.message[0]);
+								frappe.query_report.set_filter_value('overall_position', r.message[1]);
+								frappe.query_report.set_filter_value('class_total', r.message[2]);
+							}
 						//	console.log(r.message)
 						//	report.page.clear_secondary_action()	
 						}
@@ -97,7 +99,8 @@ frappe.query_reports["Student Report Card"] = {
 			"fieldtype": "Link",
 			"options": "Academic Year",
 			"width": "100px",
-			"reqd": 0
+			"reqd": 0,
+			"hidden" : 1
 			
 		},
 		{
@@ -106,7 +109,7 @@ frappe.query_reports["Student Report Card"] = {
 			"fieldtype":"Link",
 			"options": "Academic Term",
 			"width": "90px",
-			"reqd": 0
+			"reqd": 1
 		},
 
 		{
@@ -119,7 +122,7 @@ frappe.query_reports["Student Report Card"] = {
 			"fieldname": "score",
 			"label": __("Mid Year Score"),
 			"fieldtype": "Data",
-			"hidden": 0
+			"hidden": 1
 		},
 		{
 			"fieldname": "total_score",
@@ -139,15 +142,13 @@ frappe.query_reports["Student Report Card"] = {
 			"fieldtype": "Data",
 			"hidden": 1
 		},
-
-
+		{
+			"fieldname": "class_total",
+			"label": __("Class Total"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
 
 	],
-
-	refresh: function (report){
-
-		report.page.clear_secondary_action()	
-
-	},
 };
 

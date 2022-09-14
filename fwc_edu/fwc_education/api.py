@@ -7,6 +7,10 @@ from audioop import reverse
 import math
 import frappe
 from frappe import _, msgprint
+import pandas as pd
+import numpy as np
+import functools
+
 
 @frappe.whitelist()
 def get_total_score(student):
@@ -45,9 +49,16 @@ def get_midyear_position(student):
 #		return ele['MidYear_Total']
 
 	program = get_program(student)
-	midyear_position = frappe.db.sql("""SELECT tabAR.academic_year, 
-					tabAR.academic_term, tabAR.student, tabAR.student_name,
-					tabARD.assessment_criteria, SUM(tabARD.score) AS 'MidYear_Total'
+
+	totalClass = frappe.db.sql("""SELECT COUNT(*)
+					FROM `tabProgram Enrollment`
+					WHERE program = %s""", (program))
+
+	
+	ClassTotal = functools.reduce(lambda sub, ele: sub * 10 + ele, totalClass)
+
+	midyear_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
+					SUM(tabARD.score) AS 'MidYear_Total'
 					FROM `tabAssessment Result` as tabAR
 					LEFT JOIN `tabAssessment Result Detail` AS tabARD
 					ON tabAR.name = tabARD.parent
@@ -57,11 +68,31 @@ def get_midyear_position(student):
 					AND tabARD.assessment_criteria = 'Mid Year Exam'
 					GROUP BY tabAR.student""", (program), as_dict=1)
 	
-	midyear_position.sort(key=totalFunc, reverse=True)
-
-	frappe.msgprint(_("Class {0}").format(midyear_position))
+	overall_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
+					SUM(tabAR.total_score) AS 'Overall_Total'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program = %s
+					GROUP BY tabAR.student""", (program), as_dict=1)
 	
-	return midyear_position
+	overalData = pd.DataFrame.from_records(overall_position)
+	overalData['Mark_Rank'] = overalData['Overall_Total'].rank(ascending = 0)
+
+	dataframe = pd.DataFrame.from_records(midyear_position)
+	dataframe['Mark_Rank'] = dataframe['MidYear_Total'].rank(ascending = 0)
+	#dataframe = dataframe.set_index('Mark_Rank')
+	#dataframe = dataframe.sort_index()
+
+	studentID = student
+
+	OverallPosition = dataframe.loc[dataframe.student == studentID,'Mark_Rank'].values[0]
+	MidYearPosition = dataframe.loc[dataframe.student == studentID,'Mark_Rank'].values[0]
+
+#	frappe.msgprint(_("Class {0}").format(ClassTotal))
+#	frappe.msgprint(_("Class {0}").format(MidYearPosition))
+	
+	return MidYearPosition, OverallPosition, ClassTotal
 
 def get_program(student):
 	return frappe.get_value('Program Enrollment', {'student': student}, ['program'])

@@ -11,9 +11,8 @@ import os.path
 import sys
 import datetime
 import pandas as pd
-import xlsxwriter
-import openpyxl 
 import numpy as np
+import functools
 
 from openpyxl import load_workbook
 from frappe import _, msgprint, utils
@@ -30,10 +29,21 @@ def execute(filters=None):
 	columns, data = [], []
 
 	studentsql = "tabAR.student = '{student}'".format(student=filters.student) if filters.student else "1 = 1"
-#	companysql = "tbf.company = '{company}'".format(company=filters.company) if filters.company else "1 = 1"
-	academic_yearsql = "tabAR.academic_year = '{academic_year}'".format(academic_year=filters.academic_year) if filters.academic_year else "1 = 1"
-	academic_termsql = "tabAR.academic_term = '{academic_term}'".format(academic_term=filters.academic_term) if filters.academic_term else "1 = 1"
+
+#	academic_yearsql = "tabAR.academic_year = '{academic_year}'".format(academic_year=filters.academic_year) if filters.academic_year else "1 = 1"
+#	academic_termsql = "tabAR.academic_term = '{academic_term}'".format(academic_term=filters.academic_term) if filters.academic_term else "1 = 1"
 #	programsql = "tabAR.program = '{program}'".format(program=filters.program) if filters.program else "1 = 1"
+
+
+	#programSQL = """
+	#			SELECT program
+	#			FROM `tabProgram Enrollment`
+	#			WHERE ({studentsql})""".format(studentsql = studentsql)
+
+	
+	#getProgram = functools.reduce(lambda sub, ele: sub * 10 + ele, programSQL)
+	#frappe.msgprint(_("Data {0}").format(getProgram))
+
 
 	scoreSQL = """
 		SELECT tabAR.name, tabAR.course, tabAR.student, tabAR.student_name,
@@ -62,13 +72,25 @@ def execute(filters=None):
 	df_total = pd.DataFrame.from_records(totalData)
 	df_grade = pd.DataFrame.from_records(totalData)
 
-	df_total = df_total.pivot_table(index='course', values='total_score')
-	df_grade = df_grade.pivot_table(index='course', values='grade',aggfunc = lambda x: ','.join(str(v) for v in x))
+	
 #	frappe.msgprint(_("Dataframe {0}").format(dataframe))
 	assessments = dataframe.assessment_criteria.unique().tolist()
 	
+	Subjects = {'English' : 1, 'Mathematics' : 2, 'Science' : 3, 'Biblical': 4, 'Lea Fakatonga' : 5, 'Tonga moe Angafakafonua' : 6, 'Tourism and Hospitality' : 7, 'Creative Technology' : 8, 'Music' : 9,
+				'Accounting' : 10, 'Mathematic with Calculus' : 11, 'StatisticBiology' : 12, 'Physic' : 13, 'Chemistry' : 14, 'Biology' : 15, 'Computing' : 16, 'Economic' : 17, 'Geography' :18,
+				'History' : 19, 'Home Economic' : 20, 'Agricultural' : 21, 'French' : 22, 'Tourism and Hospitality' : 23}
+	
+	dataframe['Subject_Index'] = dataframe['course'].map(Subjects)
+	
+	#dataframe = dataframe.set_index('Subject_Index')
+	#dataframe = dataframe.sort_index()
 
-	dataframe = dataframe.pivot_table(index="course", columns="assessment_criteria", values=('score'))
+	#frappe.msgprint(_("Column {0}").format(dataframe))
+
+	df_total = df_total.pivot_table(index='course', values='total_score')
+	df_grade = df_grade.pivot_table(index='course', values='grade',aggfunc = lambda x: ','.join(str(v) for v in x))
+	
+	dataframe = dataframe.pivot_table(index=("Subject_Index", "course"), columns="assessment_criteria", values=('score'))
 	
 	dataframe['Overall'] = df_total
 	dataframe['Grade'] = df_grade
@@ -77,7 +99,7 @@ def execute(filters=None):
 	dataframe.fillna(0, inplace = True)
 	dataframe['raw_marks'] = dataframe.loc[:, 'Mid Year Exam'] / 70 * 100
 	
-#	frappe.msgprint(_("Data {0}").format(dataframe))
+	dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 2))
 
 	assessments = [{"fieldname": assessment_criteria, "label": _(assessment_criteria), "fieldtype": "Data", "width": 200, } for assessment_criteria in assessments]
 	columns = [ { "fieldname": "course", "label": _("Subjects"), "fieldtype": "Data", "width": 200 }]
