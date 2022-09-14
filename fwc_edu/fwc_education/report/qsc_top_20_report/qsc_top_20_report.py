@@ -35,7 +35,7 @@ def execute(filters=None):
 
 
 	studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-			tabAR.total_score, tabAR.total_score as 'mark_index'
+			tabAR.total_score
 			FROM `tabAssessment Result` as tabAR
 			WHERE tabAR .docstatus = 1
 			AND tabAR.not_included = 0
@@ -46,11 +46,12 @@ def execute(filters=None):
 	
 
 	totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-			tabAR.total_score, tabAR.total_score as 'mark_index'
+			ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
 			FROM `tabAssessment Result` as tabAR
 			WHERE tabAR .docstatus = 1
 			AND tabAR.not_included = 0
 			AND tabAR.program LIKE 'Form 1%'
+			GROUP BY tabAR.student
 			"""
 
 	dataTotal = frappe.db.sql(totalSQL, as_dict=1)
@@ -58,18 +59,18 @@ def execute(filters=None):
 	dataframe = pd.DataFrame.from_records(data)
 	df_total = pd.DataFrame.from_records(dataTotal)
 
+	df_total['Mark_Rank'] = df_total['total_score'].rank(ascending = 0)
+	
 #	frappe.msgprint(_("Dataframe {0}").format(df_total))
 	#dataframe = dataframe.set_index('Overall')
 
-	df_total = df_total.pivot_table(index=('mark_index','student_name'), values='total_score')
+	df_total = df_total.pivot_table(index=('student_name'), values='total_score')
 #	df_grade = df_grade.pivot_table(index='student_name', values='grade',aggfunc = lambda x: ','.join(str(v) for v in x))
-#	frappe.msgprint(_("Dataframe {0}").format(dataframe))
+#	frappe.msgprint(_("Dataframe {0}").format(df_total))
 	lessons = dataframe.course.unique().tolist()
 
-	dataframe = dataframe.pivot_table(index=('mark_index','student_name'), columns="course", values=('total_score'))
+	dataframe = dataframe.pivot_table(index=('student_name'), columns="course", values=('total_score'))
 	
-	dataframe.sort_values('mark_index', inplace=True)
-
 	dataframe['Overall'] = df_total
 #	dataframe['Grade'] = df_grade
 #	dataframe['Comments'] = " "
@@ -79,7 +80,9 @@ def execute(filters=None):
 	#dataframe = dataframe.sort_index(), ascending=[0])
 #	dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 2))
 	
-	lessons = [{"fieldname": course, "label": _(course), "fieldtype": "Data", "width": 200, } for course in lessons]
+	#dataframe = dataframe.iloc[:10]
+
+	lessons = [{"fieldname": course, "label": _(course), "fieldtype": "Data", "width": 100, } for course in lessons]
 	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
 #	columns += [ { "fieldname": "Overall_Total", "label": _("Overall"), "fieldtype": "Data", "width": 150 }]
 	columns += lessons

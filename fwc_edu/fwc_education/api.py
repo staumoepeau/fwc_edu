@@ -30,7 +30,7 @@ def get_midyear_score(student):
 	#*******Get students assessment results as list of dictionary
 
 	program = get_program(student)
-	score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.score)/(count(tabARD.score)*100)*100, 1) AS 'Score' 
+	score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(count(tabARD.raw_marks)*100)*100, 1) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				LEFT JOIN `tabAssessment Result Detail` AS tabARD
 				ON tabAR.name = tabARD.parent
@@ -58,7 +58,7 @@ def get_midyear_position(student):
 	ClassTotal = functools.reduce(lambda sub, ele: sub * 10 + ele, totalClass)
 
 	midyear_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
-					SUM(tabARD.score) AS 'MidYear_Total'
+					SUM(tabARD.raw_marks) AS 'MidYear_Total'
 					FROM `tabAssessment Result` as tabAR
 					LEFT JOIN `tabAssessment Result Detail` AS tabARD
 					ON tabAR.name = tabARD.parent
