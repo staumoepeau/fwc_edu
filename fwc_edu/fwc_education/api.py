@@ -15,7 +15,7 @@ import functools
 @frappe.whitelist()
 def get_total_score(student):
 	#*******Get students assessment results as list of dictionary
-	total_score = frappe.db.sql("""SELECT SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100 AS 'totalScore'
+	total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'totalScore'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.student = %s
 					AND tabAR .docstatus = 1
@@ -30,7 +30,7 @@ def get_midyear_score(student):
 	#*******Get students assessment results as list of dictionary
 
 	program = get_program(student)
-	score = frappe.db.sql("""SELECT SUM(tabARD.score)/(count(tabARD.score)*100)*100 AS 'Score' 
+	score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.score)/(count(tabARD.score)*100)*100, 1) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				LEFT JOIN `tabAssessment Result Detail` AS tabARD
 				ON tabAR.name = tabARD.parent

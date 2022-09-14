@@ -39,7 +39,7 @@ def execute(filters=None):
 			FROM `tabAssessment Result` as tabAR
 			WHERE tabAR .docstatus = 1
 			AND tabAR.not_included = 0
-			AND tabAR.program LIKE 'Form 1%'		
+			AND tabAR.program LIKE 'Form 1%'	
 			"""
 	
 #	frappe.msgprint(_("GetValue {0}").format(studentList))
@@ -68,13 +68,15 @@ def execute(filters=None):
 
 	dataframe = dataframe.pivot_table(index=('mark_index','student_name'), columns="course", values=('total_score'))
 	
+	dataframe.sort_values('mark_index', inplace=True)
+
 	dataframe['Overall'] = df_total
 #	dataframe['Grade'] = df_grade
 #	dataframe['Comments'] = " "
 	
 	dataframe.fillna(0, inplace = True)
 #	dataframe['raw_marks'] = dataframe.loc[:, 'Mid Year Exam'] / 70 * 100
-	dataframe = dataframe.sort_index(), ascending=[0])
+	#dataframe = dataframe.sort_index(), ascending=[0])
 #	dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 2))
 	
 	lessons = [{"fieldname": course, "label": _(course), "fieldtype": "Data", "width": 200, } for course in lessons]
@@ -83,12 +85,10 @@ def execute(filters=None):
 	columns += lessons
 	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Data", "width": 100 }]
 #	columns+=[ { "fieldname": "Grade", "label": _("Grade"), "fieldtype": "Data", "width": 100 }]
-#	columns+=[ { "fieldname": "Comments", "label": _("Teacher's Comment"), "fieldtype": "Data", "width": 500}]
-
+#	columns+=[ { "fieldname": "Comments", "label": _("Teacher's Comment"), "fieldtype": "Data", "width": 500}]ss
 
 #	frappe.msgprint(_("Column {0}").format(columns))
 #	columns += [ { "fieldname": "assessment_criteria", "label": _("Assessment"), "fieldtype": "Data", "width": 200 }]
 	data = dataframe.reset_index().to_dict('records')
-#	data = dataframe.reset_index(drop=True)
 
 	return columns, data
