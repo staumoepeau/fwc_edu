@@ -1,0 +1,125 @@
+{%
+	var report_columns = report.get_columns_for_print();
+%}
+<style>
+	@media print 
+{
+    @page {
+      size: A4; 
+      margin:0;
+    }
+    html, body {
+        width: 210mm;
+        /* height: 297mm; */
+        height: 282mm;
+        background: #FFF;
+        overflow:visible;
+    }
+    body {
+        padding-top:5mm;
+    }
+}
+table, td, th {
+border: 1px solid black;
+}
+
+table, td {
+vertical-align:middle;
+}
+
+table {
+border-collapse: collapse;
+}
+.table td, .table th {
+    font-size: 12px;
+}
+</style>
+
+<!--------------------HEADING-------------------------------->
+<br>
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<h3>QUUEN SALOTE COLLEGE<BR>CLASS/SUBJECTS RESULTS</h3>
+	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-xs-7">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-left">CLASS</label></div>
+			<div class="col-xs-6">{%= filters.program %}</div>
+		</div>
+	</div>
+	<div class="col-xs-5">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-right">SUBJECTS</label></div>
+			<div class="col-xs-6 text-right">{%= filters.course %}</div>
+		</div>
+	</div>
+</div>
+
+<hr>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+			
+				{% if (report_columns[i].label=="Common Test") { %}
+					<th class="text-center" style="width:12%">Course Work<br><br>30%</th>
+				
+				{% } else if (report_columns[i].label=="Mid Year Exam") { %}
+				<th class="text-center" style="width:14%">Mid Year Exam<br><br>70%</th>
+				
+				{% } else if (report_columns[i].label=="Raw Marks") { %}
+				<th class="text-center" style="width:13%">Mid Year Exam<br>Raw Marks<br>100%</th>
+
+				{% } else if (report_columns[i].label=="Overall") { %}
+				<th class="text-center" style="width:13%">Overall<br><br>100%</th>
+
+				{% } else if (report_columns[i].label=="Subjects") { %}
+				<th class="text-center" style="width:16%"><br>Subjects</th>
+
+				{% } else if (report_columns[i].label=="Teacher's Comment") { %}
+				<th class="text-center" style="width:30%"><br>Teacher's Comment</th>
+
+				{% } else { %}
+					<th class="text-center" >{%= report_columns[i].label %}</th>
+				{% } %}
+			{% } %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for(var j=0, k=data.length; j<k; j++) { %}
+			{%
+				var row = data[j];
+			%}
+			<tr>
+				{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+				{% if (i==0) { %}
+					<td class="text-left">
+						{% var fieldname = report_columns[i].fieldname; %}
+
+								{%= row[fieldname] %}
+
+					</td>
+					{% } else { %}
+					<td class="text-center">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{% if (row[fieldname].length > 4) { %}
+								{%= row[fieldname].slice(0, 4) %}
+						{% } else { %}
+							{%= row[fieldname] %}
+						{% } %}
+
+					</td>
+					{% } %}
+				{% } %}
+			</tr>
+		{% } %}
+	</tbody>
+</table>
+
+<!-----------------------------------------------Overall MARKS------------------------------------------------------------------------->
+
+<p class="text-right text-muted">{{ __("Printed On") }} {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}</p>

@@ -87,15 +87,22 @@ def execute(filters=None):
 
 	#frappe.msgprint(_("Column {0}").format(dataframe))
 
-	df_total = df_total.pivot_table(index='course', values='total_score')
-	df_grade = df_grade.pivot_table(index='course', values='grade',aggfunc = lambda x: ','.join(str(v) for v in x))
-	
+	df_total['Subject_Index'] = df_total['course'].map(Subjects)
+	df_grade['Subject_Index'] = df_grade['course'].map(Subjects)
+
+	df_total = df_total.pivot_table(index=("Subject_Index", "course"), values='total_score')
+	df_grade = df_grade.pivot_table(index=("Subject_Index", "course"), values='grade',aggfunc = lambda x: ','.join(str(v) for v in x))
+
+#	frappe.msgprint(_("Column {0}").format(dataframe))
+
 	dataframe = dataframe.pivot_table(index=("Subject_Index", "course"), columns="assessment_criteria", values=('score'))
 	
 	dataframe['Overall'] = df_total
 	dataframe['Grade'] = df_grade
 	dataframe['Comments'] = " "
 	
+#	frappe.msgprint(_("Column {0}").format(dataframe))
+
 	dataframe.fillna(0, inplace = True)
 	dataframe['raw_marks'] = dataframe.loc[:, 'Mid Year Exam'] / 70 * 100
 	
