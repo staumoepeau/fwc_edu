@@ -1,0 +1,51 @@
+{
+ "add_total_row": 0,
+ "columns": [
+  {
+   "fieldname": "student_name",
+   "fieldtype": "Link",
+   "label": "Student Name",
+   "options": "Student",
+   "width": 0
+  },
+  {
+   "fieldname": "overal",
+   "fieldtype": "Float",
+   "label": "Overall",
+   "width": 0
+  }
+ ],
+ "creation": "2022-09-15 21:43:40.324021",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [
+  {
+   "fieldname": "level",
+   "fieldtype": "Select",
+   "label": "Level",
+   "mandatory": 0,
+   "options": "\nL1\nL2\nL3\nL4\nL5\nL5\nL6",
+   "wildcard_filter": 0
+  }
+ ],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "FWC Education",
+ "modified": "2022-09-15 22:25:12.984930",
+ "modified_by": "Administrator",
+ "module": "FWC Education",
+ "name": "QSC TOP 15 Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT student, student_name, course,\nROUND(SUM(total_score)/(600)*100, 1) AS 'total_score'\nFROM `tabAssessment Result`\nWHERE docstatus = 1\nAND not_included = 0\nAND program = 'Form 7A'\nGROUP BY student",
+ "ref_doctype": "Assessment Result",
+ "report_name": "QSC TOP 15 Report",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Academics User"
+  }
+ ]
+}

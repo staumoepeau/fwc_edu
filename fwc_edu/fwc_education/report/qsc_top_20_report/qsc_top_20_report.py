@@ -174,7 +174,7 @@ def execute(filters=None):
 	
 	dataframe['Overall'] = df_total
 #	dataframe['Grade'] = df_grade
-#	dataframe['Comments'] = " "
+	dataframe['Comments'] = " "
 	
 	dataframe.fillna(0, inplace = True)
 #	dataframe['raw_marks'] = dataframe.loc[:, 'Mid Year Exam'] / 70 * 100
@@ -183,13 +183,14 @@ def execute(filters=None):
 	dataframe = dataframe.sort_values(by="Overall", ascending=False)
 	dataframe = dataframe.iloc[:20]
 
-	lessons = [{"fieldname": course, "label": _(course), "fieldtype": "Data", "width": 100, } for course in lessons]
+	#lessons = [{"fieldname": course, "label": _(course), "fieldtype": "Data", "width": 100, } for course in lessons]
+
 	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
 #	columns += [ { "fieldname": "Overall_Total", "label": _("Overall"), "fieldtype": "Data", "width": 150 }]
-	columns += lessons
+#	columns += 
+	columns+=[ { "fieldname": "Comments", "label": _("Kolo e Ui me Ai"), "fieldtype": "Data", "width": 500}]
 	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Data", "width": 100 }]
-#	columns+=[ { "fieldname": "Grade", "label": _("Grade"), "fieldtype": "Data", "width": 100 }]
-#	columns+=[ { "fieldname": "Comments", "label": _("Teacher's Comment"), "fieldtype": "Data", "width": 500}]ss
+
 
 #	frappe.msgprint(_("Column {0}").format(columns))
 #	columns += [ { "fieldname": "assessment_criteria", "label": _("Assessment"), "fieldtype": "Data", "width": 200 }]
