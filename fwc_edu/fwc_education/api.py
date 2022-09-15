@@ -17,7 +17,7 @@ from re import search
 def get_total_score(student):
 
 	program = get_program(student)
-	frappe.msgprint(_("Dataframe {0}").format(program))
+#	frappe.msgprint(_("Dataframe {0}").format(program))
 	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
 		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 		
