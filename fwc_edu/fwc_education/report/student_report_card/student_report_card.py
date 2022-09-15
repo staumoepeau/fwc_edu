@@ -77,7 +77,7 @@ def execute(filters=None):
 	assessments = dataframe.assessment_criteria.unique().tolist()
 	
 	Subjects = {'English' : 1, 'Mathematics' : 2, 'Science' : 3, 'Biblical': 4, 'Lea Fakatonga' : 5, 'Tonga moe Angafakafonua' : 6, 'Tourism and Hospitality' : 7, 'Creative Technology' : 8, 'Music' : 9,
-				'Accounting' : 10, 'Mathematic with Calculus' : 11, 'Statistics' : 12, 'Physic' : 13, 'Chemistry' : 14, 'Biology' : 15, 'Computing' : 16, 'Economic' : 17, 'Geography' :18,
+				'Accounting' : 10, 'Mathematic with Calculus' : 11, 'Statistic' : 12, 'Physic' : 13, 'Chemistry' : 14, 'Biology' : 15, 'Computing' : 16, 'Economic' : 17, 'Geography' :18,
 				'History' : 19, 'Home Economic' : 20, 'Agricultural' : 21, 'French' : 22, 'Tourism and Hospitality' : 23}
 	
 	dataframe['Subject_Index'] = dataframe['course'].map(Subjects)
