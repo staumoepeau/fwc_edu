@@ -17,7 +17,9 @@ from re import search
 def get_total_score(student):
 
 	program = get_program(student)
-	if search('Form 5',program) or search('Form 6',program) or search('Form 7',program):
+
+	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
+		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
 	#*******Get students assessment results as list of dictionary
 		total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 1) AS 'totalScore'
@@ -37,14 +39,15 @@ def get_total_score(student):
 			GROUP BY tabAR.student
 			ORDER BY SUM(tabAR.total_score) DESC""", student)
 		
-		return total_score
+	return total_score
 
 @frappe.whitelist()
 def get_midyear_score(student):
 	#*******Get students assessment results as list of dictionary
 
 	program = get_program(student)
-	if search('Form 5',program) or search('Form 6',program) or search('Form 7',program):
+	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
+		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
 		score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(600)*100, 1) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
@@ -115,11 +118,10 @@ def get_midyear_position(student):
 	OverallPosition = overalData.loc[overalData.student == studentID,'Mark_Rank'].values[0]
 
 	MidYearPosition = dataMidyear.loc[dataMidyear.student == studentID,'Mark_Rank'].values[0]
+	
+	MidYear = "{:.0f}".format(MidYearPosition)
 
-	
-#	frappe.msgprint(_("Class {0}").format(MidYearPosition))
-	
-	return MidYearPosition, OverallPosition, ClassTotal
+	return MidYear, OverallPosition, ClassTotal
 
 def get_program(student):
 	return frappe.get_value('Program Enrollment', {'student': student}, ['program'])
