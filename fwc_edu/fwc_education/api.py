@@ -10,27 +10,53 @@ from frappe import _, msgprint
 import pandas as pd
 import numpy as np
 import functools
+from re import search
 
 
 @frappe.whitelist()
 def get_total_score(student):
-	#*******Get students assessment results as list of dictionary
-	total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'totalScore'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR.student = %s
-					AND tabAR.docstatus = 1
-					AND tabAR.not_included = 0
-					GROUP BY tabAR.student
-					ORDER BY SUM(tabAR.total_score) DESC""", student)
 
-	return total_score
+	program = get_program(student)
+	if search('Form 5',program) or search('Form 6',program) or search('Form 7',program):
+
+	#*******Get students assessment results as list of dictionary
+		total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 1) AS 'totalScore'
+			FROM `tabAssessment Result` as tabAR
+			WHERE tabAR.student = %s
+			AND tabAR.docstatus = 1
+			AND tabAR.not_included = 0
+			GROUP BY tabAR.student
+			ORDER BY SUM(tabAR.total_score) DESC""", student)
+
+	else:
+		total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 1) AS 'totalScore'
+			FROM `tabAssessment Result` as tabAR
+			WHERE tabAR.student = %s
+			AND tabAR.docstatus = 1
+			AND tabAR.not_included = 0
+			GROUP BY tabAR.student
+			ORDER BY SUM(tabAR.total_score) DESC""", student)
+		
+		return total_score
 
 @frappe.whitelist()
 def get_midyear_score(student):
 	#*******Get students assessment results as list of dictionary
 
 	program = get_program(student)
-	score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(count(tabARD.raw_marks)*100)*100, 1) AS 'Score' 
+	if search('Form 5',program) or search('Form 6',program) or search('Form 7',program):
+
+		score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(600)*100, 1) AS 'Score' 
+				FROM `tabAssessment Result` as tabAR
+				LEFT JOIN `tabAssessment Result Detail` AS tabARD
+				ON tabAR.name = tabARD.parent
+				WHERE tabAR.docstatus = 1
+				AND tabAR.student = %s
+				AND tabAR.program = %s
+				AND tabAR.not_included = 0
+				AND tabARD.assessment_criteria = 'Mid Year Exam'""", (student, program))
+	else:
+		score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(800)*100, 1) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				LEFT JOIN `tabAssessment Result Detail` AS tabARD
 				ON tabAR.name = tabARD.parent
