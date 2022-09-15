@@ -17,11 +17,12 @@ from re import search
 def get_total_score(student):
 
 	program = get_program(student)
-
+	frappe.msgprint(_("Dataframe {0}").format(program))
 	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
 		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
-
-	#*******Get students assessment results as list of dictionary
+		
+		
+	#*******Get students assessment results as list of dictionar	y
 		total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 1) AS 'totalScore'
 			FROM `tabAssessment Result` as tabAR
 			WHERE tabAR.student = %s
@@ -29,8 +30,8 @@ def get_total_score(student):
 			AND tabAR.not_included = 0
 			GROUP BY tabAR.student
 			ORDER BY SUM(tabAR.total_score) DESC""", student)
-
 	else:
+		
 		total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 1) AS 'totalScore'
 			FROM `tabAssessment Result` as tabAR
 			WHERE tabAR.student = %s
@@ -81,7 +82,8 @@ def get_midyear_position(student):
 
 	totalClass = frappe.db.sql("""SELECT COUNT(*)
 					FROM `tabProgram Enrollment`
-					WHERE program = %s""", (program))
+					WHERE company = 'Queen Salote College'
+					AND program = %s""", (program))
 
 	
 	ClassTotal = functools.reduce(lambda sub, ele: sub * 10 + ele, totalClass)
@@ -113,11 +115,11 @@ def get_midyear_position(student):
 	#dataframe = dataframe.set_index('Mark_Rank')
 	#dataframe = dataframe.sort_index()
 
-	studentID = student
+	#studentID = student
 
-	OverallPosition = overalData.loc[overalData.student == studentID,'Mark_Rank'].values[0]
+	OverallPosition = overalData.loc[overalData.student == student,'Mark_Rank'].values[0]
 
-	MidYearPosition = dataMidyear.loc[dataMidyear.student == studentID,'Mark_Rank'].values[0]
+	MidYearPosition = dataMidyear.loc[dataMidyear.student == student,'Mark_Rank'].values[0]
 	
 	MidYear = "{:.0f}".format(MidYearPosition)
 
