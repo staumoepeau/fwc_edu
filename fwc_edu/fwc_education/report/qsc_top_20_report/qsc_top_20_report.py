@@ -24,6 +24,7 @@ def execute(filters=None):
 	if not filters: filters = {}
 	columns, data = [], []
 
+
 	#groupSQL = filters.student_group_name
 
 	#programSQL = "tabAR.program = '{program}'".format(program=filters.program) if filters.program else "1 = 1"
@@ -32,14 +33,28 @@ def execute(filters=None):
 #	programSQL = "tabAR.program LIKE 'Form 1%'.format(program=filters.program)"
 #	getProgram = frappe.db.get_value('Student Group', {'name': groupSQL}, ['program'])
 #	getCourse = frappe.db.get_value('Student Group', {'name': groupSQL}, ['course'])
-
+	if filters:
+		if filters.level == 'L1':
+			Level = "Form 1%"
+		if filters.level == 'L2':
+			Level = "Form 2%"
+		if filters.level == 'L3':
+			Level = "Form 3%"
+		if filters.level == 'L4':
+			Level = "Form 4%"
+		if filters.level == 'L5':
+			Level = "Form 5%"
+		if filters.level == 'L6':
+			Level = "Form 6%"
+		if filters.level == 'L7':
+			Level = "Form 7%"
 
 	studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
 			tabAR.total_score
 			FROM `tabAssessment Result` as tabAR
 			WHERE tabAR .docstatus = 1
 			AND tabAR.not_included = 0
-			AND tabAR.program LIKE 'Form 1%'	
+			AND tabAR.program LIKE '%Level%'	
 			"""
 	
 #	frappe.msgprint(_("GetValue {0}").format(studentList))
@@ -50,7 +65,7 @@ def execute(filters=None):
 			FROM `tabAssessment Result` as tabAR
 			WHERE tabAR .docstatus = 1
 			AND tabAR.not_included = 0
-			AND tabAR.program LIKE 'Form 1%'
+			AND tabAR.program LIKE '%Level%'
 			GROUP BY tabAR.student
 			"""
 
@@ -59,9 +74,9 @@ def execute(filters=None):
 	dataframe = pd.DataFrame.from_records(data)
 	df_total = pd.DataFrame.from_records(dataTotal)
 
-	df_total['Mark_Rank'] = df_total['total_score'].rank(ascending = 0)
+	#df_total['Mark_Rank'] = df_total['total_score'].rank(ascending = 0)
 	
-#	frappe.msgprint(_("Dataframe {0}").format(df_total))
+	#frappe.msgprint(_("Dataframe {0}").format(df_total))
 	#dataframe = dataframe.set_index('Overall')
 
 	df_total = df_total.pivot_table(index=('student_name'), values='total_score')
@@ -79,8 +94,8 @@ def execute(filters=None):
 #	dataframe['raw_marks'] = dataframe.loc[:, 'Mid Year Exam'] / 70 * 100
 	#dataframe = dataframe.sort_index(), ascending=[0])
 #	dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 2))
-	
-	#dataframe = dataframe.iloc[:10]
+	dataframe = dataframe.sort_values(by="Overall", ascending=False)
+	dataframe = dataframe.iloc[:20]
 
 	lessons = [{"fieldname": course, "label": _(course), "fieldtype": "Data", "width": 100, } for course in lessons]
 	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
