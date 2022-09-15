@@ -24,55 +24,141 @@ def execute(filters=None):
 	if not filters: filters = {}
 	columns, data = [], []
 
-
 	#groupSQL = filters.student_group_name
 
-	#programSQL = "tabAR.program = '{program}'".format(program=filters.program) if filters.program else "1 = 1"
+	#levelSQL = "tabAR.program LIKE '{%level%}'".format(program=filters.level) if filters.level else "1 = 1"
 
 #	if filters.program in ('Form 1S', 'Form 1M'):
 #	programSQL = "tabAR.program LIKE 'Form 1%'.format(program=filters.program)"
 #	getProgram = frappe.db.get_value('Student Group', {'name': groupSQL}, ['program'])
 #	getCourse = frappe.db.get_value('Student Group', {'name': groupSQL}, ['course'])
+	studentList = ''
+	totalSQL = ''
 	if filters:
 		if filters.level == 'L1':
-			Level = "Form 1%"
+			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					tabAR.total_score
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 1%'
+					"""
+			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 1%'
+					GROUP BY tabAR.student
+					"""
 		if filters.level == 'L2':
-			Level = "Form 2%"
+			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					tabAR.total_score
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 2%'
+					"""
+			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 2%'
+					GROUP BY tabAR.student
+					"""
 		if filters.level == 'L3':
-			Level = "Form 3%"
+			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					tabAR.total_score
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 3%'
+					"""
+			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 3%'
+					GROUP BY tabAR.student
+					"""
 		if filters.level == 'L4':
-			Level = "Form 4%"
+			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					tabAR.total_score
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 4%'
+					"""
+			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 4%'
+					GROUP BY tabAR.student
+					"""
 		if filters.level == 'L5':
-			Level = "Form 5%"
+			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					tabAR.total_score
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 5%'
+					"""
+			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 5%'
+					GROUP BY tabAR.student
+					"""
 		if filters.level == 'L6':
-			Level = "Form 6%"
+			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					tabAR.total_score
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 6%'
+					"""
+			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 6%'
+					GROUP BY tabAR.student
+					"""
 		if filters.level == 'L7':
-			Level = "Form 7%"
-
-	studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-			tabAR.total_score
-			FROM `tabAssessment Result` as tabAR
-			WHERE tabAR .docstatus = 1
-			AND tabAR.not_included = 0
-			AND tabAR.program LIKE '%Level%'	
-			"""
+			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					tabAR.total_score
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 7%'
+					"""
+			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
+					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR .docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE 'Form 7%'
+					GROUP BY tabAR.student
+					"""
 	
-#	frappe.msgprint(_("GetValue {0}").format(studentList))
-	
-
-	totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-			ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-			FROM `tabAssessment Result` as tabAR
-			WHERE tabAR .docstatus = 1
-			AND tabAR.not_included = 0
-			AND tabAR.program LIKE '%Level%'
-			GROUP BY tabAR.student
-			"""
-
+	if len(studentList) == 0 or len(totalSQL) == 0:
+		frappe.msgprint('Please Select a Level')
+		return [], []
+		
 	dataTotal = frappe.db.sql(totalSQL, as_dict=1)
 	data = frappe.db.sql(studentList, as_dict=1)
+
 	dataframe = pd.DataFrame.from_records(data)
 	df_total = pd.DataFrame.from_records(dataTotal)
+
+	
 
 	#df_total['Mark_Rank'] = df_total['total_score'].rank(ascending = 0)
 	
