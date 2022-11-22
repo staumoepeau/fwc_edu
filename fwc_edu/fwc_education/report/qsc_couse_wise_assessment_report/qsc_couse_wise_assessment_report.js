@@ -5,6 +5,15 @@
 frappe.query_reports["QSC Couse Wise Assessment Report"] = {
 	"filters": [
 		{
+			"fieldname":"academic_term",
+			"label": __("Term"),
+			"fieldtype": "Link",
+			"options" : 'Academic Term',
+			"width": "100px",
+			"reqd": 1,
+			"hidden": 0
+		},
+		{
 			"fieldname":"student_group",
 			"label": __("Student Group"),
 			"fieldtype": "Link",
