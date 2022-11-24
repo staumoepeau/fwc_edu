@@ -19,22 +19,25 @@ from collections import defaultdict
 from werkzeug.wrappers import Response
 format = "%Y-%m-%d %H:%M:%S"
 
+global BSP_Bank 
+global MBF_Bank
+global TDB_Bank
+global SIA
+global CompanyList
+global netpay
+
+CompanyList = ["Tupou Tertiary Institute","FWC Education","Queen Salote College","Tupou High School","Tupou College Toloa","Tupou College Toloa Faama"]
+
+SIA = "SIA%"
+BSP_Bank = "BSP%"
+MBF_Bank = ["MBF", "MBF01", "MBF02","MBF03","MBF04", "MBF05", "Pakiua Ma"]
+TDB_Bank = "TDB%"
+
 
 def execute(filters=None):
 	if not filters: filters = {}
 	
-	global BSP_Bank 
-	global MBF_Bank
-	global TDB_Bank
-	global SIA
-	global CompanyList
-	BSP_Bank = "BSP%"
-	MBF_Bank = ["MBF", "MBF01", "MBF02","MBF03","MBF04", "MBF05", "Pakiua Ma"]
-	TDB_Bank = "TDB%"
-	SIA = "SIA%"
-	global netpay
-	netpay = []
-	CompanyList = ["Tupou Tertiary Institute","FWC Education","Queen Salote College","Tupou High School","Tupou College Toloa","Tupou College Toloa Faama"]
+	
 	columns = get_columns(filters)
 	data = get_data(filters)
 
@@ -584,6 +587,8 @@ def get_bank_data(postingdate, company, bankname):
 	return bank_data
 
 def get_sum_netpay(posting_date, company, bank_name):
+#	CompanyList = ["Tupou Tertiary Institute","FWC Education","Queen Salote College","Tupou High School","Tupou College Toloa","Tupou College Toloa Faama"]
+
 	netpay = ""
 	netpay_1, netpay_2 = [], []
 
@@ -637,12 +642,15 @@ def get_sum_netpay(posting_date, company, bank_name):
 	netpay = (str(netpay).replace("]]","")).replace(",","")
 	netpay = str(netpay).replace("(","")
 	netpay = (str(netpay).replace(")","")).replace(",","")
+	netpay = ((str(netpay)).replace(".",""))
 
-	netpay = int(float(netpay)*100)
+#	frappe.msgprint(_("NET01: {0}").format(netpay))
+
+#	netpay = int(float(netpay)*100)
 
 #	frappe.msgprint(_("NET1: {0}").format(netpay))
 
-	netpay = ((str(netpay)).replace(".",""))
+	#netpay = ((str(netpay)).replace(".",""))
 #	frappe.msgprint(_("NET2: {0}").format(netpay))
 	
 	netpay = str(netpay).zfill(10)
@@ -754,10 +762,13 @@ def create_bank_eft_file(posting_date, company, bank_name):
 
 		if len(str(account_total)) == 11:
 			account_total = str(account_total)
+#			frappe.msgprint(_("TOTAL 1 : {0}").format(account_total))
 		if len(str(account_total)) < 11:
 			account_total = str(account_total).rjust(length, fillchar)
+#			frappe.msgprint(_("TOTAL 2 : {0}").format(account_total))
 		if len(str(account_total)) > 11:
 			account_total = str(account_total)[1:]
+#			frappe.msgprint(_("TOTAL 3 : {0}").format(account_total))
 
 		posting_date = frappe.utils.formatdate(posting_date, "dd-MM-yyyy").replace("-", "")
 

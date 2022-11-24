@@ -3,7 +3,7 @@
  "charts": [],
  "creation": "2021-04-08 09:11:45.144923",
  "developer_mode_only": 0,
- "disable_user_customization": 0,
+ "disable_user_customization": 1,
  "docstatus": 0,
  "doctype": "Workspace",
  "extends_another_page": 0,
@@ -158,6 +158,32 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "QSC Reports",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "QSC Course Wise Assessment Report",
+   "link_to": "QSC Course Wise Assessment Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Student REport Card",
+   "link_to": "Student Report Card",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Budgeting",
    "link_type": "DocType",
    "onboard": 0,
@@ -198,26 +224,9 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "QSC Reports",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "QSC Course Wise Assessment Report",
-   "link_to": "QSC Course Wise Assessment Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2022-11-23 05:33:21.939908",
+ "modified": "2022-11-24 20:01:08.433394",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
