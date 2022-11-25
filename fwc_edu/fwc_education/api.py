@@ -14,9 +14,9 @@ from re import search
 
 
 @frappe.whitelist()
-def get_total_score(student):
+def get_total_score(student, term):
 
-	program = get_program(student)
+	program = get_program(student, term)
 #	frappe.msgprint(_("Dataframe {0}").format(program))
 	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
 		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
@@ -28,8 +28,9 @@ def get_total_score(student):
 			WHERE tabAR.student = %s
 			AND tabAR.docstatus = 1
 			AND tabAR.not_included = 0
+			AND tabAR.academic_term = %s
 			GROUP BY tabAR.student
-			ORDER BY SUM(tabAR.total_score) DESC""", student)
+			ORDER BY SUM(tabAR.total_score) DESC""", (student, term))
 	else:
 		
 		total_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 1) AS 'totalScore'
@@ -37,16 +38,17 @@ def get_total_score(student):
 			WHERE tabAR.student = %s
 			AND tabAR.docstatus = 1
 			AND tabAR.not_included = 0
+			AND tabAR.academic_term = %s
 			GROUP BY tabAR.student
-			ORDER BY SUM(tabAR.total_score) DESC""", student)
+			ORDER BY SUM(tabAR.total_score) DESC""", (student, term))
 		
 	return total_score
 
 @frappe.whitelist()
-def get_midyear_score(student):
+def get_midyear_score(student, term):
 	#*******Get students assessment results as list of dictionary
 
-	program = get_program(student)
+	program = get_program(student, term)
 	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
 		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
@@ -57,8 +59,9 @@ def get_midyear_score(student):
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
 				AND tabAR.program = %s
+				AND tabAR.academic_term = %s
 				AND tabAR.not_included = 0
-				AND tabARD.assessment_criteria = 'Mid Year Exam'""", (student, program))
+				AND tabARD.assessment_criteria = 'Mid Year Exam'""", (student, program, term))
 	else:
 		score = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(800)*100, 1) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
@@ -67,18 +70,19 @@ def get_midyear_score(student):
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
 				AND tabAR.program = %s
+				AND tabAR.academic_term = %s
 				AND tabAR.not_included = 0
-				AND tabARD.assessment_criteria = 'Mid Year Exam'""", (student, program))
+				AND tabARD.assessment_criteria = 'Mid Year Exam'""", (student, program, term))
 
 	return score
 
 @frappe.whitelist()
-def get_midyear_position(student):
+def get_midyear_position(student, term):
 	#*******Get students assessment results as list of dictionary
 #	def totalFunc(ele):
 #		return ele['MidYear_Total']
 
-	program = get_program(student)
+	program = get_program(student, term)
 
 	totalClass = frappe.db.sql("""SELECT COUNT(*)
 					FROM `tabProgram Enrollment`
@@ -96,8 +100,9 @@ def get_midyear_position(student):
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program = %s
+					AND tabAR.academic_term = %s
 					AND tabARD.assessment_criteria = 'Mid Year Exam'
-					GROUP BY tabAR.student""", (program), as_dict=1)
+					GROUP BY tabAR.student""", (program, term), as_dict=1)
 	
 	overall_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
 					SUM(tabAR.total_score) AS 'Overall_Total'
@@ -105,7 +110,8 @@ def get_midyear_position(student):
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program = %s
-					GROUP BY tabAR.student""", (program), as_dict=1)
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student""", (program, term), as_dict=1)
 	
 	overalData = pd.DataFrame.from_records(overall_position)
 	overalData['Mark_Rank'] = overalData['Overall_Total'].rank(ascending = 0)
@@ -125,8 +131,8 @@ def get_midyear_position(student):
 
 	return MidYear, OverallPosition, ClassTotal
 
-def get_program(student):
-	return frappe.get_value('Program Enrollment', {'student': student}, ['program'])
+def get_program(student, term):
+	return frappe.get_value('Program Enrollment', {'student': student, 'academic_term':term}, ['program'])
 
 def totalFunc(ele):
 	return ele['MidYear_Total']

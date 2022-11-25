@@ -13,6 +13,14 @@ frappe.query_reports["Student Report Card"] = {
 			"reqd": 0,
 			"hidden":1
 		},
+		{
+			"fieldname":"academic_term",
+			"label":__("Academic Term"),
+			"fieldtype":"Link",
+			"options": "Academic Term",
+			"width": "90px",
+			"reqd": 1
+		},
 		{	
 			"fieldname": "student",
 			"label": __("Student"),
@@ -20,7 +28,8 @@ frappe.query_reports["Student Report Card"] = {
 			"options": "Student",
 			"reqd": 1,
 			on_change: () => {
-				var student = frappe.query_report.get_filter_value('student');				
+				var student = frappe.query_report.get_filter_value('student');			
+				var academic_term = frappe.query_report.get_filter_value('academic_term');		
 	
 				if (student) {
 					frappe.db.get_value('Student', student, ["title"], function(value) {
@@ -37,15 +46,15 @@ frappe.query_reports["Student Report Card"] = {
 						method: "fwc_edu.fwc_education.api.get_total_score",
 						args: {
 								"student": student,
-//								"academic_year": filters.academic_year,
-//								"academic_term": filters.academic_term,						
+								"term": academic_term,						
 							},
 							callback: function(e) {
-							//	console.log(data)
+								//console.log(data)
 								if(e.message) {
 									frappe.query_report.set_filter_value('total_score', e.message);
+								
 								}
-					//			console.log(e.message)
+								console.log(e.message)
 								//	report.page.clear_secondary_action()	
 							}
 					});
@@ -54,8 +63,7 @@ frappe.query_reports["Student Report Card"] = {
 						method: "fwc_edu.fwc_education.api.get_midyear_score",
 						args: {
 							"student": student,
-							
-//									"academic_term": filters.academic_term,						
+							"term": academic_term,						
 						},
 						callback: function(data) {
 						//	console.log(data.message)
@@ -71,7 +79,7 @@ frappe.query_reports["Student Report Card"] = {
 						method: "fwc_edu.fwc_education.api.get_midyear_position",
 						args: {
 							"student": student,
-//							"academic_term": filters.academic_term,						
+							"term": academic_term,						
 						},
 						callback: function(r) {
 							console.log(r)
@@ -103,15 +111,6 @@ frappe.query_reports["Student Report Card"] = {
 			"hidden" : 1
 			
 		},
-		{
-			"fieldname":"academic_term",
-			"label":__("Academic Term"),
-			"fieldtype":"Link",
-			"options": "Academic Term",
-			"width": "90px",
-			"reqd": 1
-		},
-
 		{
 			"fieldname": "title",
 			"label": __("Student Name"),
@@ -151,4 +150,3 @@ frappe.query_reports["Student Report Card"] = {
 
 	],
 };
-
