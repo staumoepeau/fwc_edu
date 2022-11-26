@@ -1,0 +1,421 @@
+
+
+Sat Nov 26 11:10:53 2022
+Command line: TestDisk
+
+TestDisk 7.1, Data Recovery Utility, July 2019
+Christophe GRENIER <grenier@cgsecurity.org>
+https://www.cgsecurity.org
+OS: Linux, kernel 3.10.0-957.21.3.el7.x86_64 (#1 SMP Tue Jun 18 16:35:19 UTC 2019) x86_64
+Compiler: GCC 4.8
+ext2fs lib: 1.42.9, ntfs lib: libntfs-3g, reiserfs lib: none, ewf lib: 20140608, curses lib: ncurses 5.9
+/dev/sda: LBA, LBA48 support
+/dev/sda: size       314572800 sectors
+/dev/sda: user_max   314572800 sectors
+/dev/mapper/centos-home: LBA, LBA48 support
+/dev/mapper/centos-home: size       197640192 sectors
+/dev/mapper/centos-home: user_max   314572800 sectors
+/dev/mapper/centos-root: LBA, LBA48 support
+/dev/mapper/centos-root: size       104857600 sectors
+/dev/mapper/centos-root: user_max   314572800 sectors
+/dev/mapper/centos-swap: LBA, LBA48 support
+/dev/mapper/centos-swap: size       9961472 sectors
+/dev/mapper/centos-swap: user_max   314572800 sectors
+Warning: can't get size for Disk /dev/mapper/control - 0 B - 0 sectors, sector size=512
+/dev/dm-0: LBA, LBA48 support
+/dev/dm-0: size       104857600 sectors
+/dev/dm-0: user_max   314572800 sectors
+/dev/dm-1: LBA, LBA48 support
+/dev/dm-1: size       9961472 sectors
+/dev/dm-1: user_max   314572800 sectors
+/dev/dm-2: LBA, LBA48 support
+/dev/dm-2: size       197640192 sectors
+/dev/dm-2: user_max   314572800 sectors
+Hard disk list
+Disk /dev/sda - 161 GB / 150 GiB - CHS 19581 255 63, sector size=512 - VBOX HARDDISK, S/N:VB56efc382-d766330f, FW:1.0
+Disk /dev/mapper/centos-home - 101 GB / 94 GiB - 197640192 sectors, sector size=512 - VBOX HARDDISK, S/N:VB56efc382-d766330f, FW:1.0
+Disk /dev/mapper/centos-root - 53 GB / 50 GiB - 104857600 sectors, sector size=512 - VBOX HARDDISK, S/N:VB56efc382-d766330f, FW:1.0
+Disk /dev/mapper/centos-swap - 5100 MB / 4864 MiB - 9961472 sectors, sector size=512 - VBOX HARDDISK, S/N:VB56efc382-d766330f, FW:1.0
+Disk /dev/dm-0 - 53 GB / 50 GiB - 104857600 sectors, sector size=512 - VBOX HARDDISK, S/N:VB56efc382-d766330f, FW:1.0
+Disk /dev/dm-1 - 5100 MB / 4864 MiB - 9961472 sectors, sector size=512 - VBOX HARDDISK, S/N:VB56efc382-d766330f, FW:1.0
+Disk /dev/dm-2 - 101 GB / 94 GiB - 197640192 sectors, sector size=512 - VBOX HARDDISK, S/N:VB56efc382-d766330f, FW:1.0
+
+Partition table type (auto): None
+Disk /dev/dm-2 - 101 GB / 94 GiB - VBOX HARDDISK
+Partition table type: Intel
+
+Analyse Disk /dev/dm-2 - 101 GB / 94 GiB - 197640192 sectors
+Current partition structure:
+
+Partition sector doesn't have the endmark 0xAA55
+
+search_part()
+Disk /dev/dm-2 - 101 GB / 94 GiB - 197640192 sectors
+BAD_RS LBA=359978809 657
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 06
+     FAT16 >32M             359978809 1836580942 1476602134
+This partition ends after the disk limits. (start=359978809, size=1476602134, end=1836580942, disk end=197640192)
+BAD_RS LBA=359992761 657
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 06
+     FAT16 >32M             359992761 1836594894 1476602134
+This partition ends after the disk limits. (start=359992761, size=1476602134, end=1836594894, disk end=197640192)
+BAD_RS LBA=1187945686 961
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1187945686 3429634531 2241688846
+This partition ends after the disk limits. (start=1187945686, size=2241688846, end=3429634531, disk end=197640192)
+BAD_RS LBA=1187975062 961
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1187975062 3429663907 2241688846
+This partition ends after the disk limits. (start=1187975062, size=2241688846, end=3429663907, disk end=197640192)
+BAD_RS LBA=3773330353 1068
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0C
+     FAT32 LBA             3773330353 3942039945  168709593
+This partition ends after the disk limits. (start=3773330353, size=168709593, end=3942039945, disk end=197640192)
+BAD_RS LBA=3773372529 1068
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0C
+     FAT32 LBA             3773372529 3942082121  168709593
+This partition ends after the disk limits. (start=3773372529, size=168709593, end=3942082121, disk end=197640192)
+BAD_RS LBA=3628587089 336
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0E
+     FAT16 LBA             3628587089 7010430074 3381842986
+This partition ends after the disk limits. (start=3628587089, size=3381842986, end=7010430074, disk end=197640192)
+BAD_RS LBA=3628707889 336
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0E
+     FAT16 LBA             3628707889 7010550874 3381842986
+This partition ends after the disk limits. (start=3628707889, size=3381842986, end=7010550874, disk end=197640192)
+BAD_RS LBA=2825827402 372
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 2825827402 6868956550 4043129149
+This partition ends after the disk limits. (start=2825827402, size=4043129149, end=6868956550, disk end=197640192)
+BAD_RS LBA=2825828778 372
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 2825828778 6868957926 4043129149
+This partition ends after the disk limits. (start=2825828778, size=4043129149, end=6868957926, disk end=197640192)
+
+XFS Marker at 49410048/0/1
+
+recover_xfs
+     Linux                   49410048  247050239  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=49410048, size=197640192, end=247050239, disk end=197640192)
+
+XFS Marker at 98820096/0/1
+
+recover_xfs
+     Linux                   98820096  296460287  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=98820096, size=197640192, end=296460287, disk end=197640192)
+BAD_RS LBA=725010293 180
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 04
+     FAT16 <32M             725010293 2658084562 1933074270
+This partition ends after the disk limits. (start=725010293, size=1933074270, end=2658084562, disk end=197640192)
+BAD_RS LBA=1098064083 630
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1098064083 5373646166 4275582084
+This partition ends after the disk limits. (start=1098064083, size=4275582084, end=5373646166, disk end=197640192)
+
+XFS Marker at 148230144/0/1
+
+recover_xfs
+     Linux                  148230144  345870335  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=148230144, size=197640192, end=345870335, disk end=197640192)
+Disk /dev/dm-2 - 101 GB / 94 GiB - 197640192 sectors
+Check the harddisk size: HD jumper settings, BIOS detection...
+The harddisk (101 GB / 94 GiB) seems too small! (< 3589 GB / 3342 GiB)
+The following partitions can't be recovered:
+     Linux                   49410048  247050239  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     Linux                   98820096  296460287  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     Linux                  148230144  345870335  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     FAT16 >32M             359978809 1836580942 1476602134
+     FAT16 >32M             359992761 1836594894 1476602134
+     FAT16 <32M             725010293 2658084562 1933074270
+     FAT32                 1098064083 5373646166 4275582084
+     FAT32                 1187945686 3429634531 2241688846
+     FAT32                 1187975062 3429663907 2241688846
+     FAT32                 2825827402 6868956550 4043129149
+     FAT32                 2825828778 6868957926 4043129149
+     FAT16 LBA             3628587089 7010430074 3381842986
+     FAT16 LBA             3628707889 7010550874 3381842986
+     FAT32 LBA             3773330353 3942039945  168709593
+     FAT32 LBA             3773372529 3942082121  168709593
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery
+simulate write!
+
+write_mbr_i386: starting...
+Store new MBR code
+write_all_log_i386: starting...
+No extended partition
+
+Analyse Disk /dev/dm-2 - 101 GB / 94 GiB - 197640192 sectors
+Current partition structure:
+
+Partition sector doesn't have the endmark 0xAA55
+
+search_part()
+Disk /dev/dm-2 - 101 GB / 94 GiB - 197640192 sectors
+BAD_RS LBA=359978809 657
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 06
+     FAT16 >32M             359978809 1836580942 1476602134
+This partition ends after the disk limits. (start=359978809, size=1476602134, end=1836580942, disk end=197640192)
+BAD_RS LBA=359992761 657
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 06
+     FAT16 >32M             359992761 1836594894 1476602134
+This partition ends after the disk limits. (start=359992761, size=1476602134, end=1836594894, disk end=197640192)
+BAD_RS LBA=1187945686 961
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1187945686 3429634531 2241688846
+This partition ends after the disk limits. (start=1187945686, size=2241688846, end=3429634531, disk end=197640192)
+BAD_RS LBA=1187975062 961
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1187975062 3429663907 2241688846
+This partition ends after the disk limits. (start=1187975062, size=2241688846, end=3429663907, disk end=197640192)
+BAD_RS LBA=3773330353 1068
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0C
+     FAT32 LBA             3773330353 3942039945  168709593
+This partition ends after the disk limits. (start=3773330353, size=168709593, end=3942039945, disk end=197640192)
+BAD_RS LBA=3773372529 1068
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0C
+     FAT32 LBA             3773372529 3942082121  168709593
+This partition ends after the disk limits. (start=3773372529, size=168709593, end=3942082121, disk end=197640192)
+BAD_RS LBA=3628587089 336
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0E
+     FAT16 LBA             3628587089 7010430074 3381842986
+This partition ends after the disk limits. (start=3628587089, size=3381842986, end=7010430074, disk end=197640192)
+BAD_RS LBA=3628707889 336
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0E
+     FAT16 LBA             3628707889 7010550874 3381842986
+This partition ends after the disk limits. (start=3628707889, size=3381842986, end=7010550874, disk end=197640192)
+BAD_RS LBA=2825827402 372
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 2825827402 6868956550 4043129149
+This partition ends after the disk limits. (start=2825827402, size=4043129149, end=6868956550, disk end=197640192)
+BAD_RS LBA=2825828778 372
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 2825828778 6868957926 4043129149
+This partition ends after the disk limits. (start=2825828778, size=4043129149, end=6868957926, disk end=197640192)
+
+XFS Marker at 49410048/0/1
+
+recover_xfs
+     Linux                   49410048  247050239  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=49410048, size=197640192, end=247050239, disk end=197640192)
+
+XFS Marker at 98820096/0/1
+
+recover_xfs
+     Linux                   98820096  296460287  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=98820096, size=197640192, end=296460287, disk end=197640192)
+BAD_RS LBA=725010293 180
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 04
+     FAT16 <32M             725010293 2658084562 1933074270
+This partition ends after the disk limits. (start=725010293, size=1933074270, end=2658084562, disk end=197640192)
+BAD_RS LBA=1098064083 630
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1098064083 5373646166 4275582084
+This partition ends after the disk limits. (start=1098064083, size=4275582084, end=5373646166, disk end=197640192)
+Search for partition aborted
+Disk /dev/dm-2 - 101 GB / 94 GiB - 197640192 sectors
+Check the harddisk size: HD jumper settings, BIOS detection...
+The harddisk (101 GB / 94 GiB) seems too small! (< 3589 GB / 3342 GiB)
+The following partitions can't be recovered:
+     Linux                   49410048  247050239  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     Linux                   98820096  296460287  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     FAT16 >32M             359978809 1836580942 1476602134
+     FAT16 >32M             359992761 1836594894 1476602134
+     FAT16 <32M             725010293 2658084562 1933074270
+     FAT32                 1098064083 5373646166 4275582084
+     FAT32                 1187945686 3429634531 2241688846
+     FAT32                 1187975062 3429663907 2241688846
+     FAT32                 2825827402 6868956550 4043129149
+     FAT32                 2825828778 6868957926 4043129149
+     FAT16 LBA             3628587089 7010430074 3381842986
+     FAT16 LBA             3628707889 7010550874 3381842986
+     FAT32 LBA             3773330353 3942039945  168709593
+     FAT32 LBA             3773372529 3942082121  168709593
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery
+simulate write!
+
+write_mbr_i386: starting...
+Store new MBR code
+write_all_log_i386: starting...
+No extended partition
+Partition table type (auto): None
+Disk /dev/mapper/centos-home - 101 GB / 94 GiB - VBOX HARDDISK
+Partition table type: Intel
+
+Analyse Disk /dev/mapper/centos-home - 101 GB / 94 GiB - 197640192 sectors
+Current partition structure:
+
+Partition sector doesn't have the endmark 0xAA55
+
+search_part()
+Disk /dev/mapper/centos-home - 101 GB / 94 GiB - 197640192 sectors
+BAD_RS LBA=359978809 657
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 06
+     FAT16 >32M             359978809 1836580942 1476602134
+This partition ends after the disk limits. (start=359978809, size=1476602134, end=1836580942, disk end=197640192)
+BAD_RS LBA=359992761 657
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 06
+     FAT16 >32M             359992761 1836594894 1476602134
+This partition ends after the disk limits. (start=359992761, size=1476602134, end=1836594894, disk end=197640192)
+BAD_RS LBA=1187945686 961
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1187945686 3429634531 2241688846
+This partition ends after the disk limits. (start=1187945686, size=2241688846, end=3429634531, disk end=197640192)
+BAD_RS LBA=1187975062 961
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1187975062 3429663907 2241688846
+This partition ends after the disk limits. (start=1187975062, size=2241688846, end=3429663907, disk end=197640192)
+BAD_RS LBA=3773330353 1068
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0C
+     FAT32 LBA             3773330353 3942039945  168709593
+This partition ends after the disk limits. (start=3773330353, size=168709593, end=3942039945, disk end=197640192)
+BAD_RS LBA=3773372529 1068
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0C
+     FAT32 LBA             3773372529 3942082121  168709593
+This partition ends after the disk limits. (start=3773372529, size=168709593, end=3942082121, disk end=197640192)
+BAD_RS LBA=3628587089 336
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0E
+     FAT16 LBA             3628587089 7010430074 3381842986
+This partition ends after the disk limits. (start=3628587089, size=3381842986, end=7010430074, disk end=197640192)
+BAD_RS LBA=3628707889 336
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0E
+     FAT16 LBA             3628707889 7010550874 3381842986
+This partition ends after the disk limits. (start=3628707889, size=3381842986, end=7010550874, disk end=197640192)
+BAD_RS LBA=2825827402 372
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 2825827402 6868956550 4043129149
+This partition ends after the disk limits. (start=2825827402, size=4043129149, end=6868956550, disk end=197640192)
+BAD_RS LBA=2825828778 372
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 2825828778 6868957926 4043129149
+This partition ends after the disk limits. (start=2825828778, size=4043129149, end=6868957926, disk end=197640192)
+
+XFS Marker at 49410048/0/1
+
+recover_xfs
+     Linux                   49410048  247050239  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=49410048, size=197640192, end=247050239, disk end=197640192)
+
+XFS Marker at 98820096/0/1
+
+recover_xfs
+     Linux                   98820096  296460287  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=98820096, size=197640192, end=296460287, disk end=197640192)
+BAD_RS LBA=725010293 180
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 04
+     FAT16 <32M             725010293 2658084562 1933074270
+This partition ends after the disk limits. (start=725010293, size=1933074270, end=2658084562, disk end=197640192)
+BAD_RS LBA=1098064083 630
+check_FAT: can't read FAT boot sector
+check_part_i386 failed for partition type 0B
+     FAT32                 1098064083 5373646166 4275582084
+This partition ends after the disk limits. (start=1098064083, size=4275582084, end=5373646166, disk end=197640192)
+
+XFS Marker at 148230144/0/1
+
+recover_xfs
+     Linux                  148230144  345870335  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+This partition ends after the disk limits. (start=148230144, size=197640192, end=345870335, disk end=197640192)
+Disk /dev/mapper/centos-home - 101 GB / 94 GiB - 197640192 sectors
+Check the harddisk size: HD jumper settings, BIOS detection...
+The harddisk (101 GB / 94 GiB) seems too small! (< 3589 GB / 3342 GiB)
+The following partitions can't be recovered:
+     Linux                   49410048  247050239  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     Linux                   98820096  296460287  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     Linux                  148230144  345870335  197640192
+     XFS CRC enabled, blocksize=4096, 101 GB / 94 GiB
+     FAT16 >32M             359978809 1836580942 1476602134
+     FAT16 >32M             359992761 1836594894 1476602134
+     FAT16 <32M             725010293 2658084562 1933074270
+     FAT32                 1098064083 5373646166 4275582084
+     FAT32                 1187945686 3429634531 2241688846
+     FAT32                 1187975062 3429663907 2241688846
+     FAT32                 2825827402 6868956550 4043129149
+     FAT32                 2825828778 6868957926 4043129149
+     FAT16 LBA             3628587089 7010430074 3381842986
+     FAT16 LBA             3628707889 7010550874 3381842986
+     FAT32 LBA             3773330353 3942039945  168709593
+     FAT32 LBA             3773372529 3942082121  168709593
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery
+
+search_part()
+Disk /dev/mapper/centos-home - 101 GB / 94 GiB - 197640192 sectors
+Search for partition aborted
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery
+simulate write!
+
+write_mbr_i386: starting...
+Store new MBR code
+write_all_log_i386: starting...
+No extended partition
+
+TestDisk exited normally.

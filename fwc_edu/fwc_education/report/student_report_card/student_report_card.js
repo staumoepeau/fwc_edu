@@ -41,62 +41,102 @@ frappe.query_reports["Student Report Card"] = {
 
 					});
 
-					
-					frappe.call({
-						method: "fwc_edu.fwc_education.api.get_total_score",
-						args: {
-								"student": student,
-								"term": academic_term,						
-							},
-							callback: function(e) {
-								//console.log(data)
-								if(e.message) {
-									frappe.query_report.set_filter_value('total_score', e.message);
+					if (academic_term = "2022 (Term 1)"){
+							frappe.call({
+								method: "fwc_edu.fwc_education.api.get_total_score",
+								args: {
+										"student": student,
+										"term": academic_term,						
+									},
+									callback: function(e) {
+										//console.log(data)
+										if(e.message) {
+											frappe.query_report.set_filter_value('total_score', e.message);
+										
+										}
+										console.log(e.message)
+										//	report.page.clear_secondary_action()	
+									}
+							});
+
+							frappe.call({
+								method: "fwc_edu.fwc_education.api.get_midyear_score",
+								args: {
+									"student": student,
+									"term": academic_term,						
+								},
+								callback: function(data) {
 								
-								}
-								console.log(e.message)
+									if(data.message) {
+										frappe.query_report.set_filter_value('score', data.message);
+									}
+								//	console.log(data.message)
 								//	report.page.clear_secondary_action()	
-							}
-					});
+								}
+							});
 
-					frappe.call({
-						method: "fwc_edu.fwc_education.api.get_midyear_score",
-						args: {
-							"student": student,
-							"term": academic_term,						
-						},
-						callback: function(data) {
-						//	console.log(data.message)
-							if(data.message) {
-								frappe.query_report.set_filter_value('score', data.message);
-							}
-						//	console.log(data.message)
-						//	report.page.clear_secondary_action()	
+							frappe.call({
+								method: "fwc_edu.fwc_education.api.get_midyear_position",
+								args: {
+									"student": student,
+									"term": academic_term,						
+								},
+								callback: function(r) {
+									
+									if(r.message) {
+										frappe.query_report.set_filter_value('midyear_position', r.message[0]);
+										frappe.query_report.set_filter_value('overall_position', r.message[1]);
+										frappe.query_report.set_filter_value('class_total', r.message[2]);
+									}
+								//	console.log(r.message)
+								//	report.page.clear_secondary_action()	
+								}
+							});
 						}
-					});
+					if (academic_term = "2022 (Term 4)"){
+						
+						frappe.call({
+							method: "fwc_edu.fwc_education.api.get_final_second_half",
+							args: {
+									"student": student,
+									"term": academic_term,						
+								},
+								callback: function(e) {
+									//console.log(data)
+									if(e.message) {
+										frappe.query_report.set_filter_value('final_second_half_score', e.message[0]);
+										frappe.query_report.set_filter_value('grand_total', e.message[1]);
+										
+									
+									}
+									console.log(e.message)
+									//	report.page.clear_secondary_action()	
+								}
+						});
 
-					frappe.call({
-						method: "fwc_edu.fwc_education.api.get_midyear_position",
-						args: {
-							"student": student,
-							"term": academic_term,						
-						},
-						callback: function(r) {
-							console.log(r)
-							if(r.message) {
-								frappe.query_report.set_filter_value('midyear_position', r.message[0]);
-								frappe.query_report.set_filter_value('overall_position', r.message[1]);
-								frappe.query_report.set_filter_value('class_total', r.message[2]);
-							}
-						//	console.log(r.message)
-						//	report.page.clear_secondary_action()	
-						}
-					});
+						frappe.call({
+							method: "fwc_edu.fwc_education.api.get_finalsecond_half_position",
+							args: {
+									"student": student,
+									"term": academic_term,						
+								},
+								callback: function(e) {
+									//console.log(data)
+									if(e.message) {
+										frappe.query_report.set_filter_value('finalsecond_half_position', e.message[0]);
+										frappe.query_report.set_filter_value('finalclass_total', e.message[1]);
+										frappe.query_report.set_filter_value('overall_level', e.message[2]);
+									
+									}
+									console.log(e.message)
+									//	report.page.clear_secondary_action()	
+								}
+						});
+					}
 							
 				} else {
 					frappe.query_report.set_filter_value('title', "");
 					frappe.query_report.set_filter_value('program', "");
-					frappe.query_report.set_filter_value('total_score', "");
 				}
 			}
 
@@ -141,9 +181,36 @@ frappe.query_reports["Student Report Card"] = {
 			"fieldtype": "Data",
 			"hidden": 1
 		},
+//=========================================================================================================================
 		{
-			"fieldname": "class_total",
+			"fieldname": "final_second_half_score",
+			"label": __("Final Second Half"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+
+		{
+			"fieldname": "finalsecond_half_position",
+			"label": __("Final Second Half Position"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+
+		{
+			"fieldname": "finalclass_total",
 			"label": __("Class Total"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
+			"fieldname": "grand_total",
+			"label": __("Grand Total"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
+			"fieldname": "overall_level",
+			"label": __("Total Level"),
 			"fieldtype": "Data",
 			"hidden": 1
 		},

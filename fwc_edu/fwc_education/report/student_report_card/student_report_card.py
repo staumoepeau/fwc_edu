@@ -174,17 +174,15 @@ def execute(filters=None):
 
 		dataframe = dataframe.pivot_table(index=("Subject_Index", "course"), columns="assessment_criteria", values=('score'))
 		
-		dataframe['MidYear_40'] = (df_midyear_total * 40/100)
-		dataframe['Final_60'] = (df_total * 60/100)
-		dataframe['Total_Overall'] = dataframe['MidYear_40'] + dataframe['Final_60']
-		dataframe['Overall'] = df_total
+		dataframe['MidYear_40'] = round((df_midyear_total * 40/100), 2)
+		dataframe['Final_60'] = round((df_total * 60/100), 2)
+		dataframe['Total_Overall'] = round(dataframe['MidYear_40'] + dataframe['Final_60'], 2)
+		dataframe['Overall'] = round(df_total, 2)
 		dataframe['Grade'] = df_grade
 		dataframe['Comments'] = " "
 		
-	#	frappe.msgprint(_("Column {0}").format(dataframe))
-
 		dataframe.fillna(0, inplace = True)
-		dataframe['raw_marks'] = dataframe.loc[:, 'Final Exam'] / 70 * 100
+		dataframe['raw_marks'] = round(dataframe.loc[:, 'Final Exam'] / 70 * 100, 2)
 		
 		dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 3))
 

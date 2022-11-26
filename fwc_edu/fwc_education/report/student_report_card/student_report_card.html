@@ -446,7 +446,9 @@ border-collapse: collapse;
 	</tbody>
 </table>
 {% } %}
-<!--------------------END MIDYEAR REPORT-------------------------------->
+<!-------------------------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------END MIDYEAR REPORT------------------------------------------>
+<!-------------------------------------------------------------------------------------------------------------------------->
 
 {% if (filters.academic_term == "2022 (Term 4)") { %}
 
@@ -457,7 +459,7 @@ border-collapse: collapse;
 	</div>
 </div>
 <hr>
-{% } %}
+
 <div class="row">
 	<div class="col-xs-7">
 		<div class="row">
@@ -494,17 +496,26 @@ border-collapse: collapse;
 		<tr>
 			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
 			
-				{% if (report_columns[i].label=="Common Test") { %}
-					<th class="text-center" style="width:12%">Course Work<br><br>30%</th>
+				{% if (report_columns[i].label=="Common Test Final") { %}
+					<th class="text-center" style="width:8%">Course Work<br><br>30%</th>
 				
 				{% } else if (report_columns[i].label=="Final Exam") { %}
-				<th class="text-center" style="width:14%">Final Exam<br><br>70%</th>
+				<th class="text-center" style="width:8%">Final Exam<br><br>70%</th>
+
+				{% } else if (report_columns[i].label=="Final Overall") { %}
+				<th class="text-center" style="width:8%">Final Second<br>Half<br>10%</th>
+
+				{% } else if (report_columns[i].label=="Mid Year 40%") { %}
+				<th class="text-center" style="width:8%">MID YEAR<br><br>40%</th>
+
+				{% } else if (report_columns[i].label=="Final 60%") { %}
+				<th class="text-center" style="width:8%">FINAL<br><br>60%</th>
 				
 				{% } else if (report_columns[i].label=="Raw Marks") { %}
-				<th class="text-center" style="width:13%">Final Exam<br>Raw Marks<br>100%</th>
+				<th class="text-center" style="width:10%">Final Exam<br>(HONOUR BOARD)<br>100%</th>
 
-				{% } else if (report_columns[i].label=="Overall") { %}
-				<th class="text-center" style="width:13%">Overall<br><br>100%</th>
+				{% } else if (report_columns[i].label=="TOTAL") { %}
+				<th class="text-center" style="width:8%"><br>GRAND<br>TOTAL</th>
 
 				{% } else if (report_columns[i].label=="Subjects") { %}
 				<th class="text-center" style="width:16%"><br>Subjects</th>
@@ -565,12 +576,12 @@ border-collapse: collapse;
 		</tr>
 		<tr>
 			<th colspan="2" class="text-center">
-				MID YEAR EXAM
+				FINAL SECOND HALF
 			</th>
 			
 			
 			<th colspan="2" class="text-center">
-				OVERALL RESULTS
+				GRAND TOTAL OVERALL
 			</th>
 			
 		</tr>
@@ -578,17 +589,16 @@ border-collapse: collapse;
 	<tbody>
 		<tr class="text-center">
 			<td>
-				PERCENTAGE : <b>{%= filters.score %}%</b>
-			</td>
-	
-			<td>
-				POSITION : <b>{%= filters.midyear_position %} / {%= filters.class_total %}</b>
+				PERCENTAGE : <b>{%= filters.final_second_half_score %}%</b>
 			</td>
 			<td>
-				PERCENTAGE : <b>{%= filters.total_score %}%</b>
+				POSITION : <b>{%= filters.finalsecond_half_position %} / {%= filters.finalclass_total %}</b>
 			</td>
 			<td>
-				POSITION : <b>{%= filters.overall_position %} / {%= filters.class_total %}</b>
+				PERCENTAGE : <b>{%= filters.grand_total %}%</b>
+			</td>
+			<td>
+				POSITION : <b>{%= filters.grand_total_position %} / {%= filters.overall_level %}</b>
 			</td>
 		</tr>
 	</tbody>
@@ -859,3 +869,4 @@ border-collapse: collapse;
 
 	</tbody>
 </table>
+{% } %}
