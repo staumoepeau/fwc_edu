@@ -32,7 +32,7 @@ table {
 border-collapse: collapse;
 }
 .table td, .table th {
-    font-size: 10px;
+    font-size: 12px;
 }
 </style>
 {% if (filters.academic_term == "2022 (Term 1)") { %}
@@ -474,7 +474,7 @@ border-collapse: collapse;
 				<th class="text-center" style="width:10%">Final Exam<br>(HONOUR BOARD)<br>100%</th>
 		
 				{% } else if (report_columns[i].label=="TOTAL") { %}
-				<th class="text-center" style="width:8%"><br>GRAND<br>TOTAL</th>
+				<th class="text-center" style="width:8%"><br>Year<br>Overall</th>
 
 				{% } else if (report_columns[i].label=="Subjects") { %}
 				<th class="text-center" style="width:16%"><br>Subjects</th>
@@ -853,7 +853,7 @@ border-collapse: collapse;
 				<th class="text-center" style="width:10%">Final Exam<br><br>100%</th>
 		
 				{% } else if (report_columns[i].label=="TOTAL") { %}
-				<th class="text-center" style="width:8%"><br>GRAND<br>TOTAL</th>
+				<th class="text-center" style="width:8%"><br>Year<br>Overall</th>
 
 				{% } else if (report_columns[i].label=="Subjects") { %}
 				<th class="text-center" style="width:16%"><br>Subjects</th>
