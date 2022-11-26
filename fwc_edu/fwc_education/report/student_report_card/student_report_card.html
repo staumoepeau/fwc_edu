@@ -32,7 +32,7 @@ table {
 border-collapse: collapse;
 }
 .table td, .table th {
-    font-size: 10px;
+    font-size: 12px;
 }
 </style>
 {% if (filters.academic_term == "2022 (Term 1)") { %}
@@ -447,13 +447,13 @@ border-collapse: collapse;
 	</tbody>
 </table>
 {% } %}
+
 <!-------------------------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------END MIDYEAR REPORT------------------------------------------>
 <!-------------------------------------------------------------------------------------------------------------------------->
 
-
 {% if (filters.academic_term == "2022 (Term 4)") { %}
-	{% if (filters.program == "6M") { %}
+	{% if (filters.program == "Form 6M") { %}
 <br>
 <div class="row">
 	<div class="col-xs-12 text-center">
@@ -506,7 +506,7 @@ border-collapse: collapse;
 				<th class="text-center" style="width:8%">Final Exam<br><br>70%</th>
 
 				{% } else if (report_columns[i].label=="Final Overall") { %}
-				<th class="text-center" style="width:8%">Final Second<br>Half<br>10%</th>
+				<th class="text-center" style="width:8%">Final Second<br>Half<br>100%</th>
 
 				{% } else if (report_columns[i].label=="Mid Year 40%") { %}
 				<th class="text-center" style="width:8%">MID YEAR<br><br>40%</th>
@@ -618,41 +618,23 @@ border-collapse: collapse;
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th class="text-center">
-				ATTENDANCE
-			</th>
-			
-			
-			<th class="text-center">
-				CONDUCT
-			</th>
-			
-		</tr>
-	</thead>
-	<tbody>
-		<tr class="text-center">
-			<td>
-				<br>
-				<br>
-			</td>
-			<td>
-				
-			</td>
-		</tr>
-	</tbody>
-</table>
-
-<table class="table table-bordered">
-	<thead>
-		<tr>
 			<th>
 				FORM TEACHER’S COMMENTS: 
 			</th>
+			<th class="text-center">
+				ATTENDANCE
+			</th>
+
+			<th class="text-center">
+				CONDUCT
+			</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<td>
+				<br>
+				<br>
 				<br>
 				<br>
 				<br>
@@ -668,9 +650,6 @@ border-collapse: collapse;
 	<thead>
 		<tr>
 			<th>
-				TEACHER'S REMARKS
-			</th>
-			<th>
 				
 			</th>
 			<th>
@@ -688,18 +667,10 @@ border-collapse: collapse;
 			<td>
 
 			</td>
-	
-			<td>
-
-			</td>
 		</tr>
 	</tbody>
 	<tfoot>
 		<tr>
-			<td>
-				DATE
-			</td>
-	
 			<td>
 				SIGNATURE OF FORM TEACHER
 			</td>
@@ -890,37 +861,21 @@ border-collapse: collapse;
 		<h4>{%= filters.title %}</h4>
 	</div>
 </div>
-<hr>
-
 <div class="row">
-	<div class="col-xs-7">
+	<div class="col-xs-6">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-left">CLASS</label></div>
+			<div class="col-xs-6 text-right">{%= filters.program %}</div>
+			
+		</div>
+	</div>
+	<div class="col-xs-6">
 		<div class="row">
 			<div class="col-xs-6"><label class="text-left">STUDENT NO</label></div>
-			<div class="col-xs-6">{%= filters.student %}</div>
-		</div>
-	</div>
-	<div class="col-xs-5">
-		<div class="row">
-			<div class="col-xs-6"><label class="text-right">CLASS</label></div>
-			<div class="col-xs-6 text-right">{%= filters.program %}</div>
+			<div class="col-xs-6 text-right">{%= filters.student %}</div>
 		</div>
 	</div>
 </div>
-
-<div class="row">
-	<div class="col-xs-7">
-		<div class="row">
-			<div class="col-xs-6"><label class="text-left">TERM</label></div>
-			<div class="col-xs-6">{%= filters.academic_term %}</div>
-		</div>
-	</div>
-	<div class="col-xs-5">
-		<div class="row">
-		
-		</div>
-	</div>
-</div>
-<hr>
 
 <table class="table table-bordered">
 	<thead>
@@ -934,7 +889,7 @@ border-collapse: collapse;
 				<th class="text-center" style="width:8%">Final Exam<br><br>70%</th>
 
 				{% } else if (report_columns[i].label=="Final Overall") { %}
-				<th class="text-center" style="width:8%">Final Second<br>Half<br>10%</th>
+				<th class="text-center" style="width:8%">Final Second<br>Half<br>100%</th>
 
 				{% } else if (report_columns[i].label=="Mid Year 40%") { %}
 				<th class="text-center" style="width:8%">MID YEAR<br><br>40%</th>
@@ -1043,41 +998,23 @@ border-collapse: collapse;
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th class="text-center">
-				ATTENDANCE
-			</th>
-			
-			
-			<th class="text-center">
-				CONDUCT
-			</th>
-			
-		</tr>
-	</thead>
-	<tbody>
-		<tr class="text-center">
-		---	<td>
-				<br>
-				<br>
-			</td>
-			<td>
-				
-			</td>
-		</tr>
-	</tbody>
-</table>
-
-<table class="table table-bordered">
-	<thead>
-		<tr>
 			<th>
 				FORM TEACHER’S COMMENTS: 
 			</th>
+			<th class="text-center">
+				ATTENDANCE
+			</th>
+
+			<th class="text-center">
+				CONDUCT
+			</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<td>
+				<br>
+				<br>
 				<br>
 				<br>
 				<br>
@@ -1093,9 +1030,6 @@ border-collapse: collapse;
 	<thead>
 		<tr>
 			<th>
-				TEACHER'S REMARKS
-			</th>
-			<th>
 				
 			</th>
 			<th>
@@ -1113,18 +1047,10 @@ border-collapse: collapse;
 			<td>
 
 			</td>
-	
-			<td>
-
-			</td>
 		</tr>
 	</tbody>
 	<tfoot>
 		<tr>
-			<td>
-				DATE
-			</td>
-	
 			<td>
 				SIGNATURE OF FORM TEACHER
 			</td>

@@ -29,6 +29,7 @@ def execute(filters=None):
 	columns, data = [], []
 
 	get_term = filters.get("academic_term")
+	program = filters.get("program")
 	studentsql = "tabAR.student = '{student}'".format(student=filters.student) if filters.student else "1 = 1"
 
 	if get_term == "2022 (Term 1)":
@@ -188,11 +189,14 @@ def execute(filters=None):
 
 		assessments = [{"fieldname": assessment_criteria, "label": _(assessment_criteria), "fieldtype": "Data", "width": 200, } for assessment_criteria in assessments]
 		columns = [ { "fieldname": "course", "label": _("Subjects"), "fieldtype": "Data", "width": 200 }]
-		columns += [ { "fieldname": "raw_marks", "label": _("Raw Marks"), "fieldtype": "Data", "width": 150 }]
+		
+		if program in ('Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
+			columns += [ { "fieldname": "raw_marks", "label": _("Raw Marks"), "fieldtype": "Data", "width": 150 }]
+		
 		columns += assessments
 		columns+=[ { "fieldname": "Overall", "label": _("Final Overall"), "fieldtype": "Data", "width": 100 }]
-		columns+=[ { "fieldname": "MidYear_40", "label": _("Mid Year 40%"), "fieldtype": "Data", "width": 100 }]
 		columns+=[ { "fieldname": "Final_60", "label": _("Final 60%"), "fieldtype": "Data", "width": 100 }]
+		columns+=[ { "fieldname": "MidYear_40", "label": _("Mid Year 40%"), "fieldtype": "Data", "width": 100 }]
 		columns+=[ { "fieldname": "Total_Overall", "label": _("TOTAL"), "fieldtype": "Data", "width": 100 }]
 		columns+=[ { "fieldname": "Grade", "label": _("Grade"), "fieldtype": "Data", "width": 100 }]
 		columns+=[ { "fieldname": "Comments", "label": _("Teacher's Comment"), "fieldtype": "Data", "width": 500}]
