@@ -211,50 +211,56 @@ def get_finalsecond_half_position(student, term):
 #		return ele['MidYear_Total']
 
 	program = get_program(student, term)
+	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
+		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
-	totalClass = frappe.db.sql("""SELECT COUNT(*)
-					FROM `tabProgram Enrollment`
-					WHERE company = 'Queen Salote College'
-					AND docstatus = 1
-					AND program = %s
-					AND academic_term = %s""", (program, term))
+		totalClass = frappe.db.sql("""SELECT COUNT(*)
+						FROM `tabProgram Enrollment`
+						WHERE company = 'Queen Salote College'
+						AND docstatus = 1
+						AND program = %s
+						AND academic_term = %s""", (program, term))
 
-	Final_ClassTotal = functools.reduce(lambda sub, ele: sub * 10 + ele, totalClass)
+		Final_ClassTotal = functools.reduce(lambda sub, ele: sub * 10 + ele, totalClass)
 
-	level = program[:-1]
-	leveltotal = frappe.db.sql("""SELECT COUNT(*)
-					FROM `tabProgram Enrollment`
-					WHERE company = 'Queen Salote College'
-					AND docstatus = 1
-					AND program LIKE %s
-					AND academic_term = %s""",("%%%s%%" % level, term))
+		level = program[:-1]
+		leveltotal = frappe.db.sql("""SELECT COUNT(*)
+						FROM `tabProgram Enrollment`
+						WHERE company = 'Queen Salote College'
+						AND docstatus = 1
+						AND program LIKE %s
+						AND academic_term = %s""",("%%%s%%" % level, term))
 
-	
-	Level_Total = functools.reduce(lambda sub, ele: sub * 10 + ele, leveltotal)
+		
+		Level_Total = functools.reduce(lambda sub, ele: sub * 10 + ele, leveltotal)
 
-	final_second_half_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
-					SUM(tabAR.total_score) AS 'Final_Second_Half_Total'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR.docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program = %s
-					AND tabAR.academic_term = %s
-					GROUP BY tabAR.student""", (program, term), as_dict=1)
-	
-	overall_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
-					SUM(tabAR.total_score) AS 'Overall_Total'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR.docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program = %s
-					AND tabAR.academic_term = %s
-					GROUP BY tabAR.student""", (program, term), as_dict=1)
+		final_second_half_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
+						SUM(tabAR.total_score) AS 'Final_Second_Half_Total'
+						FROM `tabAssessment Result` as tabAR
+						WHERE tabAR.docstatus = 1
+						AND tabAR.not_included = 0
+						AND tabAR.program = %s
+						AND tabAR.academic_term = %s
+						GROUP BY tabAR.student""", (program, term), as_dict=1)
+		
+		overall_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
+						SUM(tabAR.total_score) AS 'Overall_Total'
+						FROM `tabAssessment Result` as tabAR
+						WHERE tabAR.docstatus = 1
+						AND tabAR.not_included = 0
+						AND tabAR.program = %s
+						AND tabAR.academic_term = %s
+						GROUP BY tabAR.student""", (program, term), as_dict=1)
 	
 #	overalData = pd.DataFrame.from_records(overall_position)
 #	overalData['Mark_Rank'] = overalData['Overall_Total'].rank(ascending = 0)
 
 	dataFinal = pd.DataFrame.from_records(final_second_half_position)
 	dataFinal['Mark_Rank'] = dataFinal['Final_Second_Half_Total'].rank(ascending = 0)
+
+	dataFinal = dataFinal.sort_values(by=['Mark_Rank'])
+
+	frappe.msgprint(_("Level {0}").format(dataFinal))
 
 	FinalHalfPosition = dataFinal.loc[dataFinal.student == student,'Mark_Rank'].values[0]
 	
@@ -277,7 +283,7 @@ def get_final_overall_position(student, term):
 
 	level = program[:-1]
 
-#	frappe.msgprint(_("Level {0}").format(level))
+#	frappe.msgprint(_("Level {0}").format(dataFinal))
 
 	
 	leveltotal = frappe.db.sql("""SELECT COUNT(*)
@@ -357,19 +363,19 @@ def get_final_overall_position(student, term):
 
 	#gTotal.set_index('student',inplace=True)
 
-	gTotal['OverallScore'] = gTotal['Total_Score'] + gTotal['MidYear_Score']
+#	gTotal['OverallScore'] = gTotal['Total_Score'] + gTotal['MidYear_Score']
 	
 	#gTotal['StudentID'] = gTotal['student']
 	
 	#gTotal.set_index = gTotal.StudentID
 
-	gTotal['Mark_Rank'] = gTotal['OverallScore']
+#	gTotal['Mark_Rank'] = gTotal['OverallScore']
 
-	gTotal = gTotal.sort_values(by=['Mark_Rank'])
+#	gTotal = gTotal.sort_values(by=['Mark_Rank'])
 
-	FinalPosition = gTotal.loc[gTotal.student == student,'Mark_Rank'].values[0]
+#	FinalPosition = gTotal.loc[gTotal.student == student,'Mark_Rank'].values[0]
 	
-	FinalPosition = "{:.0f}".format(FinalPosition)
+#	FinalPosition = "{:.0f}".format(FinalPosition)
 
 #	frappe.msgprint(_("Final {0}").format(gTotal))
 
