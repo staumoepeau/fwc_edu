@@ -29,7 +29,8 @@ frappe.query_reports["Student Report Card"] = {
 			"reqd": 1,
 			on_change: () => {
 				var student = frappe.query_report.get_filter_value('student');			
-				var academic_term = frappe.query_report.get_filter_value('academic_term');		
+				var academic_term = frappe.query_report.get_filter_value('academic_term');
+
 	
 				if (student) {
 					frappe.db.get_value('Student', student, ["title"], function(value) {
@@ -37,8 +38,7 @@ frappe.query_reports["Student Report Card"] = {
 					});
 
 					frappe.db.get_value('Program Enrollment', {'student': student}, ["program"], function(value) {
-					frappe.query_report.set_filter_value('program', value["program"]);
-
+					frappe.query_report.set_filter_value('program',value["program"]);
 					});
 
 					if (academic_term = "2022 (Term 1)"){
@@ -257,6 +257,12 @@ frappe.query_reports["Student Report Card"] = {
 		{
 			"fieldname": "honour_board",
 			"label": __("Honour Board"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
+			"fieldname": "level",
+			"label": __("Level"),
 			"fieldtype": "Data",
 			"hidden": 1
 		},
