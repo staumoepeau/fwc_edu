@@ -250,8 +250,8 @@ def get_finalsecond_half_position(student, term):
 					AND tabAR.academic_term = %s
 					GROUP BY tabAR.student""", (program, term), as_dict=1)
 	
-	overalData = pd.DataFrame.from_records(overall_position)
-	overalData['Mark_Rank'] = overalData['Overall_Total'].rank(ascending = 0)
+#	overalData = pd.DataFrame.from_records(overall_position)
+#	overalData['Mark_Rank'] = overalData['Overall_Total'].rank(ascending = 0)
 
 	dataFinal = pd.DataFrame.from_records(final_second_half_position)
 	dataFinal['Mark_Rank'] = dataFinal['Final_Second_Half_Total'].rank(ascending = 0)
@@ -330,6 +330,23 @@ def get_final_overall_position(student, term):
 					AND tabAR.academic_term = %s
 					GROUP BY tabAR.student""", ("%%%s%%" % level, term), as_dict=1)
 	
+#	studentData=[]
+#	students = {}
+#	for final in final_60:
+#		students = {
+#			'student' : final.student,
+#			'final' : final.Total_Score
+#		}
+#	studentData.append(students)
+
+#	for midyear in midyear_40:
+#		students = {
+#			'student' : midyear.student,
+#			'midYear' : midyear.MidYear_Score
+#		}
+
+#	studentData.append(students)
+
 #	frappe.msgprint(_("Mid Year {0}").format(str(midyear_40)))
 #	frappe.msgprint(_("Final {0}").format(str(final_60)))
 
@@ -338,25 +355,43 @@ def get_final_overall_position(student, term):
 	
 	gTotal = pd.merge(finalHalf_60, midYeay_40, on='student')
 
-	gTotal.set_index('student',
-             inplace=True)
+	#gTotal.set_index('student',inplace=True)
 
-	final_result = gTotal['Total_Score'] + gTotal['MidYear_Score']
-#	final_result = dict(zip(final_60.Final_60(), midyear_40.MidYear_40()))
-
-
-#	final_result = Counter(final_60) + Counter(midyear_40)
-    
-#	final_result = {**final_60, **midyear_40}
+	gTotal['OverallScore'] = gTotal['Total_Score'] + gTotal['MidYear_Score']
 	
-#	for key, value in final_result.items():
-#		if key in final_60 and key in midyear_40:
-#				final_result[key] = [value , final_60[key]]
+	#gTotal['StudentID'] = gTotal['student']
+	
+	#gTotal.set_index = gTotal.StudentID
 
+	gTotal['Mark_Rank'] = gTotal['OverallScore']
 
-	#frappe.msgprint(_("Final {0}").format(final_result))
+	gTotal = gTotal.sort_values(by=['Mark_Rank'])
 
-	return final_60, Level_Total
+	FinalPosition = gTotal.loc[gTotal.student == student,'Mark_Rank'].values[0]
+	
+	FinalPosition = "{:.0f}".format(FinalPosition)
+
+#	frappe.msgprint(_("Final {0}").format(gTotal))
+
+	return FinalPosition
+
+@frappe.whitelist()
+def get_honour_board(student, term):
+
+	program = get_program(student, term)
+	
+	honourB = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(600)*100, 2) AS 'Score' 
+				FROM `tabAssessment Result` as tabAR
+				LEFT JOIN `tabAssessment Result Detail` AS tabARD
+				ON tabAR.name = tabARD.parent
+				WHERE tabAR.docstatus = 1
+				AND tabAR.student = %s
+				AND tabAR.program = %s
+				AND tabAR.academic_term = %s
+				AND tabAR.not_included = 0
+				AND tabARD.assessment_criteria = 'Final Exam'""", (student, program, term))
+
+	return honourB
 
 def get_program(student, term):
 	return frappe.get_value('Program Enrollment', {'student': student, 'academic_term':term}, ['program'])

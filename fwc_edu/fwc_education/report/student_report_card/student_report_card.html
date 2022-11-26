@@ -40,21 +40,23 @@ border-collapse: collapse;
 <br>
 <div class="row">
 	<div class="col-xs-12 text-center">
-		<label>STUDENT MID YEAR REPORT CARD</label>
+		<H4>STUDENT MID YEAR REPORT CARD</H4>
+		<h4>{%= filters.title %}</h4>
 	</div>
 </div>
 <hr>
+
 <div class="row">
 	<div class="col-xs-7">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-left">STUDENT NAME</label></div>
-			<div class="col-xs-6">{%= filters.title %}</div>
+			<div class="col-xs-6"><label class="text-left">STUDENT NO</label></div>
+			<div class="col-xs-6">{%= filters.student %}</div>
 		</div>
 	</div>
 	<div class="col-xs-5">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-right">STUDENT NO</label></div>
-			<div class="col-xs-6 text-right">{%= filters.student %}</div>
+			<div class="col-xs-6"><label class="text-right">CLASS</label></div>
+			<div class="col-xs-6 text-right">{%= filters.program %}</div>
 		</div>
 	</div>
 </div>
@@ -62,14 +64,13 @@ border-collapse: collapse;
 <div class="row">
 	<div class="col-xs-7">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-left">CLASS</label></div>
-			<div class="col-xs-6">{%= filters.program %}</div>
+			<div class="col-xs-6"><label class="text-left">TERM</label></div>
+			<div class="col-xs-6">{%= filters.academic_term %}</div>
 		</div>
 	</div>
 	<div class="col-xs-5">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-right">Term</label></div>
-			<div class="col-xs-6 text-right">{%= filters.academic_term %}</div>
+		
 		</div>
 	</div>
 </div>
@@ -451,11 +452,12 @@ border-collapse: collapse;
 <!-------------------------------------------------------------------------------------------------------------------------->
 
 {% if (filters.academic_term == "2022 (Term 4)") { %}
-
+	{% if (filters.program == "Form 6M") { %}
 <br>
 <div class="row">
 	<div class="col-xs-12 text-center">
-		<label>STUDENT FINAL REPORT CARD</label>
+		<H4>STUDENT FINAL REPORT CARD</H4>
+		<h4>{%= filters.title %}</h4>
 	</div>
 </div>
 <hr>
@@ -463,14 +465,14 @@ border-collapse: collapse;
 <div class="row">
 	<div class="col-xs-7">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-left">STUDENT NAME</label></div>
-			<div class="col-xs-6">{%= filters.title %}</div>
+			<div class="col-xs-6"><label class="text-left">STUDENT NO</label></div>
+			<div class="col-xs-6">{%= filters.student %}</div>
 		</div>
 	</div>
 	<div class="col-xs-5">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-right">STUDENT NO</label></div>
-			<div class="col-xs-6 text-right">{%= filters.student %}</div>
+			<div class="col-xs-6"><label class="text-right">CLASS</label></div>
+			<div class="col-xs-6 text-right">{%= filters.program %}</div>
 		</div>
 	</div>
 </div>
@@ -478,18 +480,18 @@ border-collapse: collapse;
 <div class="row">
 	<div class="col-xs-7">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-left">CLASS</label></div>
-			<div class="col-xs-6">{%= filters.program %}</div>
+			<div class="col-xs-6"><label class="text-left">TERM</label></div>
+			<div class="col-xs-6">{%= filters.academic_term %}</div>
 		</div>
 	</div>
 	<div class="col-xs-5">
 		<div class="row">
-			<div class="col-xs-6"><label class="text-right">Term</label></div>
-			<div class="col-xs-6 text-right">{%= filters.academic_term %}</div>
+		
 		</div>
 	</div>
 </div>
 <hr>
+
 
 <table class="table table-bordered">
 	<thead>
@@ -511,9 +513,10 @@ border-collapse: collapse;
 				{% } else if (report_columns[i].label=="Final 60%") { %}
 				<th class="text-center" style="width:8%">FINAL<br><br>60%</th>
 				
+
 				{% } else if (report_columns[i].label=="Raw Marks") { %}
 				<th class="text-center" style="width:10%">Final Exam<br>(HONOUR BOARD)<br>100%</th>
-
+		
 				{% } else if (report_columns[i].label=="TOTAL") { %}
 				<th class="text-center" style="width:8%"><br>GRAND<br>TOTAL</th>
 
@@ -570,11 +573,14 @@ border-collapse: collapse;
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th colspan="4" class="text-center">
+			<th colspan="5" class="text-center">
 				ANALYSIS OF PERFORMANCE 
 			</th>
 		</tr>
 		<tr>
+			<th colspan="1" class="text-center">
+				HONOUR BOARD
+			</th>
 			<th colspan="2" class="text-center">
 				FINAL SECOND HALF
 			</th>
@@ -586,8 +592,12 @@ border-collapse: collapse;
 			
 		</tr>
 	</thead>
+	
 	<tbody>
 		<tr class="text-center">
+			<td>
+				PERCENTAGE : <b>{%= filters.honour_board %}%</b>
+			</td>
 			<td>
 				PERCENTAGE : <b>{%= filters.final_second_half_score %}%</b>
 			</td>
@@ -598,7 +608,7 @@ border-collapse: collapse;
 				PERCENTAGE : <b>{%= filters.grand_total %}%</b>
 			</td>
 			<td>
-				POSITION : <b>{%= filters.grand_total_position %} / {%= filters.overall_level %}</b>
+				POSITION : <b>{%= filters.final_overall_position %} / {%= filters.overall_level %}</b>
 			</td>
 		</tr>
 	</tbody>
@@ -869,4 +879,431 @@ border-collapse: collapse;
 
 	</tbody>
 </table>
+{% } else { %}
+
+
+<br>
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<h4>STUDENT FINAL REPORT CARD</h4>
+		<h4>{%= filters.title %}</h4>
+	</div>
+</div>
+<hr>
+
+<div class="row">
+	<div class="col-xs-7">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-left">STUDENT NO</label></div>
+			<div class="col-xs-6">{%= filters.student %}</div>
+		</div>
+	</div>
+	<div class="col-xs-5">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-right">CLASS</label></div>
+			<div class="col-xs-6 text-right">{%= filters.program %}</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-7">
+		<div class="row">
+			<div class="col-xs-6"><label class="text-left">TERM</label></div>
+			<div class="col-xs-6">{%= filters.academic_term %}</div>
+		</div>
+	</div>
+	<div class="col-xs-5">
+		<div class="row">
+		
+		</div>
+	</div>
+</div>
+<hr>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+			
+				{% if (report_columns[i].label=="Common Test Final") { %}
+					<th class="text-center" style="width:8%">Course Work<br><br>30%</th>
+				
+				{% } else if (report_columns[i].label=="Final Exam") { %}
+				<th class="text-center" style="width:8%">Final Exam<br><br>70%</th>
+
+				{% } else if (report_columns[i].label=="Final Overall") { %}
+				<th class="text-center" style="width:8%">Final Second<br>Half<br>10%</th>
+
+				{% } else if (report_columns[i].label=="Mid Year 40%") { %}
+				<th class="text-center" style="width:8%">MID YEAR<br><br>40%</th>
+
+				{% } else if (report_columns[i].label=="Final 60%") { %}
+				<th class="text-center" style="width:8%">FINAL<br><br>60%</th>
+				
+
+				{% } else if (report_columns[i].label=="Raw Marks") { %}
+				<th class="text-center" style="width:10%">Final Exam<br><br>100%</th>
+		
+				{% } else if (report_columns[i].label=="TOTAL") { %}
+				<th class="text-center" style="width:8%"><br>GRAND<br>TOTAL</th>
+
+				{% } else if (report_columns[i].label=="Subjects") { %}
+				<th class="text-center" style="width:16%"><br>Subjects</th>
+
+				{% } else if (report_columns[i].label=="Teacher's Comment") { %}
+				<th class="text-center" style="width:30%"><br>Teacher's Comment</th>
+
+				{% } else { %}
+					<th class="text-center" >{%= report_columns[i].label %}</th>
+				{% } %}
+			{% } %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for(var j=0, k=data.length; j<k; j++) { %}
+			{%
+				var row = data[j];
+			%}
+			<tr>
+				{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+				{% if (i==0) { %}
+					<td class="text-left" style="height:50px">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
+							{%= format_currency(row[fieldname]) %}
+						{% } else { %}
+							{% if (!is_null(row[fieldname])) { %}
+								{%= row[fieldname] %}
+							{% } %}
+						{% } %}
+					</td>
+					{% } else { %}
+					<td class="text-center">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{% if (report_columns[i].fieldtype=='Currency' && !isNaN(row[fieldname])) { %}
+							{%= format_currency(row[fieldname]) %}
+						{% } else { %}
+							{% if (!is_null(row[fieldname])) { %}
+								{%= row[fieldname] %}
+							{% } %}
+						{% } %}
+					</td>
+					{% } %}
+				{% } %}
+			</tr>
+		{% } %}
+	</tbody>
+</table>
+
+<!-----------------------------------------------Overall MARKS------------------------------------------------------------------------->
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th colspan="4" class="text-center">
+				ANALYSIS OF PERFORMANCE 
+			</th>
+		</tr>
+		<tr>
+
+
+			<th colspan="2" class="text-center">
+				FINAL SECOND HALF
+			</th>
+			
+			
+			<th colspan="2" class="text-center">
+				GRAND TOTAL OVERALL
+			</th>
+			
+		</tr>
+	</thead>
+	
+	<tbody>
+		<tr class="text-center">
+
+			<td>
+				PERCENTAGE : <b>{%= filters.final_second_half_score %}%</b>
+			</td>
+			<td>
+				POSITION : <b>{%= filters.finalsecond_half_position %} / {%= filters.finalclass_total %}</b>
+			</td>
+			<td>
+				PERCENTAGE : <b>{%= filters.grand_total %}%</b>
+			</td>
+			<td>
+				POSITION : <b>{%= filters.final_overall_position %} / {%= filters.overall_level %}</b>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th class="text-center">
+				ATTENDANCE
+			</th>
+			
+			
+			<th class="text-center">
+				CONDUCT
+			</th>
+			
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="text-center">
+			<td>
+				<br>
+				<br>
+			</td>
+			<td>
+				
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>
+				FORM TEACHER’S COMMENTS: 
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<!-----------------------------------------------SINGNATURES------------------------------------------------------------------------->
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>
+				TEACHER'S REMARKS
+			</th>
+			<th>
+				
+			</th>
+			<th>
+				
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<br>
+				<br>
+			</td>
+	
+			<td>
+
+			</td>
+	
+			<td>
+
+			</td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td>
+				DATE
+			</td>
+	
+			<td>
+				SIGNATURE OF FORM TEACHER
+			</td>
+	
+			<td>
+				SIGNATURE OF PRINCIPAL
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+<div class="page-break"></div>
+
+<br>
+<br>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th class="text-center">
+				<br>
+				INFORMATION
+				<br>
+				<br>
+			</th>
+						
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th colspan="2" class="text-center">
+				ATTENDANCE
+			</th>
+			
+			
+			<th colspan="2" class="text-center">
+				CONDUCT
+			</th>
+			
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="text-center" style="width:100%">
+			<td>
+			A
+			</td>
+			<td>
+			LESS THAN 5 DAILY ABENCES 
+			</td>
+			<td>
+				A
+			</td>
+			<td>
+				EXCELLENT 
+			</td>
+		</tr>
+		<tr class="text-center" style="width:100%">
+			<td>
+			B
+			</td>
+			<td>
+			6 - 10
+			</td>
+			<td>
+				B
+			</td>
+			<td>
+				GOOD 
+			</td>
+		</tr>
+		<tr class="text-center" style="width:100%">
+			<td>
+			C
+			</td>
+			<td>
+			11 - 15
+			</td>
+			<td>
+				C
+			</td>
+			<td>
+				FAIR 
+			</td>
+		</tr>
+		<tr class="text-center" style="width:100%">
+			<td>
+			D
+			</td>
+			<td>
+				OVER 15 ABSENCES 
+			</td>
+			<td>
+				D
+			</td>
+			<td>
+				POOR 
+			</td>
+		</tr>
+		
+	</tbody>
+</table>
+
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th colspan="9" class="text-center">
+				QUEEN SALOTE COLLEGE GRADING SCALE
+			</th>
+						
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="text-center" style="width:100%">
+			<td>
+				GRADE
+				</td>
+			<td>
+			A+
+			</td>
+			<td>
+			A
+			</td>
+			<td>
+			B+
+			</td>
+			<td>
+			B
+			</td>
+			<td>
+				C+
+				</td>
+				<td>
+				C 
+				</td>
+				<td>
+				NA
+				</td>
+				<td>
+				NULL 
+				</td>
+		</tr>
+
+		<tr class="text-center" style="width:100%">
+			<td>
+			THRESHOLD 
+			</td>
+			<td>
+			90%
+			</td>
+			<td>
+			80%
+			</td>
+			<td>
+			75%
+			</td>
+			<td>
+			70%
+			</td>
+			<td>
+				56%
+				</td>
+				<td>
+				50%
+				</td>
+				<td>
+				1%
+				</td>
+				<td>
+				0% 
+				</td>
+		</tr>
+
+	</tbody>
+</table>
+
+{% } %}
 {% } %}

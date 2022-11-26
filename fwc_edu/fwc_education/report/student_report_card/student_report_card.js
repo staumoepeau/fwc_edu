@@ -33,7 +33,7 @@ frappe.query_reports["Student Report Card"] = {
 	
 				if (student) {
 					frappe.db.get_value('Student', student, ["title"], function(value) {
-					frappe.query_report.set_filter_value('title', value["title"]);
+					frappe.query_report.set_filter_value('title', value["title"].toUpperCase());
 					});
 
 					frappe.db.get_value('Program Enrollment', {'student': student}, ["program"], function(value) {
@@ -132,6 +132,40 @@ frappe.query_reports["Student Report Card"] = {
 									//	report.page.clear_secondary_action()	
 								}
 						});
+
+						frappe.call({
+							method: "fwc_edu.fwc_education.api.get_final_overall_position",
+							args: {
+									"student": student,
+									"term": academic_term,						
+								},
+								callback: function(e) {
+									//console.log(data)
+									if(e.message) {
+										frappe.query_report.set_filter_value('final_overall_position', e.message[0]);
+									
+									}
+									console.log(e.message)
+									//	report.page.clear_secondary_action()	
+								}
+						});
+
+						frappe.call({
+							method: "fwc_edu.fwc_education.api.get_honour_board",
+							args: {
+									"student": student,
+									"term": academic_term,						
+								},
+								callback: function(e) {
+									//console.log(data)
+									if(e.message) {
+										frappe.query_report.set_filter_value('honour_board', e.message[0]);
+									
+									}
+									console.log(e.message)
+									//	report.page.clear_secondary_action()	
+								}
+						});
 					}
 							
 				} else {
@@ -209,8 +243,20 @@ frappe.query_reports["Student Report Card"] = {
 			"hidden": 1
 		},
 		{
+			"fieldname": "final_overall_position",
+			"label": __("Final Overall Position"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
 			"fieldname": "overall_level",
 			"label": __("Total Level"),
+			"fieldtype": "Data",
+			"hidden": 1
+		},
+		{
+			"fieldname": "honour_board",
+			"label": __("Honour Board"),
 			"fieldtype": "Data",
 			"hidden": 1
 		},
