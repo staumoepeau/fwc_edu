@@ -211,20 +211,18 @@ def get_finalsecond_half_position(student, term):
 #		return ele['MidYear_Total']
 
 	program = get_program(student, term)
-	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
-		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
-		totalClass = frappe.db.sql("""SELECT COUNT(*)
+	totalClass = frappe.db.sql("""SELECT COUNT(*)
 						FROM `tabProgram Enrollment`
 						WHERE company = 'Queen Salote College'
 						AND docstatus = 1
 						AND program = %s
 						AND academic_term = %s""", (program, term))
 
-		Final_ClassTotal = functools.reduce(lambda sub, ele: sub * 10 + ele, totalClass)
+	Final_ClassTotal = functools.reduce(lambda sub, ele: sub * 10 + ele, totalClass)
 
-		level = program[:-1]
-		leveltotal = frappe.db.sql("""SELECT COUNT(*)
+	level = program[:-1]
+	leveltotal = frappe.db.sql("""SELECT COUNT(*)
 						FROM `tabProgram Enrollment`
 						WHERE company = 'Queen Salote College'
 						AND docstatus = 1
@@ -232,75 +230,67 @@ def get_finalsecond_half_position(student, term):
 						AND academic_term = %s""",("%%%s%%" % level, term))
 
 		
-		Level_Total = functools.reduce(lambda sub, ele: sub * 10 + ele, leveltotal)
+	Level_Total = functools.reduce(lambda sub, ele: sub * 10 + ele, leveltotal)
 
-		final_second_half_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
-						SUM(tabAR.total_score) AS 'Final_Second_Half_Total'
-						FROM `tabAssessment Result` as tabAR
-						WHERE tabAR.docstatus = 1
-						AND tabAR.not_included = 0
-						AND tabAR.program = %s
-						AND tabAR.academic_term = %s
-						GROUP BY tabAR.student""", (program, term), as_dict=1)
+	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
+		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
+
+
+		final_second_half_position =frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
+					ROUND(SUM(tabAR.total_score)/(600)*100, 2) AS 'Final_Second_Half_Total'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR.docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program = %s
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student
+					""", (program, term), as_dict=1)
+	else:
+
+		final_second_half_position =frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
+					ROUND(SUM(tabAR.total_score)/(800)*100, 2) AS 'Final_Second_Half_Total'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR.docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program = %s
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student
+				""", (program, term), as_dict=1)
 		
-		overall_position = frappe.db.sql("""SELECT tabAR.student, tabAR.student_name,
-						SUM(tabAR.total_score) AS 'Overall_Total'
-						FROM `tabAssessment Result` as tabAR
-						WHERE tabAR.docstatus = 1
-						AND tabAR.not_included = 0
-						AND tabAR.program = %s
-						AND tabAR.academic_term = %s
-						GROUP BY tabAR.student""", (program, term), as_dict=1)
-	
-#	overalData = pd.DataFrame.from_records(overall_position)
-#	overalData['Mark_Rank'] = overalData['Overall_Total'].rank(ascending = 0)
 
 	dataFinal = pd.DataFrame.from_records(final_second_half_position)
-	dataFinal['Mark_Rank'] = dataFinal['Final_Second_Half_Total'].rank(ascending = 0)
 
-	dataFinal = dataFinal.sort_values(by=['Mark_Rank'])
+	dataFinal['Rank'] = dataFinal['Final_Second_Half_Total'].rank(ascending = 0)
 
-	frappe.msgprint(_("Level {0}").format(dataFinal))
+#	dataFinal = dataFinal.sort_values(by=['Rank'])
 
-	FinalHalfPosition = dataFinal.loc[dataFinal.student == student,'Mark_Rank'].values[0]
+#	frappe.msgprint(_("Level {0}").format(dataFinal))
+
+	FinalHalfPosition = dataFinal.loc[dataFinal.student == student,'Rank'].values[0]
 	
+#	frappe.msgprint(_("Position {0}").format(FinalHalfPosition))
+
 	FinalHalfPosition = "{:.0f}".format(FinalHalfPosition)
-	
-	#midYear = get_midyear_position(student, "2022 (Term 1)")
-	#midYear_40 = (midYear.MidYear / 40 * 100)
-
-	#Final_60 = (FinalHalf /60*100)
 
 	return FinalHalfPosition, Final_ClassTotal, Level_Total
+
 
 @frappe.whitelist()
 def get_final_overall_position(student, term):
 	#*******Get students assessment results as list of dictionary
 #	def totalFunc(ele):
 #		return ele['MidYear_Total']
-
+	
 	program = get_program(student, term)
 
 	level = program[:-1]
 
-#	frappe.msgprint(_("Level {0}").format(dataFinal))
-
-	
-	leveltotal = frappe.db.sql("""SELECT COUNT(*)
-					FROM `tabProgram Enrollment`
-					WHERE company = 'Queen Salote College'
-					AND docstatus = 1
-					AND program LIKE %s
-					AND academic_term = %s""",("%%%s%%" % level, term))
-
-	
-	Level_Total = functools.reduce(lambda sub, ele: sub * 10 + ele, leveltotal)
 
 #	frappe.msgprint(_("Level Total {0}").format(Level_Total))
-	if (program in ('Form 1', 'Form 2', 'Form 3', 'Form 4')):
+	if (level in ('Form 1', 'Form 2', 'Form 3', 'Form 4')):
 
 		midyear_40 = frappe.db.sql("""SELECT tabAR.student,
-					((SUM(tabAR.total_score)/800*100)*40/100) AS 'MidYear_40'
+					ROUND(((SUM(tabAR.total_score)/800*100)*40/100), 2) AS 'MidYear_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
@@ -309,7 +299,7 @@ def get_final_overall_position(student, term):
 					GROUP BY tabAR.student""", ("%%%s%%" % level), as_dict=1)
 	
 		final_60 = frappe.db.sql("""SELECT tabAR.student,
-					((SUM(tabAR.total_score)/800*100)*60/100) AS 'Final_60'
+					ROUND(((SUM(tabAR.total_score)/800*100)*60/100), 2) AS 'Total_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
@@ -319,7 +309,7 @@ def get_final_overall_position(student, term):
 	else:
 
 		midyear_40 = frappe.db.sql("""SELECT tabAR.student,
-					((SUM(tabAR.total_score)/600*100)*40/100) AS 'MidYear_Score'
+					ROUND(((SUM(tabAR.total_score)/600*100)*40/100),2) AS 'MidYear_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
@@ -328,33 +318,19 @@ def get_final_overall_position(student, term):
 					GROUP BY tabAR.student""", ("%%%s%%" % level), as_dict=1)
 	
 		final_60 = frappe.db.sql("""SELECT tabAR.student, 
-					((SUM(tabAR.total_score)/600*100)*60/100) AS 'Total_Score'
+					ROUND(((SUM(tabAR.total_score)/600*100)*60/100),2) AS 'Total_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
 					AND tabAR.academic_term = %s
 					GROUP BY tabAR.student""", ("%%%s%%" % level, term), as_dict=1)
-	
-#	studentData=[]
-#	students = {}
-#	for final in final_60:
-#		students = {
-#			'student' : final.student,
-#			'final' : final.Total_Score
-#		}
-#	studentData.append(students)
 
-#	for midyear in midyear_40:
-#		students = {
-#			'student' : midyear.student,
-#			'midYear' : midyear.MidYear_Score
-#		}
 
-#	studentData.append(students)
 
-#	frappe.msgprint(_("Mid Year {0}").format(str(midyear_40)))
-#	frappe.msgprint(_("Final {0}").format(str(final_60)))
+	#frappe.msgprint(_("Final {0}").format(midyear_40))
+
+	#finalResult = Counter(final_60) + Counter(midyear_40)
 
 	midYeay_40 = pd.DataFrame.from_records(midyear_40)
 	finalHalf_60 = pd.DataFrame.from_records(final_60)
@@ -362,22 +338,17 @@ def get_final_overall_position(student, term):
 	gTotal = pd.merge(finalHalf_60, midYeay_40, on='student')
 
 	#gTotal.set_index('student',inplace=True)
+	gtest = gTotal['MidYear_Score']
 
-#	gTotal['OverallScore'] = gTotal['Total_Score'] + gTotal['MidYear_Score']
+	gTotal['OverallScore'] = gTotal['Total_Score'] + gTotal['MidYear_Score']
+
+	gTotal['Mark_Rank'] = gTotal['OverallScore'].rank(ascending = 0)
+
+	FinalPosition = gTotal.loc[gTotal.student == student,'Mark_Rank'].values[0]
 	
-	#gTotal['StudentID'] = gTotal['student']
-	
-	#gTotal.set_index = gTotal.StudentID
+	FinalPosition = "{:.0f}".format(FinalPosition)
 
-#	gTotal['Mark_Rank'] = gTotal['OverallScore']
-
-#	gTotal = gTotal.sort_values(by=['Mark_Rank'])
-
-#	FinalPosition = gTotal.loc[gTotal.student == student,'Mark_Rank'].values[0]
-	
-#	FinalPosition = "{:.0f}".format(FinalPosition)
-
-#	frappe.msgprint(_("Final {0}").format(gTotal))
+	#frappe.msgprint(_("Final {0}").format(gtest))
 
 	return FinalPosition
 

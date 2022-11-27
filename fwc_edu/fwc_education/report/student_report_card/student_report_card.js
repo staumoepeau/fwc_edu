@@ -142,7 +142,7 @@ frappe.query_reports["Student Report Card"] = {
 								callback: function(e) {
 									//console.log(data)
 									if(e.message) {
-										frappe.query_report.set_filter_value('final_overall_position', e.message[0]);
+										frappe.query_report.set_filter_value('final_overall_position', e.message);
 									
 									}
 									console.log(e.message)
