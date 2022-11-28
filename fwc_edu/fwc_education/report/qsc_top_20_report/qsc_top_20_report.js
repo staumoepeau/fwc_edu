@@ -14,6 +14,14 @@ frappe.query_reports["QSC TOP 20 Report"] = {
 			hidden:1
 		},
 		{
+			"fieldname":"academic_term",
+			"label":__("Academic Term"),
+			"fieldtype":"Link",
+			"options": "Academic Term",
+			"width": "90px",
+			"reqd": 1
+		},
+		{
 			fieldname:"level",
 			label: __("Choose Level"),
 			fieldtype: "Select",
@@ -27,32 +35,33 @@ frappe.query_reports["QSC TOP 20 Report"] = {
 				{ "value": "L6", "label": __("FORM 6 LEVEL") },
 				{ "value": "L7", "label": __("FORM 7 LEVEL") },
 			],
-			reqd: 0,
+			reqd: 1,
 
-//			on_change: function() {
-//				var level = frappe.query_report.get_filter_value('level');
-//				if (level){
-//					if (level = 'L1'){
-//						var levelClass = "Form 1"
-//					}else if (level = 'L2'){
-//						var levelClass = "Form 2"
-//					}else if (level = 'L3'){
-//						var levelClass = "Form 3"
-//					}else if (level = 'L4'){
-//						var levelClass = "Form 4"
-//					}else if (level = 'L5'){
-//						var levelClass = "Form 5"
-//					}else if (level = 'L6'){
-//						var levelClass = "Form 6"
-//					}else if (level = 'L7'){
-//						var levelClass = "Form 7"
-//					}
-//					frappe.query_report.set_filter_value('classLevel', levelClass)
-//
-//				} else {
-//					frappe.query_report.set_filter_value('classLevel', "");
-//				}
-//			} 
+			on_change: function() {
+				var levelClass = ""
+				var level = frappe.query_report.get_filter_value('level');
+				if (level){
+					if (level = 'L1'){
+						levelClass = "Form 1"
+					}else if (level = 'L2'){
+						levelClass = "Form 2"
+					}else if (level = 'L3'){
+						levelClass = "Form 3"
+					}else if (level = 'L4'){
+						levelClass = "Form 4"
+					}else if (level = 'L5'){
+						levelClass = "Form 5"
+					}else if (level = 'L6'){
+						levelClass = "Form 6"
+					}else if (level = 'L7'){
+						levelClass = "Form 7"
+					}
+					frappe.query_report.set_filter_value('classLevel', levelClass)
+
+				} else {
+					frappe.query_report.set_filter_value('classLevel', "");
+				}
+			} 
 		},
 		{
 			fieldname:"classLevel",

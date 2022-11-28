@@ -175,8 +175,17 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Student REport Card",
+   "label": "Student Report Card",
    "link_to": "Student Report Card",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "LEVEL TOP 20 ",
+   "link_to": "QSC TOP 20 Report",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -226,7 +235,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-11-24 20:01:08.433394",
+ "modified": "2022-11-29 09:14:48.028319",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",

@@ -24,176 +24,111 @@ def execute(filters=None):
 	if not filters: filters = {}
 	columns, data = [], []
 
-	#groupSQL = filters.student_group_name
-
-	#levelSQL = "tabAR.program LIKE '{%level%}'".format(program=filters.level) if filters.level else "1 = 1"
-
-#	if filters.program in ('Form 1S', 'Form 1M'):
-#	programSQL = "tabAR.program LIKE 'Form 1%'.format(program=filters.program)"
-#	getProgram = frappe.db.get_value('Student Group', {'name': groupSQL}, ['program'])
-#	getCourse = frappe.db.get_value('Student Group', {'name': groupSQL}, ['course'])
-	studentList = ''
-	totalSQL = ''
-	if filters:
-		if filters.level == 'L1':
-			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					tabAR.total_score
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 1%'
-					"""
-			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 1%'
-					GROUP BY tabAR.student
-					"""
-		if filters.level == 'L2':
-			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					tabAR.total_score
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 2%'
-					"""
-			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 2%'
-					GROUP BY tabAR.student
-					"""
-		if filters.level == 'L3':
-			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					tabAR.total_score
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 3%'
-					"""
-			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 3%'
-					GROUP BY tabAR.student
-					"""
-		if filters.level == 'L4':
-			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					tabAR.total_score
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 4%'
-					"""
-			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 4%'
-					GROUP BY tabAR.student
-					"""
-		if filters.level == 'L5':
-			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					tabAR.total_score
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 5%'
-					"""
-			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 5%'
-					GROUP BY tabAR.student
-					"""
-		if filters.level == 'L6':
-			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					tabAR.total_score
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 6%'
-					"""
-			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 6%'
-					GROUP BY tabAR.student
-					"""
-		if filters.level == 'L7':
-			studentList = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					tabAR.total_score
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 7%'
-					"""
-			totalSQL = """SELECT tabAR.student, tabAR.student_name, tabAR.course,
-					ROUND(SUM(tabAR.total_score)/(count(tabAR.total_score)*100)*100, 1) AS 'total_score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR .docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE 'Form 7%'
-					GROUP BY tabAR.student
-					"""
+	formLevel = filters.get('level')
+	term = filters.get('academic_term')
 	
-	if len(studentList) == 0 or len(totalSQL) == 0:
-		frappe.msgprint('Please Select a Level')
-		return [], []
+	program = get_program(formLevel)
+
+	if formLevel in ("L1", "L2", "L3", "L4"):
 		
-	dataTotal = frappe.db.sql(totalSQL, as_dict=1)
-	data = frappe.db.sql(studentList, as_dict=1)
+#		frappe.msgprint(_("Level {0}").format(program))
 
-	dataframe = pd.DataFrame.from_records(data)
-	df_total = pd.DataFrame.from_records(dataTotal)
+		midyear_40 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/800*100)*40/100), 2) AS 'MidYear_Score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR.docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE %s
+					AND tabAR.academic_term = "2022 (Term 1)"
+					GROUP BY tabAR.student""", ("%%%s%%" % program), as_dict=1)
+	
+		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/800*100)*60/100), 2) AS 'Total_Score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR.docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE %s
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
+	
+	if formLevel in ("L5", "L6", "L7"):
+#		frappe.msgprint(_("Level 2 {0}").format(program))
+
+		midyear_40 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/600*100)*40/100), 2) AS 'MidYear_Score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR.docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE %s
+					AND tabAR.academic_term = "2022 (Term 1)"
+					GROUP BY tabAR.student""", ("%%%s%%" % program), as_dict=1)
+	
+		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/600*100)*60/100), 2) AS 'Total_Score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR.docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE %s
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
+
+
+#	df_40 = pd.DataFrame.from_records(midyear_40)
+#	df_60 = pd.DataFrame.from_records(final_60)
+	
+
+	dataframe = pd.DataFrame.from_records(midyear_40)
+	df_total = pd.DataFrame.from_records(final_60)
+
+	df_total = df_total.pivot_table(index=('student_name'), values='Total_Score')
+#	lessons = dataframe.course.unique().tolist()
+	dataframe = dataframe.pivot_table(index=('student_name'), values=('MidYear_Score'))
 
 	
 
-	#df_total['Mark_Rank'] = df_total['total_score'].rank(ascending = 0)
-	
-	#frappe.msgprint(_("Dataframe {0}").format(df_total))
-	#dataframe = dataframe.set_index('Overall')
+	dataframe['Overall'] = df_total['Total_Score'] + dataframe['MidYear_Score']
 
-	df_total = df_total.pivot_table(index=('student_name'), values='total_score')
-#	df_grade = df_grade.pivot_table(index='student_name', values='grade',aggfunc = lambda x: ','.join(str(v) for v in x))
-#	frappe.msgprint(_("Dataframe {0}").format(df_total))
-	lessons = dataframe.course.unique().tolist()
-
-	dataframe = dataframe.pivot_table(index=('student_name'), columns="course", values=('total_score'))
-	
-	dataframe['Overall'] = df_total
-#	dataframe['Grade'] = df_grade
 	dataframe['Comments'] = " "
 	
+	dataframe['FinalSecond'] = dataframe['Overall'] - dataframe['MidYear_Score']
+
+	dataframe['FinalSecond'] = round(dataframe['FinalSecond'], 2)
+
+	dataframe['Overall'] = round(dataframe['Overall'] ,2)
 	dataframe.fillna(0, inplace = True)
-#	dataframe['raw_marks'] = dataframe.loc[:, 'Mid Year Exam'] / 70 * 100
-	#dataframe = dataframe.sort_index(), ascending=[0])
-#	dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 2))
+
 	dataframe = dataframe.sort_values(by="Overall", ascending=False)
+	
 	dataframe = dataframe.iloc[:20]
 
-	#lessons = [{"fieldname": course, "label": _(course), "fieldtype": "Data", "width": 100, } for course in lessons]
-
+	columns = [ { "fieldname": "rank", "label": _("Position"), "fieldtype": "Data", "width": 200 }]
 	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
-#	columns += [ { "fieldname": "Overall_Total", "label": _("Overall"), "fieldtype": "Data", "width": 150 }]
-#	columns += 
 	columns+=[ { "fieldname": "Comments", "label": _("Kolo e Ui me Ai"), "fieldtype": "Data", "width": 500}]
-	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Data", "width": 100 }]
 
+	columns+=[ { "fieldname": "MidYear_Score", "label": _("Mid Year 40%"), "fieldtype": "Float", "width": 100 }]
 
-#	frappe.msgprint(_("Column {0}").format(columns))
-#	columns += [ { "fieldname": "assessment_criteria", "label": _("Assessment"), "fieldtype": "Data", "width": 200 }]
+	columns+=[ { "fieldname": "FinalSecond", "label": _("Second Half 60%"), "fieldtype": "Float", "width": 100 }]
+
+	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Float", "width": 100 }]
+
 	data = dataframe.reset_index().to_dict('records')
-
+	
 	return columns, data
+
+def get_program(level):
+	
+	if level == "L1":
+		return "Form 1"
+	if level == "L2":
+		return "Form 2"
+	if level == "L3":
+		return "Form 3"
+	if level == "L4":
+		return "Form 4"
+	if level == "L5":
+		return "Form 5"
+	if level == "L6":
+		return "Form 6"
+	if level == "L7":
+		return "Form 7"
+	
