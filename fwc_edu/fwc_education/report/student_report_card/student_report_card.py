@@ -192,12 +192,15 @@ def execute(filters=None):
 		
 		dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 3))
 
-		score_bins = [0, 1, 50, 56, 70, 75, 80, 90, 100]
-		letter_grades = ['NULL', 'NA', 'C', 'C+','B','B+','A','A+']
+		score_bins = [0, 50, 56, 70, 75, 80, 90, 100]
+		letter_grades =['NA', 'C', 'C+','B','B+','A','A+']
 
 		letter_cats = pd.cut(dataframe['Total_Overall'], score_bins, labels=letter_grades)
 
 		dataframe['Grade'] = letter_cats
+
+		dataframe['Grade'] = dataframe['Grade'].cat.add_categories('NULL')
+		dataframe['Grade'].fillna('NULL', inplace = True)
 
 		assessments = [{"fieldname": assessment_criteria, "label": _(assessment_criteria), "fieldtype": "Data", "width": 200, } for assessment_criteria in assessments]
 		columns = [ { "fieldname": "course", "label": _("Subjects"), "fieldtype": "Data", "width": 200 }]
