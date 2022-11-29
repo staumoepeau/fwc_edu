@@ -179,13 +179,25 @@ def execute(filters=None):
 		dataframe['Final_60'] = round((df_total * 60/100), 2)
 		dataframe['Total_Overall'] = round(dataframe['MidYear_40'] + dataframe['Final_60'], 2)
 		dataframe['Overall'] = round(df_total, 2)
-		dataframe['Grade'] = df_grade
+	#	dataframe['Grade'] = df_grade
 		dataframe['Comments'] = " "
+
+	#	totalOverall = dataframe['Overall']
+
+	#	frappe.msgprint(_("Column {0}").format(dataframe[dataframe['Overall']]))
 		
 		dataframe.fillna(0, inplace = True)
+
 		dataframe['raw_marks'] = round(dataframe.loc[:, 'Final Exam'] / 70 * 100, 2)
 		
 		dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 3))
+
+		score_bins = [0, 1, 50, 56, 70, 75, 80, 90, 100]
+		letter_grades = ['NULL', 'NA', 'C', 'C+','B','B+','A','A+']
+
+		letter_cats = pd.cut(dataframe['Total_Overall'], score_bins, labels=letter_grades)
+
+		dataframe['Grade'] = letter_cats
 
 		assessments = [{"fieldname": assessment_criteria, "label": _(assessment_criteria), "fieldtype": "Data", "width": 200, } for assessment_criteria in assessments]
 		columns = [ { "fieldname": "course", "label": _("Subjects"), "fieldtype": "Data", "width": 200 }]
