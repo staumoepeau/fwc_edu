@@ -386,7 +386,7 @@ def get_honour_board(student, term):
 				AND tabAR.student = %s
 				AND tabAR.program = %s
 				AND tabAR.academic_term = %s
-				AND tabAR.not_included = 0
+				AND tabAR.honor)board_exempt = 0
 				AND tabARD.assessment_criteria = 'Final Exam'""", (student, program, term))
 
 	return honourB
