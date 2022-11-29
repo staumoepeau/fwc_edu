@@ -97,19 +97,21 @@ def execute(filters=None):
 	dataframe['Overall'] = round(dataframe['Overall'] ,2)
 	dataframe.fillna(0, inplace = True)
 
+	dataframe['Rank'] = dataframe['Overall'].rank(ascending = 0)
+
 	dataframe = dataframe.sort_values(by="Overall", ascending=False)
 	
-	#dataframe = dataframe.iloc[:20]
+	dataframe = dataframe.iloc[:20]
 
-	columns = [ { "fieldname": "rank", "label": _("Position"), "fieldtype": "Data", "width": 200 }]
-	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
+	columns = [ { "fieldname": "Rank", "label": _("Position"), "fieldtype": "Data", "width": 80 }]
+	columns += [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
 	columns+=[ { "fieldname": "Comments", "label": _("Kolo e Ui me Ai"), "fieldtype": "Data", "width": 500}]
 
-	columns+=[ { "fieldname": "MidYear_Score", "label": _("Mid Year 40%"), "fieldtype": "Float", "width": 100 }]
+	columns+=[ { "fieldname": "MidYear_Score", "label": _("Mid Year 40%"), "fieldtype": "Float", "width": 90 }]
 
-	columns+=[ { "fieldname": "FinalSecond", "label": _("Second Half 60%"), "fieldtype": "Float", "width": 100 }]
+	columns+=[ { "fieldname": "FinalSecond", "label": _("Second Half 60%"), "fieldtype": "Float", "width": 90 }]
 
-	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Float", "width": 100 }]
+	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Float", "width": 90 }]
 
 	data = dataframe.reset_index().to_dict('records')
 	

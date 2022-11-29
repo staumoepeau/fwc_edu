@@ -47,7 +47,7 @@ border-collapse: collapse;
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+			{% for(var i=1, l=report_columns.length; i<l; i++) { %}
 				<th class="text-center" >{%= report_columns[i].label %}</th>
 			{% } %}
 		</tr>
@@ -120,11 +120,9 @@ border-collapse: collapse;
 					<td class="text-center">
 						
 						{% var fieldname = report_columns[i].fieldname; %}
-						{% if (i==1) { %}
-							{%= row[fieldname] %}
-						{% } else { %}
-							{%= row[fieldname] %}%
-						{% } %}
+					
+						{%= row[fieldname] %}
+
 					</td>
 					{% } %}
 				{% } %}
