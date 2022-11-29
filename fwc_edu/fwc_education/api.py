@@ -377,18 +377,21 @@ def get_final_overall_position(student, term):
 def get_honour_board(student, term):
 
 	program = get_program(student, term)
-	
-	honourB = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(600)*100, 2) AS 'Score' 
-				FROM `tabAssessment Result` as tabAR
-				LEFT JOIN `tabAssessment Result Detail` AS tabARD
-				ON tabAR.name = tabARD.parent
-				WHERE tabAR.docstatus = 1
-				AND tabAR.student = %s
-				AND tabAR.program = %s
-				AND tabAR.academic_term = %s
-				AND tabAR.honor)board_exempt = 0
-				AND tabARD.assessment_criteria = 'Final Exam'""", (student, program, term))
 
+	if program in ('Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
+	
+		honourB = frappe.db.sql("""SELECT ROUND(SUM(tabARD.raw_marks)/(600)*100, 2) AS 'Score' 
+					FROM `tabAssessment Result` as tabAR
+					LEFT JOIN `tabAssessment Result Detail` AS tabARD
+					ON tabAR.name = tabARD.parent
+					WHERE tabAR.docstatus = 1
+					AND tabAR.student = %s
+					AND tabAR.program = %s
+					AND tabAR.academic_term = %s
+					AND tabAR.honor_board_exempt = 0
+					AND tabARD.assessment_criteria = 'Final Exam'""", (student, program, term))
+	else:
+		honourB = []
 	return honourB
 
 def get_program(student, term):
