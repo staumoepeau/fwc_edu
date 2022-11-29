@@ -148,7 +148,7 @@ def get_final_second_half(student, term):
 	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
 		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
-		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 2) AS 'Score' 
+		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
@@ -157,7 +157,7 @@ def get_final_second_half(student, term):
 				AND tabAR.not_included = 0
 				""", (student, program, term))
 
-		midyear_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 2) AS 'Score' 
+		midyear_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
@@ -166,7 +166,7 @@ def get_final_second_half(student, term):
 				AND tabAR.not_included = 0
 				""", (student, program))
 	else:
-		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 2) AS 'Score' 
+		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
@@ -174,7 +174,7 @@ def get_final_second_half(student, term):
 				AND tabAR.academic_term = %s
 				""", (student, program, term))
 
-		midyear_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 2) AS 'Score' 
+		midyear_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
@@ -193,7 +193,7 @@ def get_final_second_half(student, term):
 	finalhalf_score = str(finalhalf_score).replace('((', '')
 	finalhalf_score = str(finalhalf_score).replace('))', '')
 
-	finalhalf_60 = float(finalhalf_score)*60/100
+	finalhalf_60 = round(float(finalhalf_score)*60/100, 2)
 
 	grand_total = round(float(midyear_40 + finalhalf_60), 2)
 
@@ -290,27 +290,43 @@ def get_final_overall_position(student, term):
 	if (level in ('Form 1', 'Form 2', 'Form 3', 'Form 4')):
 
 		if student in ('S22000368','S22000478'):
-			totalsubject = 700
-		else:
-			totalsubject = 800
 
-		midyear_40 = frappe.db.sql("""SELECT tabAR.student,
-					ROUND(((SUM(tabAR.total_score)/%s*100)*40/100), 2) AS 'MidYear_Score'
+			midyear_40 = frappe.db.sql("""SELECT tabAR.student,
+					ROUND(((SUM(tabAR.total_score)/700*100)*40/100), 2) AS 'MidYear_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
 					AND tabAR.academic_term = "2022 (Term 1)"
-					GROUP BY tabAR.student""", (totalsubject, "%%%s%%" % level), as_dict=1)
+					GROUP BY tabAR.student""", ("%%%s%%" % level), as_dict=1)
 	
-		final_60 = frappe.db.sql("""SELECT tabAR.student,
-					ROUND(((SUM(tabAR.total_score)/%s*100)*60/100), 2) AS 'Total_Score'
+			final_60 = frappe.db.sql("""SELECT tabAR.student,
+					ROUND(((SUM(tabAR.total_score)/700*100)*60/100), 2) AS 'Total_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
 					AND tabAR.academic_term = %s
-					GROUP BY tabAR.student""", (totalsubject, "%%%s%%" % level, term), as_dict=1)
+					GROUP BY tabAR.student""", ("%%%s%%" % level, term), as_dict=1)
+		else:
+
+			midyear_40 = frappe.db.sql("""SELECT tabAR.student,
+						ROUND(((SUM(tabAR.total_score)/800*100)*40/100), 2) AS 'MidYear_Score'
+						FROM `tabAssessment Result` as tabAR
+						WHERE tabAR.docstatus = 1
+						AND tabAR.not_included = 0
+						AND tabAR.program LIKE %s
+						AND tabAR.academic_term = "2022 (Term 1)"
+						GROUP BY tabAR.student""", ("%%%s%%" % level), as_dict=1)
+		
+			final_60 = frappe.db.sql("""SELECT tabAR.student,
+						ROUND(((SUM(tabAR.total_score)/800*100)*60/100), 2) AS 'Total_Score'
+						FROM `tabAssessment Result` as tabAR
+						WHERE tabAR.docstatus = 1
+						AND tabAR.not_included = 0
+						AND tabAR.program LIKE %s
+						AND tabAR.academic_term = %s
+						GROUP BY tabAR.student""", ("%%%s%%" % level, term), as_dict=1)
 	else:
 
 		midyear_40 = frappe.db.sql("""SELECT tabAR.student,
@@ -343,7 +359,7 @@ def get_final_overall_position(student, term):
 	gTotal = pd.merge(finalHalf_60, midYeay_40, on='student')
 
 	#gTotal.set_index('student',inplace=True)
-	gtest = gTotal['MidYear_Score']
+	#gtest = gTotal['MidYear_Score']
 
 	gTotal['OverallScore'] = gTotal['Total_Score'] + gTotal['MidYear_Score']
 
