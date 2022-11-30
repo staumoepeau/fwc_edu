@@ -169,6 +169,7 @@ def get_final_second_half(student, term):
 		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
+				AND tabAR.not_included = 0
 				AND tabAR.student = %s
 				AND tabAR.program = %s
 				AND tabAR.academic_term = %s
@@ -177,6 +178,7 @@ def get_final_second_half(student, term):
 		midyear_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
+				AND tabAR.not_included = 0
 				AND tabAR.student = %s
 				AND tabAR.program = %s
 				AND tabAR.academic_term = '2022 (Term 1)'

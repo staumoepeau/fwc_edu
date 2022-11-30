@@ -99,7 +99,7 @@ def execute(filters=None):
 
 	dataframe = dataframe.sort_values(by="Overall", ascending=False)
 	
-	dataframe = dataframe.iloc[:20]
+	dataframe = dataframe.iloc[:10]
 
 	columns = [ { "fieldname": "rank", "label": _("Position"), "fieldtype": "Data", "width": 200 }]
 	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
