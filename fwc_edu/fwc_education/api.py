@@ -195,12 +195,13 @@ def get_final_second_half(student, term):
 	finalhalf_score = str(finalhalf_score).replace('((', '')
 	finalhalf_score = str(finalhalf_score).replace('))', '')
 
+	finalhalf_score = round(float(finalhalf_score), 2)
 	finalhalf_60 = round(float(finalhalf_score)*60/100, 2)
 
 	grand_total = round(float(midyear_40 + finalhalf_60), 2)
 
-	#frappe.msgprint(_("Final {0}").format(grand_total))
-#	frappe.msgprint(_("FinalHalf_60 {0}").format(finalhalf_60))
+#	frappe.msgprint(_("Final {0}").format(grand_total))
+#	frappe.msgprint(_("FinalHalf {0}").format(finalhalf_score))
 
 	
 	return finalhalf_score, grand_total
