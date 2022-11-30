@@ -192,6 +192,15 @@
   },
   {
    "hidden": 0,
+   "is_query_report": 1,
+   "label": "TOP 10 by Subject",
+   "link_to": "Level TOP by Subject",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
    "is_query_report": 0,
    "label": "Budgeting",
    "link_type": "DocType",
@@ -235,7 +244,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-11-29 09:14:48.028319",
+ "modified": "2022-11-30 15:04:20.853658",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
