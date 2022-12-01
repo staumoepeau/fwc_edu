@@ -194,8 +194,24 @@ def get_final_second_half(student, term):
 
 
 		gtotal = Counter(dict(finalhalf_list)) + Counter(dict(midyear_list))
+
+		if student == "S22000962":
+			gtotal.pop("Computing")
+		if student == "S22000994":		
+			gtotal.pop("Geography")
+		if student == "S22000851":
+			gtotal.pop("Physic")
+		if student == "S22001036":
+			gtotal.pop("History")
+
+
+		list = []
+		for i in gtotal:
+			list.append(gtotal[i])
+		final = sum(list)
+		final = round((final/600*100), 2)
 		
-#		frappe.msgprint(_("Final {0}").format(gtotal))
+#		frappe.msgprint(_("Final {0}").format(final))
 
 	else:
 		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
@@ -239,7 +255,8 @@ def get_final_second_half(student, term):
 
 #	frappe.msgprint(_("Final {0}").format(grand_total))
 #	frappe.msgprint(_("FinalHalf {0}").format(finalhalf_score))
-
+	if student in ("S22000962", "S22000994"):
+		grand_total = final
 	
 	return finalhalf_score, grand_total
 
