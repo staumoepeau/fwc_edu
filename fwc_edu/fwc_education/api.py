@@ -166,7 +166,7 @@ def get_final_second_half(student, term):
 				AND tabAR.not_included = 0
 				""", (student, program))
 		
-		finalhalf_list = frappe.db.sql("""SELECT tabAR.course, tabAR.total_score 
+		finalhalf_list = frappe.db.sql("""SELECT tabAR.course, (tabAR.total_score/100)*60
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
@@ -204,6 +204,7 @@ def get_final_second_half(student, term):
 		if student == "S22001036":
 			gtotal.pop("History")
 
+#		frappe.msgprint(_("Final {0}").format(gtotal))
 
 		list = []
 		for i in gtotal:
@@ -211,7 +212,7 @@ def get_final_second_half(student, term):
 		final = sum(list)
 		final = round((final/600*100), 2)
 		
-#		frappe.msgprint(_("Final {0}").format(final))
+	#	frappe.msgprint(_("Final {0}").format(final))
 
 	else:
 		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
