@@ -148,6 +148,23 @@ def get_final_second_half(student, term):
 	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
 		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
+		course_remove = frappe.db.sql("""SELECT tabAR.course 
+				FROM `tabAssessment Result` as tabAR
+				WHERE tabAR.docstatus = 1
+				AND tabAR.student = %s
+				AND tabAR.program = %s
+				AND tabAR.academic_term = %s
+				AND tabAR.not_included = 1
+				""", (student, program, term))
+		
+		
+
+		course_remove = str(course_remove).replace(',', '')
+		course_remove = str(course_remove).replace('((', '')
+		course_remove = str(course_remove).replace('))', '')
+		
+		frappe.msgprint(_("MID1 {0}").format(course_remove))
+
 		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(600)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
@@ -163,8 +180,8 @@ def get_final_second_half(student, term):
 				AND tabAR.student = %s
 				AND tabAR.program = %s
 				AND tabAR.academic_term = '2022 (Term 1)'
-				AND tabAR.not_included = 0
-				""", (student, program))
+				AND tabAR.course != %s
+				""", (student, program, course_remove))
 	else:
 		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
 				FROM `tabAssessment Result` as tabAR
@@ -182,9 +199,11 @@ def get_final_second_half(student, term):
 				AND tabAR.student = %s
 				AND tabAR.program = %s
 				AND tabAR.academic_term = '2022 (Term 1)'
-				AND tabAR.not_included = 0
-				""", (student, program))
-	
+				AND tabAR.course != %s
+				""", (student, program, "English"))
+
+#	frappe.msgprint(_("MID1 {0}").format(get_course))
+
 	midyear_score = str(midyear_score).replace(',', '')
 	midyear_score = str(midyear_score).replace('((', '')
 	midyear_score = str(midyear_score).replace('))', '')
@@ -200,7 +219,7 @@ def get_final_second_half(student, term):
 
 	grand_total = round(float(midyear_40 + finalhalf_60), 2)
 
-	#frappe.msgprint(_("MID1 {0}").format(midyear_score))
+	
 	#frappe.msgprint(_("MID {0}").format(midyear_40))
 	#frappe.msgprint(_("FIN {0}").format(finalhalf_60))
 
