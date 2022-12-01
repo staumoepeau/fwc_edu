@@ -200,9 +200,9 @@ def get_final_second_half(student, term):
 
 	grand_total = round(float(midyear_40 + finalhalf_60), 2)
 
-	frappe.msgprint(_("MID1 {0}").format(midyear_score))
-	frappe.msgprint(_("MID {0}").format(midyear_40))
-	frappe.msgprint(_("FIN {0}").format(finalhalf_60))
+	#frappe.msgprint(_("MID1 {0}").format(midyear_score))
+	#frappe.msgprint(_("MID {0}").format(midyear_40))
+	#frappe.msgprint(_("FIN {0}").format(finalhalf_60))
 
 	
 	return finalhalf_score, grand_total
