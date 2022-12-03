@@ -186,19 +186,13 @@ def get_final_second_half(student, term):
 #				And tabAR.overall_exempt = 1
 #				""", (student, program, term))
 
-#		get_exempt_subject = str(get_exempt_subject).replace(',', '')
-#		get_exempt_subject = str(get_exempt_subject).replace('((', '')
-#		get_exempt_subject = str(get_exempt_subject).replace('))', '')
-		
-#		exempt_subject = get_exempt_subject
-
 		midyear_list = frappe.db.sql("""SELECT tabAR.course, (tabAR.total_score/100)*40
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
-				AND tabAR.student = %s
-				AND tabAR.program = %s
 				And tabAR.overall_exempt = 0
 				AND tabAR.academic_term = "2022 (Term 1)"
+				AND tabAR.student = %s
+				AND tabAR.program = %s
 				""", (student, program))
 
 
