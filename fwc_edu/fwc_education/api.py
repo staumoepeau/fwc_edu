@@ -168,7 +168,7 @@ def get_final_second_half(student, term):
 #
 # Get the Excempt Subject
 #  		
-		finalhalf_list = frappe.db.sql("""SELECT tabAR.course, (tabAR.total_score/100)*60
+		finalhalf_list = frappe.db.sql("""SELECT tabAR.course, ROUND((tabAR.total_score/100)*60, 2)
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
@@ -177,16 +177,16 @@ def get_final_second_half(student, term):
 				And tabAR.overall_exempt = 0
 				""", (student, program, term))
 
-#		get_exempt_subject = frappe.db.sql("""SELECT tabAR.course
-#				FROM `tabAssessment Result` as tabAR
-#				WHERE tabAR.docstatus = 1
-#				AND tabAR.student = %s
-#				AND tabAR.program = %s
-#				AND tabAR.academic_term = %s
-#				And tabAR.overall_exempt = 1
-#				""", (student, program, term))
+		get_exempt_subject = frappe.db.sql("""SELECT tabAR.course
+				FROM `tabAssessment Result` as tabAR
+				WHERE tabAR.docstatus = 1
+				AND tabAR.student = %s
+				AND tabAR.program = %s
+				AND tabAR.academic_term = %s
+				And tabAR.overall_exempt = 1
+				""", (student, program, term))
 
-		midyear_list = frappe.db.sql("""SELECT tabAR.course, (tabAR.total_score/100)*40
+		midyear_list = frappe.db.sql("""SELECT tabAR.course, ROUND((tabAR.total_score/100)*40, 2)
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				And tabAR.overall_exempt = 0
@@ -213,7 +213,7 @@ def get_final_second_half(student, term):
 #		if student == "S22001036":
 #			gtotal.pop("History")
 
-		
+#		frappe.msgprint(_("MID {0}").format(gtotal))	
 
 		list = []
 		for i in gtotal:
@@ -221,7 +221,7 @@ def get_final_second_half(student, term):
 		final = sum(list)
 		final = round((final/600*100), 2)
 		
-	#	frappe.msgprint(_("Final {0}").format(final))
+#		frappe.msgprint(_("Final {0}").format(final))
 
 	else:
 		finalhalf_score = frappe.db.sql("""SELECT ROUND(SUM(tabAR.total_score)/(800)*100, 3) AS 'Score' 
@@ -261,12 +261,16 @@ def get_final_second_half(student, term):
 	finalhalf_score = round(float(finalhalf_score), 2)
 	finalhalf_60 = round(float(finalhalf_score)*60/100, 2)
 
-	grand_total = round(float(midyear_40 + finalhalf_60), 2)
+#	grand_total = round(float(midyear_40 + finalhalf_60), 2)
 
+	if get_exempt_subject:
+		grand_total = final
+	else:
+		grand_total = round(float(midyear_40 + finalhalf_60), 2)
 #	frappe.msgprint(_("Final {0}").format(grand_total))
 #	frappe.msgprint(_("FinalHalf {0}").format(finalhalf_score))
-	if student in ("S22000962", "S22000994"):
-		grand_total = final
+#	if student in ("S22000962", "S22000994"):
+#		grand_total = final
 	
 	return finalhalf_score, grand_total
 
