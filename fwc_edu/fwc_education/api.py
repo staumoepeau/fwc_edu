@@ -165,23 +165,42 @@ def get_final_second_half(student, term):
 				AND tabAR.academic_term = '2022 (Term 1)'
 				AND tabAR.not_included = 0
 				""", (student, program))
-		
+#
+# Get the Excempt Subject
+#  		
 		finalhalf_list = frappe.db.sql("""SELECT tabAR.course, (tabAR.total_score/100)*60
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
 				AND tabAR.program = %s
 				AND tabAR.academic_term = %s
+				And tabAR.overall_exempt = 0
 				""", (student, program, term))
+
+#		get_exempt_subject = frappe.db.sql("""SELECT tabAR.course
+#				FROM `tabAssessment Result` as tabAR
+#				WHERE tabAR.docstatus = 1
+#				AND tabAR.student = %s
+#				AND tabAR.program = %s
+#				AND tabAR.academic_term = %s
+#				And tabAR.overall_exempt = 1
+#				""", (student, program, term))
+
+#		get_exempt_subject = str(get_exempt_subject).replace(',', '')
+#		get_exempt_subject = str(get_exempt_subject).replace('((', '')
+#		get_exempt_subject = str(get_exempt_subject).replace('))', '')
+		
+#		exempt_subject = get_exempt_subject
 
 		midyear_list = frappe.db.sql("""SELECT tabAR.course, (tabAR.total_score/100)*40
 				FROM `tabAssessment Result` as tabAR
 				WHERE tabAR.docstatus = 1
 				AND tabAR.student = %s
 				AND tabAR.program = %s
-				AND tabAR.academic_term = '2022 (Term 1)'
+				And tabAR.overall_exempt = 0
 				""", (student, program))
-		
+
+#		midyear_list.pop("Computing")
 #		for student in midyear_list:
 #			if student in finalhalf_list:
 #				finalhalf_list[student] = finalhalf_list[student] + midyear_list[student]
@@ -192,19 +211,24 @@ def get_final_second_half(student, term):
 #		midyear_list = Counter(midyear_list)
 
 
-
+#		frappe.msgprint(_("Final {0}").format(finalhalf_list))
+#		frappe.msgprint(_("MID {0}").format(midyear_list))
+#		frappe.msgprint(_("MID {0}").format(exempt_subject))
+		
 		gtotal = Counter(dict(finalhalf_list)) + Counter(dict(midyear_list))
 
-		if student == "S22000962":
-			gtotal.pop("Computing")
-		if student == "S22000994":		
-			gtotal.pop("Geography")
-		if student == "S22000851":
-			gtotal.pop("Physic")
-		if student == "S22001036":
-			gtotal.pop("History")
+#		gtotal.pop(exempt_subject)
 
-#		frappe.msgprint(_("Final {0}").format(gtotal))
+#		if student == "S22000962":
+#			gtotal.pop("Computing")
+#		if student == "S22000994":		
+#			gtotal.pop("Geography")
+#		if student == "S22000851":
+#			gtotal.pop("Physic")
+#		if student == "S22001036":
+#			gtotal.pop("History")
+
+		
 
 		list = []
 		for i in gtotal:
