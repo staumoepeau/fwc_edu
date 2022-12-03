@@ -198,22 +198,13 @@ def get_final_second_half(student, term):
 				AND tabAR.student = %s
 				AND tabAR.program = %s
 				And tabAR.overall_exempt = 0
+				AND tabAR.academic_term = "2022 (Term 1)"
 				""", (student, program))
-
-#		midyear_list.pop("Computing")
-#		for student in midyear_list:
-#			if student in finalhalf_list:
-#				finalhalf_list[student] = finalhalf_list[student] + midyear_list[student]
-#			else:
-#				passfor key in dictB:
-				
-#		finalhalf_list = Counter(finalhalf_list)
-#		midyear_list = Counter(midyear_list)
 
 
 #		frappe.msgprint(_("Final {0}").format(finalhalf_list))
 #		frappe.msgprint(_("MID {0}").format(midyear_list))
-#		frappe.msgprint(_("MID {0}").format(exempt_subject))
+#		frappe.msgprint(_("MID {0}").format(get_exempt_subject))
 		
 		gtotal = Counter(dict(finalhalf_list)) + Counter(dict(midyear_list))
 
