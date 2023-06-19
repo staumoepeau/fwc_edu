@@ -262,11 +262,17 @@ def get_final_second_half(student, term):
 	finalhalf_60 = round(float(finalhalf_score)*60/100, 2)
 
 #	grand_total = round(float(midyear_40 + finalhalf_60), 2)
+	
+	if program in ('Form 5K','Form 5L','Form 5M','Form 5S','Form 5T','Form 5V',
+		'Form 6K','Form 6M','Form 6S','Form 6T','Form 7A','Form 7L'):
 
-	if get_exempt_subject:
-		grand_total = final
+		if get_exempt_subject:
+			grand_total = final
+		else:
+			grand_total = round(float(midyear_40 + finalhalf_60), 2)
 	else:
 		grand_total = round(float(midyear_40 + finalhalf_60), 2)
+
 #	frappe.msgprint(_("Final {0}").format(grand_total))
 #	frappe.msgprint(_("FinalHalf {0}").format(finalhalf_score))
 #	if student in ("S22000962", "S22000994"):

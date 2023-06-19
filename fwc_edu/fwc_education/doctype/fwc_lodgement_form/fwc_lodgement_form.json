@@ -7,14 +7,12 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
-  "payroll_no",
   "section_break_2",
-  "school",
-  "account_debited",
-  "column_break_6",
+  "payroll_no",
   "posting_date",
+  "school",
   "batch_no",
-  "section_break_9",
+  "account_debited",
   "total_payment",
   "amended_from"
  ],
@@ -22,7 +20,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "hidden": 1,
    "label": "Series",
    "options": "Lodgement.-.YY.MM.-.###"
   },
@@ -32,29 +29,30 @@
   },
   {
    "fieldname": "payroll_no",
-   "fieldtype": "Link",
-   "label": "Payroll No",
-   "options": "Payroll Entry",
-   "read_only": 1
+   "fieldtype": "Data",
+   "label": "Payroll No"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date"
   },
   {
    "fieldname": "school",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "School",
-   "options": "Company",
-   "read_only": 1
+   "options": "Company"
   },
   {
    "allow_on_submit": 1,
-   "fetch_from": "school.batch_no",
    "fieldname": "batch_no",
    "fieldtype": "Data",
    "label": "Batch No"
   },
   {
    "allow_on_submit": 1,
-   "fetch_from": "school.account_debited",
    "fieldname": "account_debited",
    "fieldtype": "Data",
    "label": "Account to be DEBITED"
@@ -71,32 +69,18 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Lodgement Form",
+   "options": "FWC Lodgement Form",
    "print_hide": 1,
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break_6",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_9",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fetch_from": "payroll_no.posting_date",
-   "fieldname": "posting_date",
-   "fieldtype": "Date",
-   "label": "Posting Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-01-18 13:01:40.953508",
+ "modified": "2023-01-18 12:59:32.130870",
  "modified_by": "Administrator",
  "module": "FWC Education",
- "name": "Lodgement Form",
+ "name": "FWC Lodgement Form",
  "owner": "Administrator",
  "permissions": [
   {

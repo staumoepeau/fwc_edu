@@ -642,13 +642,13 @@ def get_sum_netpay(posting_date, company, bank_name):
 	netpay = (str(netpay).replace("]]","")).replace(",","")
 	netpay = str(netpay).replace("(","")
 	netpay = (str(netpay).replace(")","")).replace(",","")
-	netpay = ((str(netpay)).replace(".",""))
+#	netpay = ((str(netpay)).replace(".",""))
 
 #	frappe.msgprint(_("NET01: {0}").format(netpay))
 
-#	netpay = int(float(netpay)*100)
+	netpay = int(float(netpay)*100)
 
-#	frappe.msgprint(_("NET1: {0}").format(netpay))
+#	frappe.msgprint(_("NET 1: {0}").format(netpay))
 
 	#netpay = ((str(netpay)).replace(".",""))
 #	frappe.msgprint(_("NET2: {0}").format(netpay))

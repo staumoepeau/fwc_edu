@@ -123,7 +123,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "School Fees",
-   "link_to": "Fees",
+   "link_to": "Sales Invoice",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -193,7 +193,7 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "TOP 10 by Subject",
+   "label": "LEVEL TOP 10 by Subject",
    "link_to": "Level TOP by Subject",
    "link_type": "Report",
    "onboard": 0,
@@ -244,7 +244,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-11-30 15:04:20.853658",
+ "modified": "2023-01-24 09:59:13.612101",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",
@@ -309,7 +309,7 @@
   {
    "doc_view": "",
    "label": "School Fees",
-   "link_to": "Fees",
+   "link_to": "Sales Invoice",
    "type": "DocType"
   },
   {
