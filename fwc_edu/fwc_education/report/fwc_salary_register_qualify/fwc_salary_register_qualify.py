@@ -21,7 +21,6 @@ def execute(filters=None):
 	doj_map = get_employee_doj_map()
 	basic_annual = get_employee_annual_basic()
 	mycompany = filters.get("company")
-	
 
 	data = []
 	for ss in salary_slips:
@@ -125,24 +124,17 @@ def get_salary_slips(filters, company_currency):
 def get_conditions(filters, company_currency):
 	conditions = ""
 	doc_status = {"Draft": 0, "Submitted": 1, "Cancelled": 2}
-	qualify_teaching = {"No": 0, "Yes": 1, "All": None}
 
 	if filters.get("docstatus"):
 		conditions += "docstatus = {0}".format(doc_status[filters.get("docstatus")])
 
-	if filters.get("qualify_teaching_staff"):
-		if filters.get("qualify_teaching_staff") in ("Yes", "No"):
-			conditions += " and qualify_teaching_staff = {0}".format(qualify_teaching[filters.get("qualify_teaching_staff")])
-		else:
-			conditions += " and qualify_teaching_staff = ''"
-
 	if filters.get("from_date"): conditions += " and start_date >= %(from_date)s"
 	if filters.get("to_date"): conditions += " and end_date <= %(to_date)s"
 	if filters.get("company"): conditions += " and company = %(company)s"
+	if filters.get("employee"): conditions += " and employee = %(employee)s"
 	if filters.get("currency") and filters.get("currency") != company_currency:
 		conditions += " and currency = %(currency)s"
 
-#	msgprint(_("Salary Slip {0}").format(conditions))
 	return conditions, filters
 
 def get_employee_annual_basic():

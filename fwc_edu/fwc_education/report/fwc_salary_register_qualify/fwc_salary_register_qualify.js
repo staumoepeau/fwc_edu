@@ -1,7 +1,7 @@
 // Copyright (c) 2013, Sione Taumoepeau and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["FWC Salary Register"] = {
+frappe.query_reports["FWC Salary Register Qualify"] = {
 	"filters": [
 		{
 			"fieldname":"from_date",
@@ -32,7 +32,6 @@ frappe.query_reports["FWC Salary Register"] = {
 			"label":__("Qualify Teacher"),
 			"fieldtype":"Select",
 			"options":["All","Yes", "No"],
-			"default": "Yes",
 			"width": "50px",
 		},
 		{
