@@ -39,8 +39,8 @@ def execute(filters=None):
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
-					AND tabAR.academic_term = "2022 (Term 1)"
-					GROUP BY tabAR.student""", ("%%%s%%" % program), as_dict=1)
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
 	
 		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
 					ROUND(((SUM(tabAR.total_score)/800*100)*60/100), 2) AS 'Total_Score'
@@ -60,8 +60,8 @@ def execute(filters=None):
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
-					AND tabAR.academic_term = "2022 (Term 1)"
-					GROUP BY tabAR.student""", ("%%%s%%" % program), as_dict=1)
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
 	
 		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
 					ROUND(((SUM(tabAR.total_score)/600*100)*60/100), 2) AS 'Total_Score'

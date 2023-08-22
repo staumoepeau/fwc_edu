@@ -24,67 +24,65 @@ def execute(filters=None):
 	if not filters: filters = {}
 	columns, data = [], []
 
-	term = filters.get("academic_term")
-	formLevel = filters.get("level")
+	term = filters.get('academic_term')
 	program = get_program(formLevel)
-	subject = filters.get("subject")
-	
-#	frappe.msgprint(_("MID {0}").format(program))
 
-	if formLevel in ("L1", "L2", "L3", "L4"):
+	if program and (program.startswith('Form 1') or program.startswith('Form 2') or program.startswith('Form 3')) or or program.startswith('Form 4'):
 		
-		midyear_40 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name, tabAR.course,
-					ROUND(((tabAR.total_score)*40/100), 2) AS 'MidYear_Score'
+#		frappe.msgprint(_("Level {0}").format(program))
+
+		midyear_40 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/800*100)*40/100), 2) AS 'MidYear_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
-					AND tabAR.course = %s
 					AND tabAR.academic_term = %s
-					GROUP BY tabAR.student""", ("%%%s%%" % program, subject, term), as_dict=1)
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
 	
-		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name, tabAR.course,
-					ROUND(((tabAR.total_score)*60/100), 2) AS 'Total_Score'
+		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/800*100)*60/100), 2) AS 'Total_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
 					AND tabAR.academic_term = %s
-					AND tabAR.course = %s
-					GROUP BY tabAR.student""", ("%%%s%%" % program, term, subject), as_dict=1)
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
 	
 	if formLevel in ("L5", "L6", "L7"):
+#		frappe.msgprint(_("Level 2 {0}").format(program))
 
-		midyear_40 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,tabAR.course,
-					ROUND(((tabAR.total_score)*40/100), 2) AS 'MidYear_Score'
-					FROM `tabAssessment Result` as tabAR
-					WHERE tabAR.docstatus = 1
-					AND tabAR.not_included = 0
-					AND tabAR.program LIKE %s
-					AND tabAR.course = %s
-					AND tabAR.academic_term = "2022 (Term 1)"
-					GROUP BY tabAR.student""", ("%%%s%%" % program, subject), as_dict=1)
-	
-		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,tabAR.course,
-					ROUND(((tabAR.total_score)*60/100), 2) AS 'Total_Score'
+		midyear_40 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/600*100)*40/100), 2) AS 'MidYear_Score'
 					FROM `tabAssessment Result` as tabAR
 					WHERE tabAR.docstatus = 1
 					AND tabAR.not_included = 0
 					AND tabAR.program LIKE %s
 					AND tabAR.academic_term = %s
-					AND tabAR.course = %s
-					GROUP BY tabAR.student""", ("%%%s%%" % program, term, subject), as_dict=1)
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
 	
-#	frappe.msgprint(_("Group {0}").format(subject))
-#	frappe.msgprint(_("MID {0}").format(midyear_40))
-#	frappe.msgprint(_("FINAL {0}").format(final_60))
+		final_60 = frappe.db.sql("""SELECT tabAR.student,tabAR.student_name,
+					ROUND(((SUM(tabAR.total_score)/600*100)*60/100), 2) AS 'Total_Score'
+					FROM `tabAssessment Result` as tabAR
+					WHERE tabAR.docstatus = 1
+					AND tabAR.not_included = 0
+					AND tabAR.program LIKE %s
+					AND tabAR.academic_term = %s
+					GROUP BY tabAR.student""", ("%%%s%%" % program, term), as_dict=1)
+
+
+#	df_40 = pd.DataFrame.from_records(midyear_40)
+#	df_60 = pd.DataFrame.from_records(final_60)
 	
+
 	dataframe = pd.DataFrame.from_records(midyear_40)
 	df_total = pd.DataFrame.from_records(final_60)
 
 	df_total = df_total.pivot_table(index=('student_name'), values='Total_Score')
 #	lessons = dataframe.course.unique().tolist()
 	dataframe = dataframe.pivot_table(index=('student_name'), values=('MidYear_Score'))
+
+	
 
 	dataframe['Overall'] = df_total['Total_Score'] + dataframe['MidYear_Score']
 
@@ -97,25 +95,25 @@ def execute(filters=None):
 	dataframe['Overall'] = round(dataframe['Overall'] ,2)
 	dataframe.fillna(0, inplace = True)
 
+	dataframe['Rank'] = dataframe['Overall'].rank(ascending = 0)
+
 	dataframe = dataframe.sort_values(by="Overall", ascending=False)
 	
-	dataframe = dataframe.iloc[:10]
+	dataframe = dataframe.iloc[:20]
 
-	columns = [ { "fieldname": "rank", "label": _("Position"), "fieldtype": "Data", "width": 200 }]
-	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
-	
-	columns+=[ { "fieldname": "MidYear_Score", "label": _("Mid Year 40%"), "fieldtype": "Float", "width": 100 }]
+	columns = [ { "fieldname": "Rank", "label": _("Position"), "fieldtype": "Data", "width": 80 }]
+	columns += [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
+	columns+=[ { "fieldname": "Comments", "label": _("Kolo e Ui me Ai"), "fieldtype": "Data", "width": 500}]
 
-	columns+=[ { "fieldname": "FinalSecond", "label": _("Second Half 60%"), "fieldtype": "Float", "width": 100 }]
+	columns+=[ { "fieldname": "MidYear_Score", "label": _("Mid Year 40%"), "fieldtype": "Float", "width": 90 }]
 
-	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Float", "width": 100 }]
+	columns+=[ { "fieldname": "FinalSecond", "label": _("Second Half 60%"), "fieldtype": "Float", "width": 90 }]
+
+	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Float", "width": 90 }]
 
 	data = dataframe.reset_index().to_dict('records')
-
-
-
+	
 	return columns, data
-
 
 def get_program(level):
 	

@@ -184,8 +184,8 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "LEVEL TOP 20 ",
-   "link_to": "QSC TOP 20 Report",
+   "label": "QSC Class List Mid Year",
+   "link_to": "QSC Class List Mid Year",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -193,18 +193,21 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "LEVEL TOP 10 by Subject",
-   "link_to": "Level TOP by Subject",
+   "label": "QSC Level List Mid Year",
+   "link_to": "QSC Level TOP 20",
    "link_type": "Report",
    "onboard": 0,
+   "only_for": "",
    "type": "Link"
   },
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Budgeting",
+   "label": "Budget",
+   "link_to": "",
    "link_type": "DocType",
    "onboard": 0,
+   "only_for": "",
    "type": "Card Break"
   },
   {
@@ -244,7 +247,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-01-24 09:59:13.612101",
+ "modified": "2023-08-09 15:48:20.166980",
  "modified_by": "Administrator",
  "module": "FWC Education",
  "name": "FWC Education",

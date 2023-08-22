@@ -1,0 +1,85 @@
+{%
+	var report_columns = report.get_columns_for_print();
+%}
+<style>
+	@media print 
+{
+    @page {
+      size: A4; 
+      margin:0;
+    }
+    html, body {
+        width: 210mm;
+        /* height: 297mm; */
+        height: 282mm;
+        background: #FFF;
+        overflow:visible;
+    }
+    body {
+        padding-top:5mm;
+    }
+}
+table, td, th {
+border: 1px solid black;
+}
+
+table, td {
+vertical-align:middle;
+}
+
+table {
+border-collapse: collapse;
+}
+.table td, .table th {
+    font-size: 12px;
+}
+</style>
+<!----------------------------------------------------HEADING------------------------------------------------------>
+<br>
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<h3>QUEEN SALOTE COLLEGE<BR>{%= filters.classLevel %}</h3>
+			<h2>MID YEAR - 2023</h2>
+	</div>
+</div>
+<hr>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+				<th class="text-left" >{%= report_columns[i].label %}</th>
+			{% } %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for(var j=0, k=data.length; j<k; j++) { %}
+			{%
+				var row = data[j];
+			%}
+			<tr>
+				{% for(var i=0, l=report_columns.length; i<l; i++) { %}
+				{% if (i==1) { %}
+					<td class="text-left">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{%= row[fieldname] %}
+					</td>
+				{% } else if (i==report_columns.length-1) { %}
+					<td class="text-center">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{%= row[fieldname] + "%" %}
+					</td>
+				{% } else { %}
+					<td class="text-center">
+						{% var fieldname = report_columns[i].fieldname; %}
+						{%= row[fieldname] %}
+					</td>
+				{% } %}
+				{% } %}
+			</tr>
+		{% } %}
+	</tbody>
+</table>
+
+<!-----------------------------------------------Overall MARKS------------------------------------------------------------------------->
+
+<p class="text-right text-muted">{{ __("Printed On") }} {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}</p>

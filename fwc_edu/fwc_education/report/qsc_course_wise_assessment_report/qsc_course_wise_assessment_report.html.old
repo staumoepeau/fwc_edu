@@ -70,9 +70,15 @@ border-collapse: collapse;
 				
 				{% } else if (report_columns[i].label=="Common Test Final") { %}
 				<th class="text-center" style="width:12%">Course Work<br><br>30%</th>
-			
+
+				{% } else if (report_columns[i].label=="Mid Year Exam") { %}
+				<th class="text-center" style="width:14%">Mid Year Exam<br><br>70%</th>
+
+				{% } else if (report_columns[i].label=="Final Exam") { %}
+				<th class="text-center" style="width:14%">Final Exam<br><br>70%</th>
+				
 				{% } else if (report_columns[i].label=="Raw Marks") { %}
-				<th class="text-center" style="width:13%">Mid Year Exam<br>Raw Marks<br>100%</th>
+				<th class="text-center" style="width:13%">Final Exam<br>Raw Marks<br>100%</th>
 
 				{% } else if (report_columns[i].label=="Overall") { %}
 				<th class="text-center" style="width:13%">Overall<br><br>100%</th>

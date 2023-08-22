@@ -1,6 +1,3 @@
-# Copyright (c) 2022, Sione Taumoepeau and contributors
-# For license information, please see license.txt
-
 from __future__ import unicode_literals
 from itertools import groupby
 import sys
@@ -33,7 +30,7 @@ def execute(filters=None):
 #	getCourse = frappe.db.get_value('Student Group', {'name': groupSQL}, ['course'])
 
 	
-	if schoolTerm == "2022 (Term 1)":
+	if schoolTerm == "2023 (Term 1)":
 		studentList = """SELECT tabAR.student_group, tabAR.course, tabAR.student, tabAR.student_name,
 				tabARD.assessment_criteria, tabARD.maximum_score, 
 				tabARD.score, tabARD.raw_marks, tabARD.total_raw_marks, tabARD.grade
@@ -41,7 +38,7 @@ def execute(filters=None):
 				LEFT JOIN `tabAssessment Result Detail` AS tabARD
 				ON tabAR.name = tabARD.parent
 				WHERE tabAR.docstatus = 1
-				AND tabAR.assessment_group = "QSC2002-T1"
+				AND tabAR.assessment_group = "QSC-MIDYEAR-2023"
 				AND ({studentGroupSQL})
 				ORDER BY tabARD.assessment_criteria DESC""".format(studentGroupSQL = studentGroupSQL)
 
@@ -49,11 +46,11 @@ def execute(filters=None):
 				tabAR.student_name, tabAR.grade, tabAR.total_score
 				FROM `tabAssessment Result` AS tabAR
 				WHERE tabAR.docstatus = 1
-				AND tabAR.assessment_group = "QSC2002-T1"
+				AND tabAR.assessment_group = "QSC-MIDYEAR-2023"
 				AND ({studentGroupSQL})
 				""".format(studentGroupSQL = studentGroupSQL)
 
-	if schoolTerm == "2022 (Term 4)":
+	if schoolTerm == "2023 (Term 4)":
 		studentList = """SELECT tabAR.student_group, tabAR.course, tabAR.student, tabAR.student_name,
 				tabARD.assessment_criteria, tabARD.maximum_score, 
 				tabARD.score, tabARD.raw_marks, tabARD.total_raw_marks, tabARD.grade
@@ -89,8 +86,8 @@ def execute(filters=None):
 	df_grade = df_grade.pivot_table(index='student_name', values='grade',aggfunc = lambda x: ','.join(str(v) for v in x))
 #	frappe.msgprint(_("Dataframe {0}").format(dataframe))
 	assessments = dataframe.assessment_criteria.unique().tolist()
-
-	dataframe = dataframe.pivot_table(index="student_name", columns="assessment_criteria", values=('score'))
+	assessments = sorted(assessments, key=lambda x: (x != "Common Test 1", x))
+	dataframe = dataframe.pivot_table(index="student_name", columns="assessment_criteria", values=('raw_marks'))
 	
 	dataframe['Overall'] = df_total
 	dataframe['Grade'] = df_grade
@@ -98,20 +95,21 @@ def execute(filters=None):
 	
 	dataframe.fillna(0, inplace = True)
 
-	if schoolTerm == "2022 (Term 1)":
+	if schoolTerm == "2023 (Term 1)":
 		dataframe['raw_marks'] = dataframe.loc[:, 'Mid Year Exam'] / 70 * 100
 	
-	if schoolTerm == "2022 (Term 4)":
+	if schoolTerm == "2023 (Term 4)":
 		dataframe['raw_marks'] = dataframe.loc[:, 'Final Exam'] / 70 * 100
 
 	dataframe["raw_marks"] = dataframe["raw_marks"].apply(lambda x: round(x, 2))
 
 	assessments = [{"fieldname": assessment_criteria, "label": _(assessment_criteria), "fieldtype": "Data", "width": 200, } for assessment_criteria in assessments]
+#	columns += [{"fieldname": assessment_criteria, "label": _(assessment_criteria), "fieldtype": "Data", "width": 200} for assessment_criteria in assessments]
 	columns = [ { "fieldname": "student_name", "label": _("Student"), "fieldtype": "Data", "width": 200 }]
-	columns += [ { "fieldname": "raw_marks", "label": _("Raw Marks"), "fieldtype": "Data", "width": 150 }]
+#	columns += [ { "fieldname": "raw_marks", "label": _("Raw Marks"), "fieldtype": "Data", "width": 150 }]
 	columns += assessments
-	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Data", "width": 100 }]
-	columns+=[ { "fieldname": "Grade", "label": _("Grade"), "fieldtype": "Data", "width": 100 }]
+#	columns+=[ { "fieldname": "Overall", "label": _("Overall"), "fieldtype": "Data", "width": 100 }]
+#	columns+=[ { "fieldname": "Grade", "label": _("Grade"), "fieldtype": "Data", "width": 100 }]
 #	columns+=[ { "fieldname": "Comments", "label": _("Teacher's Comment"), "fieldtype": "Data", "width": 500}]
 
 

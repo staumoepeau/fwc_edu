@@ -62,22 +62,4 @@ border-collapse: collapse;
 	</tbody>
 </table>
 
-<table width="100%">
-		 <thead>
-				 <tr>
-						 <th>Approval</th><th></th>
-				 </tr>
-		 </thead>
-		 <tbody>
-				 <tr>
-						 <td>Parepared By</td><td>Signature</td>
-				 </tr>
-
-					<tr>
-						 <td>Authorised By</td><td>Signature</td>
-				 </tr>
-				 <tr>
-						 <td>Check by FWC By</td><td>Signature</td>
-		 </tbody>
- </table>
 <p class="text-right text-muted">{{ __("Printed On") }} {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}</p>
