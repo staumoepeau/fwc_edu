@@ -1,14 +1,21 @@
 [project]
-name = "fwc_edu"                  # Must match your app folder name (hyphenated if needed, but usually snake_case)
-version = "1.0.1"                 # Matches what you had earlier; can be dynamic later if preferred
-description = "FWC Education custom app for Frappe"
-requires-python = ">=3.10"        # Adjust based on your Frappe/Python version (v16 needs ~3.11+ or 3.12+)
-
+name = "fwc-edu"                   # Hyphenated: this is the PyPI/dist name
+version = "1.0.1"
+description = "FWC Education custom Frappe app"
+readme = "README.md"
+requires-python = ">=3.14"         # Frappe v16 requires Python 3.14+
 dependencies = [
     "frappe",
-    # Add any other direct Python deps your app needs, e.g. "requests~=2.31.0",
+    "pypika @ git+https://github.com/frappe/pypika@2c50e6142b2d61d2d243e466fdd5dc03b3d918f2",
+    "gunicorn @ git+https://github.com/frappe/gunicorn@bb554053bb87218120d76ab6676af7015680e8b6",
+    # Add your other direct deps here if any
 ]
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]  # Recommended for compatibility
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+# Optional but recommended for Frappe apps
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fwc_edu*"]             # This tells setuptools to find the package as fwc_edu (underscore)
