@@ -15,7 +15,7 @@ app_license = "MIT"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/fwc_edu/css/fwc_edu.css"
+app_include_css = "fwc.bundle.css"
 # app_include_js = "/assets/fwc_edu/js/fwc_edu.js"
 
 # include js, css files in header of web template
